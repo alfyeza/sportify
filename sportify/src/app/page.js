@@ -1,9 +1,12 @@
+"use client";
 
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CardLapangan from "@/components/CardLapangan";
 import { daftarLapangan } from "@/lib/lapangan";
+import { translations } from "@/lib/translations";
+import { useLanguage } from "@/components/LanguageProvider";
 
 const kategoriOlahraga = [
   "Padel",
@@ -13,6 +16,9 @@ const kategoriOlahraga = [
 ];
 
 export default function Home() {
+  const { language } = useLanguage();
+  const t = translations[language].home;
+
   return (
     <>
       <Navbar />
@@ -22,7 +28,6 @@ export default function Home() {
         {/* HERO SECTION */}
         <section className="relative overflow-hidden px-4 sm:px-6 py-12 sm:py-16 md:py-24">
 
-          {/* Background Decoration */}
           <div className="absolute top-10 left-0 sm:left-10 w-48 sm:w-64 h-48 sm:h-64 bg-soft-mint rounded-full blur-3xl opacity-80" />
 
           <div className="absolute bottom-0 right-0 sm:right-10 w-56 sm:w-72 h-56 sm:h-72 bg-green-100 rounded-full blur-3xl opacity-60" />
@@ -35,16 +40,15 @@ export default function Home() {
               </span>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-dark-text leading-tight mt-7 sm:mt-8">
-                Temukan dan Pesan
+                {t.heroTitle}
                 <br />
                 <span className="text-primary">
-                  Tempat Olahraga Favoritmu
+                  {t.heroHighlight}
                 </span>
               </h1>
 
               <p className="text-gray-600 mt-5 sm:mt-6 max-w-2xl mx-auto leading-relaxed text-sm sm:text-base md:text-lg">
-                Cari dan sewa berbagai tempat olahraga di Kota Semarang
-                dengan mudah, cepat, dan praktis.
+                {t.heroDescription}
               </p>
 
               <div className="flex justify-center mt-8 sm:mt-10">
@@ -52,12 +56,12 @@ export default function Home() {
                   href="/lapangan"
                   className="liquid-primary-button text-sm sm:text-base px-7 sm:px-9 py-3.5 sm:py-4 rounded-2xl"
                 >
-                  Cari Lapangan →
+                  {t.findCourt} →
                 </Link>
               </div>
 
               <p className="text-gray-400 text-xs mt-7 sm:mt-8">
-                Temukan tempat olahraga yang tepat untuk aktivitasmu.
+                {t.heroFooter}
               </p>
 
             </div>
@@ -69,15 +73,15 @@ export default function Home() {
 
           <div className="text-center mb-8 sm:mb-10">
             <p className="text-primary font-semibold text-xs sm:text-sm mb-3 tracking-wider">
-              PILIH AKTIVITASMU
+              {t.categoryLabel}
             </p>
 
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-dark-text">
-              Pilih Olahraga Favoritmu
+              {t.categoryTitle}
             </h2>
 
             <p className="text-gray-500 mt-3 text-sm sm:text-base">
-              Berbagai pilihan tempat olahraga tersedia di Semarang.
+              {t.categoryDescription}
             </p>
           </div>
 
@@ -105,15 +109,15 @@ export default function Home() {
 
               <div>
                 <p className="text-primary font-semibold text-xs sm:text-sm mb-3 tracking-wider">
-                  REKOMENDASI SPORTIFY
+                  {t.recommendationLabel}
                 </p>
 
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-dark-text">
-                  Tempat Olahraga di Semarang
+                  {t.recommendationTitle}
                 </h2>
 
                 <p className="text-gray-500 mt-3 text-sm sm:text-base">
-                  Temukan tempat olahraga yang sesuai dengan kebutuhanmu.
+                  {t.recommendationDescription}
                 </p>
               </div>
 
@@ -121,7 +125,7 @@ export default function Home() {
                 href="/lapangan"
                 className="text-primary font-semibold text-sm sm:text-base hover:text-secondary transition self-start sm:self-auto"
               >
-                Lihat Semua Lapangan →
+                {t.seeAll} →
               </Link>
 
             </div>
@@ -153,18 +157,18 @@ export default function Home() {
               </span>
 
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mt-4">
-                Siap Berolahraga Hari Ini?
+                {t.ctaTitle}
               </h2>
 
               <p className="text-green-100 mt-4 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
-                Temukan tempat olahraga dan pesan jadwalmu sekarang.
+                {t.ctaDescription}
               </p>
 
               <Link
                 href="/lapangan"
                 className="inline-block mt-8 sm:mt-9 bg-white/95 text-primary px-7 sm:px-9 py-3.5 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base shadow-lg hover:bg-soft-mint hover:-translate-y-1 transition-all duration-300"
               >
-                Pesan Sekarang →
+                {t.bookNow} →
               </Link>
             </div>
 

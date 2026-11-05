@@ -6,10 +6,15 @@ import Link from "next/link";
 import { daftarLapangan } from "@/lib/lapangan";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/components/LanguageProvider";
+import { translations } from "@/lib/translations";
 
 export default function BookingLapanganPage() {
   const params = useParams();
   const router = useRouter();
+
+  const { language } = useLanguage();
+  const t = translations[language]?.booking || translations.id.booking;
 
   const lapangan = daftarLapangan.find(
     (item) => String(item.id) === String(params.id)
@@ -40,13 +45,13 @@ export default function BookingLapanganPage() {
         <main className="min-h-screen flex items-center justify-center bg-background px-4">
           <div className="liquid-info-card text-center max-w-md w-full p-6">
             <h1 className="text-2xl font-bold text-dark-text">
-              Lapangan Tidak Ditemukan
+              {t.notFound}
             </h1>
             <Link
               href="/lapangan"
               className="liquid-booking-button inline-block mt-5"
             >
-              Kembali ke Daftar Lapangan
+              {t.backToList}
             </Link>
           </div>
         </main>
@@ -75,9 +80,15 @@ export default function BookingLapanganPage() {
 
     return {
       value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
-      hari: date.toLocaleDateString("id-ID", { weekday: "short" }),
+      hari: date.toLocaleDateString(
+        language === "en" ? "en-US" : "id-ID",
+        { weekday: "short" }
+      ),
       tanggal: date.getDate(),
-      bulan: date.toLocaleDateString("id-ID", { month: "short" }),
+      bulan: date.toLocaleDateString(
+        language === "en" ? "en-US" : "id-ID",
+        { month: "short" }
+      ),
     };
   });
 
@@ -117,7 +128,7 @@ export default function BookingLapanganPage() {
 
   function lanjutBooking() {
     if (!unit || !tanggal || !jam || !durasi) {
-      alert("Silakan lengkapi pilihan booking terlebih dahulu.");
+      alert(t.alert);
       return;
     }
 
@@ -132,6 +143,13 @@ export default function BookingLapanganPage() {
     router.push(`/booking?${query.toString()}`);
   }
 
+  const filterWaktuOptions = [
+    { value: "Semua Waktu", label: t.allTimes },
+    { value: "Pagi", label: t.morning },
+    { value: "Siang", label: t.afternoon },
+    { value: "Malam", label: t.evening },
+  ];
+
   return (
     <>
       <Navbar />
@@ -144,21 +162,21 @@ export default function BookingLapanganPage() {
             href={`/lapangan/${lapangan.id}`}
             className="inline-flex items-center gap-2 text-primary font-semibold text-sm"
           >
-            ← Kembali ke Detail Lapangan
+            ← {t.backToDetail}
           </Link>
 
           {/* HEADER */}
           <div className="mt-7 mb-6">
             <p className="text-primary font-semibold text-sm mb-2">
-              SPORTIFY BOOKING
+              {t.headerLabel}
             </p>
 
             <h1 className="text-2xl sm:text-3xl font-bold text-dark-text">
-              Pilih Lapangan
+              {t.title}
             </h1>
 
             <p className="text-gray-500 text-sm mt-2">
-              Pilih tanggal, unit lapangan, dan jadwal bermain yang kamu inginkan.
+              {t.description}
             </p>
           </div>
 
@@ -182,7 +200,9 @@ export default function BookingLapanganPage() {
                     }`}
                   >
                     <p className="text-xs">{item.hari}</p>
-                    <p className="font-bold text-sm mt-1">{item.tanggal}</p>
+                    <p className="font-bold text-sm mt-1">
+                      {item.tanggal}
+                    </p>
                     <p className="text-xs mt-1">{item.bulan}</p>
                   </button>
                 ))}
@@ -205,10 +225,11 @@ export default function BookingLapanganPage() {
                   onChange={(e) => setFilterWaktu(e.target.value)}
                   className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
                 >
-                  <option value="Semua Waktu">Semua Waktu</option>
-                  <option value="Pagi">Pagi</option>
-                  <option value="Siang">Siang</option>
-                  <option value="Malam">Malam</option>
+                  {filterWaktuOptions.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
                 </select>
 
                 <select
@@ -216,7 +237,7 @@ export default function BookingLapanganPage() {
                   onChange={(e) => setFilterCabor(e.target.value)}
                   className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
                 >
-                  <option value="Semua">Semua Cabor</option>
+                  <option value="Semua">{t.allCategories}</option>
                   {kategoriLapangan.map((kategori) => (
                     <option key={kategori} value={kategori}>
                       {kategori}
@@ -269,7 +290,8 @@ export default function BookingLapanganPage() {
                           className="text-left w-full"
                         >
                           <h2 className="font-bold text-dark-text text-lg hover:text-primary">
-                            {item.nama} <span className="text-primary">›</span>
+                            {item.nama}{" "}
+                            <span className="text-primary">›</span>
                           </h2>
                         </button>
 
@@ -288,13 +310,13 @@ export default function BookingLapanganPage() {
                         <p className="text-sm font-bold text-primary mt-3">
                           Rp{lapangan.harga.toLocaleString("id-ID")}
                           <span className="text-xs text-gray-400 font-normal">
-                            {" "}/ sesi
+                            {" "}/ {t.session.toLowerCase()}
                           </span>
                         </p>
 
                         {unitTerpilih && (
                           <span className="inline-block mt-3 text-xs bg-soft-mint text-primary font-semibold px-3 py-2 rounded-lg">
-                            ✓ Lapangan Dipilih
+                            ✓ {t.selected}
                           </span>
                         )}
                       </div>
@@ -311,7 +333,7 @@ export default function BookingLapanganPage() {
                           </h3>
 
                           <p className="text-xs text-gray-400 mt-1">
-                            Jadwal bermain
+                            {t.playingSchedule}
                           </p>
                         </div>
 
@@ -324,7 +346,7 @@ export default function BookingLapanganPage() {
                           }
                           className="bg-primary hover:bg-secondary text-white rounded-lg px-5 py-3 flex items-center gap-2 text-xs sm:text-sm font-semibold transition"
                         >
-                          {jadwalTersedia} Jadwal Tersedia
+                          {jadwalTersedia} {t.availableSchedules}
 
                           <span>
                             {jadwalTerbuka ? "⌃" : "⌄"}
@@ -332,7 +354,7 @@ export default function BookingLapanganPage() {
                         </button>
                       </div>
 
-                      {/* JADWAL HANYA MUNCUL SETELAH TOMBOL DIKLIK */}
+                      {/* JADWAL MUNCUL SETELAH TOMBOL DIKLIK */}
                       {jadwalTerbuka && (
                         <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
 
@@ -362,7 +384,7 @@ export default function BookingLapanganPage() {
                                 }`}
                               >
                                 <p className="text-[10px] opacity-70">
-                                  60 Menit
+                                  {t.minutes}
                                 </p>
 
                                 <p className="text-sm font-bold mt-1">
@@ -370,7 +392,9 @@ export default function BookingLapanganPage() {
                                 </p>
 
                                 {booked ? (
-                                  <p className="text-xs mt-1">Booked</p>
+                                  <p className="text-xs mt-1">
+                                    {t.booked}
+                                  </p>
                                 ) : (
                                   <p className="text-xs mt-1">
                                     Rp{lapangan.harga.toLocaleString("id-ID")}
@@ -391,7 +415,7 @@ export default function BookingLapanganPage() {
 
             {daftarUnitFilter.length === 0 && (
               <div className="bg-white rounded-2xl p-8 text-center text-gray-500">
-                Belum ada unit lapangan untuk kategori ini.
+                {t.noUnits}
               </div>
             )}
 
@@ -401,43 +425,44 @@ export default function BookingLapanganPage() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6 mt-7">
 
             <h2 className="text-lg font-bold text-dark-text mb-5">
-              Ringkasan Booking
+              {t.summary}
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
               <div>
-                <p className="text-xs text-gray-400">Tempat</p>
+                <p className="text-xs text-gray-400">{t.place}</p>
                 <p className="font-semibold text-dark-text mt-1">
                   {lapangan.nama}
                 </p>
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">Unit Lapangan</p>
+                <p className="text-xs text-gray-400">{t.courtUnit}</p>
                 <p className="font-semibold text-dark-text mt-1">
-                  {unit || "Belum dipilih"}
+                  {unit || t.notSelected}
                 </p>
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">Tanggal dan Jam</p>
+                <p className="text-xs text-gray-400">{t.dateTime}</p>
                 <p className="font-semibold text-dark-text mt-1">
                   {tanggal} {jam && `· ${jam}`}
                 </p>
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">Durasi</p>
+                <p className="text-xs text-gray-400">{t.duration}</p>
                 <select
                   value={durasi}
                   onChange={(e) => setDurasi(e.target.value)}
                   className="border border-gray-200 rounded-lg p-2 mt-1 text-sm w-full"
                 >
-                  <option value="1">1 Sesi</option>
-                  <option value="2">2 Sesi</option>
-                  <option value="3">3 Sesi</option>
-                  <option value="4">4 Sesi</option>
+                  {[1, 2, 3, 4].map((jumlah) => (
+                    <option key={jumlah} value={jumlah}>
+                      {jumlah} {t.session}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -447,7 +472,7 @@ export default function BookingLapanganPage() {
 
               <div>
                 <p className="text-sm text-gray-500">
-                  Estimasi Total Harga
+                  {t.estimatedTotal}
                 </p>
 
                 <p className="text-2xl font-bold text-primary mt-1">
@@ -455,7 +480,8 @@ export default function BookingLapanganPage() {
                 </p>
 
                 <p className="text-xs text-gray-400 mt-1">
-                  {durasi} sesi × Rp{lapangan.harga.toLocaleString("id-ID")}
+                  {durasi} {t.session} × Rp
+                  {lapangan.harga.toLocaleString("id-ID")}
                 </p>
               </div>
 
@@ -464,15 +490,14 @@ export default function BookingLapanganPage() {
                 onClick={lanjutBooking}
                 className="liquid-booking-button w-full sm:w-auto"
               >
-                Lanjut Booking →
+                {t.continue} →
               </button>
 
             </div>
           </div>
 
           <p className="text-xs text-gray-400 text-center mt-5">
-            Jadwal masih berupa simulasi dan belum terhubung dengan sistem
-            pemesanan sebenarnya.
+            {t.simulation}
           </p>
 
         </div>

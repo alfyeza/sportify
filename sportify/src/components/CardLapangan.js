@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage } from "@/components/LanguageProvider";
+import { translations } from "@/lib/translations";
 
 export default function CardLapangan({
   id,
@@ -9,6 +13,10 @@ export default function CardLapangan({
   fasilitas = [],
   gambar,
 }) {
+  const { language } = useLanguage();
+
+  const t = translations[language]?.card || translations.id.card;
+
   return (
     <div className="liquid-card group flex flex-col h-full">
 
@@ -25,7 +33,7 @@ export default function CardLapangan({
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
 
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 px-3 py-1.5 rounded-full bg-white/80 backdrop-blur-xl border border-white/70 text-primary text-xs font-semibold shadow-sm">
-          Sportify Choice
+          {t.badge}
         </div>
       </div>
 
@@ -51,7 +59,7 @@ export default function CardLapangan({
 
           {fasilitas.length > 4 && (
             <span className="liquid-facility">
-              +{fasilitas.length - 4} lainnya
+              +{fasilitas.length - 4} {t.other}
             </span>
           )}
         </div>
@@ -64,13 +72,13 @@ export default function CardLapangan({
 
           <div>
             <p className="text-xs text-gray-500 mb-1">
-              Harga sewa
+              {t.rentalPrice}
             </p>
 
             <p className="text-lg font-bold text-primary">
               Rp {harga.toLocaleString("id-ID")}
               <span className="text-xs font-normal text-gray-500">
-                /sesi
+                {t.session}
               </span>
             </p>
           </div>
@@ -79,7 +87,7 @@ export default function CardLapangan({
             href={`/lapangan/${id}`}
             className="liquid-detail-button w-full sm:w-auto justify-center text-center"
           >
-            Lihat Detail →
+            {t.viewDetail} →
           </Link>
 
         </div>

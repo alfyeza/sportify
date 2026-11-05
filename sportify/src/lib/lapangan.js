@@ -257,7 +257,7 @@ export const daftarLapangan = [
     },
     {
       nama: "Kartika Sari",
-      tanggal: "2 March 2026",
+      tanggal: "2 Maret 2026",
       rating: 5,
       komentar: "Tempatnya nyaman.",
     },
@@ -332,7 +332,7 @@ export const daftarLapangan = [
     },
     {
       nama: "Ninuk Wiryono",
-      tanggal: "22 March 2026",
+      tanggal: "22 Maret 2026",
       rating: 5,
       komentar: "main padel dengan seru bersama teman dan keluarga. fasilitas dan lapangan bagus.",
     },
@@ -402,7 +402,7 @@ export const daftarLapangan = [
     ulasan: [
     {
       nama: "Nandi Wardhana",
-      tanggal: "3 August 2026",
+      tanggal: "3 Agustus 2026",
       rating: 5,
       komentar: "Senang main disini.",
     },
@@ -461,14 +461,20 @@ export const daftarLapangan = [
     Melanggar aturan: diberi peringatan
     Merusak fasilitas: dikenakan biaya ganti rugi
     Pelanggaran berat: dilarang menggunakan venue`,
-    gambar: "/images/lapangan/padel/padel05/durian1.jpeg",
+    gambar: "/images/lapangan/tennis/tennis1/bukit1.jpeg",
     foto: [
-     "/images/lapangan/padel/padel05/durian1.jpeg",
+     "/images/lapangan/tennis/tennis1/bukit1.jpeg",
+     "/images/lapangan/tennis/tennis1/bukit2.jpeg",
+     "/images/lapangan/tennis/tennis1/bukit3.jpeg",
+     "/images/lapangan/tennis/tennis1/bukit4.jpeg",
     ],
     unitLapangan: [
-      { id: 1, nama: "Court 1", gambar: "/images/lapangan/padel/padel05/durian2.jpeg" },
-      { id: 2, nama: "Court 2", gambar: "/images/lapangan/padel/padel05/durian2.jpeg" },
-      { id: 3, nama: "Court 3", gambar: "/images/lapangan/padel/padel05/durian2.jpeg" },
+      { id: 1, nama: "Indoor 1", gambar: "/images/lapangan/tennis/tennis1/indoorA.jpeg" },
+      { id: 2, nama: "Indoor 2", gambar: "/images/lapangan/tennis/tennis1/indoorB.jpeg" },
+      { id: 3, nama: "Outdoor 1", gambar: "/images/lapangan/tennis/tennis1/outdoor1.jpeg" },
+      { id: 4, nama: "Outdoor 2", gambar: "/images/lapangan/tennis/tennis1/outdoor2.jpeg" },
+      { id: 5, nama: "Outdoor 3", gambar: "/images/lapangan/tennis/tennis1/outdoor3.jpeg" },
+      { id: 6, nama: "Outdoor 4", gambar: "/images/lapangan/tennis/tennis1/outdoor4.jpeg" },
     ],
     rating: 5.0,
     jumlahRating: 277,
@@ -499,6 +505,368 @@ export const daftarLapangan = [
       tanggal: "9 Juli 2026",
       rating: 5,
       komentar: "puas sekali",
+    },
+  ],
+  },
+  {
+    id: 7,
+    nama: "Cross Court Tennis & Pickleball",
+    kategori: "Tennis",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Jl. Bukit Puncak No.7-5, Ngesrep, Kec. Banyumanik, Kota Semarang, Jawa Tengah 50261",
+    harga: 100000,
+    fasilitas: ["Ruang Ganti","Cafe & Resto", "Toilet", "Jual Makanan Ringan", "Jual Minuman", "Parkir Mobil", "Parkir Motor", "Shower", "Musholla", "Tribun Penonton", "Wi-fi", "Locker room dan waiting room"],
+    mapsUrl: "https://maps.app.goo.gl/uiDdk9oL27rdKRE46",
+    deskripsi: 
+    `Cross Court Semarang
+    The Best Indoor Tennis Court and 1st Pickleball Court in Semarang
+
+    Aturan Venue
+
+    1. Gunakan sepatu olahraga khusus lapangan (non-marking shoes).
+    2. Parkir WAJIB di area yang telah disediakan dan sesuai garis.
+    3. Dilarang parkir di jalan umum atau mengganggu akses rumah warga.
+    4. Ikuti arahan petugas/satpam di area venue.
+    5. Jaga kebersihan dan ketertiban selama berada di area venue.
+    6. Pemain bertanggung jawab atas barang pribadi masing-masing.
+    7. Datang dan gunakan lapangan sesuai dengan jam booking yang tertera.
+    8. Keterlambatan tidak menambah waktu bermain.
+    9. Segala bentuk tindakan yang mengganggu kenyamanan umum dapat ditindak oleh pihak venue.
+    10. Anak-anak wajib dalam pengawasan orang tua/pendamping.
+    11. Pihak venue berhak melakukan penyesuaian operasional demi keamanan dan ketertiban bersama.
+
+    1. Use appropriate sports shoes for the court (non-marking shoes).
+    2. Parking is REQUIRED in designated areas and within marked lines.
+    3. Parking on public roads or blocking residents’ access is strictly prohibited.
+    4. Please follow instructions from venue staff and security.
+    5. Maintain cleanliness and order while on the venue premises.
+    6. Players are responsible for their own personal belongings.
+    7. Please arrive and use the court according to your booked time.
+    8. Late arrivals do not extend playing time.
+    9. Any actions that disturb public comfort or order may be addressed by venue management.
+    10. Children must be under the supervision of a parent or guardian at all times.
+    11. The venue reserves the right to make operational adjustments for safety and order.`,
+    gambar: "/images/lapangan/tennis/tennis2/cross1.jpeg",
+    foto: [
+     "/images/lapangan/tennis/tennis2/cross2.jpeg",
+     "/images/lapangan/tennis/tennis2/cross3.jpeg",
+     "/images/lapangan/tennis/tennis2/cross4.jpeg",
+     "/images/lapangan/tennis/tennis2/cross5.jpeg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Indoor 1", gambar: "/images/lapangan/tennis/tennis2/tennis1.jpeg" },
+    ],
+    rating: 4.9,
+    jumlahRating: 82,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.90
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.85
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 4.74
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Riski Gumilar",
+      tanggal: "11 Juli 2026",
+      rating: 5,
+      komentar: "keren",
+    },
+    {
+      nama: "Zaenal Zen",
+      tanggal: "24 May 2026",
+      rating: 5,
+      komentar: "bagus",
+    },
+  ],
+  },
+  {
+    id: 8,
+    nama: "Gor Pamularsih",
+    kategori: "Tennis",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Jl. Pamularsih Raya No.42-44, Salamanmloyo, Kec. Semarang Barat, Kota Semarang, Jawa Tengah 50149",
+    harga: 125000,
+    fasilitas: ["Ruang Ganti","Cafe & Resto", "Toilet", "Jual Minuman", "Parkir Mobil", "Parkir Motor", "Shower", "Musholla"],
+    mapsUrl: "https://maps.app.goo.gl/uiDdk9oL27rdKRE46",
+    deskripsi: 
+    `GOR Pamularsih terdapat 2 lapangan tenis
+
+    Aturan Venue
+
+    gunakan sepatu olahraga ketika memasuki lapangan`,
+    gambar: "/images/lapangan/tennis/tennis3/pamularsih1.jpeg",
+    foto: [
+     "/images/lapangan/tennis/tennis3/pamularsih2.jpeg",
+     "/images/lapangan/tennis/tennis3/pamularsih3.jpeg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Indoor A", gambar: "/images/lapangan/tennis/tennis3/pamularsih1.jpeg" },
+      { id: 2, nama: "Indoor B", gambar: "/images/lapangan/tennis/tennis3/pamularsih3.jpeg" },
+    ],
+    rating: 4.7,
+    jumlahRating: 53,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.60
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.51
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 4.58
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Ema Yuni Hapsari",
+      tanggal: "20 Agustus 2026",
+      rating: 4,
+      komentar: "bagus",
+    },
+    {
+      nama: "Hanafi",
+      tanggal: "16 Agustus 2026",
+      rating: 4.3,
+      komentar: "the court is in a good condition, but the cleanliness need to be the main focus! keep it up",
+    },
+  ],
+  },
+  {
+    id: 9,
+    nama: "Lapangan Tennis Ngesrep",
+    kategori: "Tennis",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Jl. Ngesrep Bar. III No.2/15, Tinjomoyo, Kec. Banyumanik, Kota Semarang, Jawa Tengah 50262, Indonesia",
+    harga: 20000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Parkir Motor"],
+    mapsUrl: "https://maps.app.goo.gl/ZBsMY138LACQwYZZA",
+    deskripsi: 
+    `Lapangan Tenis Outdoor dengan lantai beton
+    Tidak menyediakan ballboy`,
+    gambar: "/images/lapangan/tennis/tennis4/ngesrep1.jpeg",
+    foto: [
+     "/images/lapangan/tennis/tennis4/ngesrep2.jpeg",
+     "/images/lapangan/tennis/tennis4/ngesrep1.jpeg"
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Court Tennis", gambar: "/images/lapangan/tennis/tennis4/ngesrep3.jpeg" },
+    ],
+    rating: 5,
+  },
+  {
+    id: 10,
+    nama: "Smashville",
+    kategori: "Badminton",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "No.1G, Jl. Kr. Rejo Raya, Banyumanik, Kec. Banyumanik, Kota Semarang, Jawa Tengah 50264",
+    harga: 45000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Musholla", "Cafe & Resto", "Toko Olahraga", "Jual Minuman", "Parkir Mobil", "Parkir Motor", "Jual Makanan Ringan"],
+    mapsUrl: "https://maps.app.goo.gl/s9oHfJtQscGLDty28",
+    deskripsi: 
+    `Yuk, main bulu tangkis di Smashville! Kami memiliki 8 lapangan standar BWF dengan vinyl berkualitas tinggi, parkiran luas, dan sirkulasi udara yang segar. Datang dan rasakan serunya bermain di sini!😆🏸
+
+    Aturan Venue
+
+    1. Reservasi:
+    • Lakukan pemesanan online by WA / applikasi AYO
+    • Untuk pemesanan yang sudah dibooking tidak dapat direfund
+    2. Waktu Bermain:
+    • Datang 15 menit sebelum waktu bermain.
+    • Waktu bermain tidak bisa diperpanjang jika terlambat.
+    3. Pakaian dan Perlengkapan:
+    • Gunakan pakaian olahraga dan sepatu khusus bulu tangkis.
+    • Raket tersedia untuk disewa.
+    4. Kebersihan:
+    • Jaga kebersihan lapangan dan buang sampah pada tempatnya.
+    • Makanan dan minuman dilarang di area lapangan.
+    5. Kerusakan Properti:
+    • Segala bentuk kerusakan pada properti yang disebabkan oleh pemain, baik sengaja maupun tidak, WAJIB DIGANTI.
+
+    Selamat bermain di Smashville Badminton Center!`,
+    gambar: "/images/lapangan/badminton/badminton1/sm1.jpeg",
+    foto: [
+     "/images/lapangan/badminton/badminton1/sm1.jpeg",
+     "/images/lapangan/badminton/badminton1/sm2.jpeg",
+     "/images/lapangan/badminton/badminton1/sm3.jpeg",
+     "/images/lapangan/badminton/badminton1/sm4.jpeg",
+     "/images/lapangan/badminton/badminton1/sm5.jpeg",
+     "/images/lapangan/badminton/badminton1/sm6.jpeg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Lapangan 1", gambar: "/images/lapangan/badminton/badminton1/lp1.jpeg" },
+      { id: 2, nama: "Lapangan 2", gambar: "/images/lapangan/badminton/badminton1/lp2.jpeg" },
+      { id: 3, nama: "Lapangan 3", gambar: "/images/lapangan/badminton/badminton1/lp3.jpeg" },
+      { id: 4, nama: "Lapangan 4", gambar: "/images/lapangan/badminton/badminton1/lp4.jpeg" },
+      { id: 5, nama: "Lapangan 5", gambar: "/images/lapangan/badminton/badminton1/lp5.jpeg" },
+      { id: 6, nama: "Lapangan 6", gambar: "/images/lapangan/badminton/badminton1/lp6.jpeg" },
+      { id: 7, nama: "Lapangan 7", gambar: "/images/lapangan/badminton/badminton1/lp7.jpeg" },
+      { id: 8, nama: "Lapangan 8", gambar: "/images/lapangan/badminton/badminton1/lp8.jpeg" },
+    ],
+    rating: 5,
+    jumlahRating: 459,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.92
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.95
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 4.92
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Setiyawan Komatsu",
+      tanggal: "29 Oktober 2026",
+      rating: 5,
+      komentar: "lapangan badminton terbaik di Semarang yang pernah dicoba.",
+    },
+    {
+      nama: "Moh. Farael",
+      tanggal: "29 Agustus 2026",
+      rating: 3.3,
+      komentar: "bagus banget lapangannya, cuman agak panas di dalam",
+    },
+  ],
+  },
+  {
+    id: 11,
+    nama: "Sport Hall SCU BSB",
+    kategori: "Badminton",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Kampus SCU BSB, Mijen, Semarang",
+    harga: 50000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Cafe & Resto", "Tribun Penonton", "Jual Minuman", "Parkir Mobil", "Parkir Motor", "Jual Makanan Ringan"],
+    mapsUrl: "https://maps.app.goo.gl/hcykNVd9YhssRnxu6",
+    deskripsi: 
+    `1.Dilarang merokok di Arena Sport Hall.
+    2.Dilarang meludah di Arena Sport Hall.
+    3.Wajib memakai sepatu sesuai arena lapangan yang dipakai.
+    4.Jagalah kebersihan Sport Hall.
+
+    #Lapangan saat ini hanya di sewakan khusus Weekend
+
+    #NOTE: sport hall SCU
+    tidak menyediakan bola futsal dan shuttlecock. Terimakasih`,
+    gambar: "/images/lapangan/badminton/badminton2/scu1.jpg",
+    foto: [
+     "/images/lapangan/badminton/badminton2/scu1.jpg",
+     "/images/lapangan/badminton/badminton2/scu2.jpg",
+     "/images/lapangan/badminton/badminton2/scu3.jpg",
+     "/images/lapangan/badminton/badminton2/scu4.jpg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Lapangan 1", gambar: "/images/lapangan/badminton/badminton2/lap1.jpg" },
+      { id: 2, nama: "Lapangan 2", gambar: "/images/lapangan/badminton/badminton2/lap2.jpg" },
+      { id: 3, nama: "Lapangan 3", gambar: "/images/lapangan/badminton/badminton2/lap3.jpg" },
+    ],
+    rating: 4.9,
+    jumlahRating: 274,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.88
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.83
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 4.77
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Syuja Arisi",
+      tanggal: "12 September 2026",
+      rating: 3,
+      komentar: "susah komunikasi jika mau extend jam booking, harus ke online dulu",
+    },
+    {
+      nama: "Eric Setyaji",
+      tanggal: "26 Agustus 2026",
+      rating: 2.7,
+      komentar: "kurang kantin untuk jualan minuman atau perlu disediakan vending machine",
+    },
+  ],
+  },
+  {
+    id: 12,
+    nama: "Quick Smash Badminton Court",
+    kategori: "Badminton",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Jl. Kokrosono No.A.10, Panggung Lor, Kec. Semarang Utara, Kota Semarang, Jawa Tengah 50177, Indonesia",
+    harga: 40000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Cafe & Resto", "Wi-fi", "Jual Minuman", "Parkir Mobil", "Parkir Motor", "Jual Makanan Ringan", "Shower", "Hot Shower"],
+    mapsUrl: "https://maps.app.goo.gl/D1MirncQ5BVpqFL59",
+    deskripsi: 
+    `Quick Smash Badminton Court, adalah arena olahraga yang berlokasi di dalam perumahan Tanah Mas, kami menyediakan 2 lapangan badminton dilengkapi dengan carpet vynil yang memberikan kenyamanan dan keamanan saat bermain.
+
+    Aturan Venue
+
+    1. Mohon datang tepat waktu sesuai jam booking.
+    2. Diwajibkan memakai baju yang layak dan sepatu badminton atau sepatu non marking.
+    3. diwajibkan menjaga kebersihan lapangan.
+    4. seluruh lapangan merupakan non smoking area.`,
+    gambar: "/images/lapangan/badminton/badminton3/QMC.jpeg",
+    foto: [
+     "/images/lapangan/badminton/badminton3/QMC.jpeg",
+     "/images/lapangan/badminton/badminton3/QMC1.jpeg",
+     "/images/lapangan/badminton/badminton3/QMC2.jpeg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Lapangan 1", gambar: "/images/lapangan/badminton/badminton3/lapanganA.jpeg" },
+      { id: 2, nama: "Lapangan 2", gambar: "/images/lapangan/badminton/badminton3/lapanganB.jpeg" },
+    ],
+    rating: 4.9,
+    jumlahRating: 9,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.89
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.89
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 5
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Yossi Martha Sanjaya",
+      tanggal: "18 September 2026",
+      rating: 5,
+      komentar: "Mantap, kapan kapan kesini lagi",
+    },
+    {
+      nama: "Lovita Dewi",
+      tanggal: "28 Agustus 2026",
+      rating: 5,
+      komentar: "Love this court so much!",
     },
   ],
   },

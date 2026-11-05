@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -7,9 +6,13 @@ import Link from "next/link";
 import { daftarLapangan } from "@/lib/lapangan";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/components/LanguageProvider";
 
 function BookingContent() {
   const searchParams = useSearchParams();
+  const { language } = useLanguage();
+
+  const isEnglish = language === "en";
 
   const lapanganId = searchParams.get("lapangan");
   const unit = searchParams.get("unit");
@@ -31,19 +34,20 @@ function BookingContent() {
             <div className="text-4xl mb-4">!</div>
 
             <h1 className="text-xl sm:text-2xl font-bold text-dark-text">
-              Belum Ada Pemesanan
+              {isEnglish ? "No Booking Found" : "Belum Ada Pemesanan"}
             </h1>
 
             <p className="text-gray-500 mt-3 leading-relaxed text-sm sm:text-base">
-              Silakan pilih tempat olahraga terlebih dahulu sebelum
-              melanjutkan booking.
+              {isEnglish
+                ? "Please choose a sports venue before continuing with your booking."
+                : "Silakan pilih tempat olahraga terlebih dahulu sebelum melanjutkan booking."}
             </p>
 
             <Link
               href="/lapangan"
               className="liquid-booking-button inline-flex mt-6"
             >
-              Cari Lapangan
+              {isEnglish ? "Find a Court" : "Cari Lapangan"}
             </Link>
           </div>
         </main>
@@ -67,7 +71,7 @@ function BookingContent() {
             href={`/lapangan/${lapangan.id}`}
             className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:opacity-70 transition"
           >
-            ← Kembali ke Detail Lapangan
+            ← {isEnglish ? "Back to Court Details" : "Kembali ke Detail Lapangan"}
           </Link>
 
           {/* HEADER */}
@@ -77,11 +81,13 @@ function BookingContent() {
             </span>
 
             <h1 className="text-2xl sm:text-4xl font-bold text-dark-text mt-4">
-              Ringkasan Booking
+              {isEnglish ? "Booking Summary" : "Ringkasan Booking"}
             </h1>
 
             <p className="text-gray-500 mt-3 text-sm sm:text-base leading-relaxed">
-              Periksa kembali detail pemesanan sebelum melanjutkan.
+              {isEnglish
+                ? "Please review your booking details before continuing."
+                : "Periksa kembali detail pemesanan sebelum melanjutkan."}
             </p>
           </div>
 
@@ -93,7 +99,7 @@ function BookingContent() {
 
               <div className="min-w-0">
                 <p className="text-xs text-primary font-bold tracking-wider uppercase">
-                  Detail Pemesanan
+                  {isEnglish ? "Booking Details" : "Detail Pemesanan"}
                 </p>
 
                 <h2 className="text-xl sm:text-2xl font-bold text-dark-text mt-2 break-words">
@@ -118,28 +124,30 @@ function BookingContent() {
             <div className="space-y-4 sm:space-y-5">
 
               <div className="liquid-summary-row">
-                <span>Tempat Olahraga</span>
+                <span>{isEnglish ? "Sports Venue" : "Tempat Olahraga"}</span>
                 <strong>{lapangan.nama}</strong>
               </div>
 
               <div className="liquid-summary-row">
-                <span>Unit Lapangan</span>
+                <span>{isEnglish ? "Court Unit" : "Unit Lapangan"}</span>
                 <strong>{unit || "-"}</strong>
               </div>
 
               <div className="liquid-summary-row">
-                <span>Tanggal Bermain</span>
+                <span>{isEnglish ? "Playing Date" : "Tanggal Bermain"}</span>
                 <strong>{tanggal || "-"}</strong>
               </div>
 
               <div className="liquid-summary-row">
-                <span>Jam Mulai</span>
+                <span>{isEnglish ? "Start Time" : "Jam Mulai"}</span>
                 <strong>{jam || "-"}</strong>
               </div>
 
               <div className="liquid-summary-row">
-                <span>Durasi Bermain</span>
-                <strong>{durasi} sesi</strong>
+                <span>{isEnglish ? "Playing Duration" : "Durasi Bermain"}</span>
+                <strong>
+                  {durasi} {isEnglish ? "sessions" : "sesi"}
+                </strong>
               </div>
 
             </div>
@@ -150,12 +158,12 @@ function BookingContent() {
             <div className="bg-soft-mint/70 rounded-2xl p-4 sm:p-6">
 
               <p className="text-sm text-gray-500">
-                Rincian Pembayaran
+                {isEnglish ? "Payment Details" : "Rincian Pembayaran"}
               </p>
 
               <div className="flex justify-between items-center gap-3 mt-4">
                 <span className="text-gray-600 text-sm">
-                  Harga per sesi
+                  {isEnglish ? "Price per session" : "Harga per sesi"}
                 </span>
 
                 <span className="font-semibold text-dark-text text-sm sm:text-base">
@@ -165,11 +173,11 @@ function BookingContent() {
 
               <div className="flex justify-between items-center gap-3 mt-3">
                 <span className="text-gray-600 text-sm">
-                  Durasi
+                  {isEnglish ? "Duration" : "Durasi"}
                 </span>
 
                 <span className="font-semibold text-dark-text text-sm sm:text-base">
-                  {durasi} sesi
+                  {durasi} {isEnglish ? "sessions" : "sesi"}
                 </span>
               </div>
 
@@ -177,7 +185,7 @@ function BookingContent() {
 
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                 <span className="font-bold text-dark-text">
-                  Total Pembayaran
+                  {isEnglish ? "Total Payment" : "Total Pembayaran"}
                 </span>
 
                 <span className="text-2xl sm:text-3xl font-bold text-primary">
@@ -189,8 +197,9 @@ function BookingContent() {
 
             {/* CATATAN */}
             <p className="text-xs text-gray-400 mt-4 leading-relaxed">
-              Harga dihitung berdasarkan tarif lapangan dikalikan dengan
-              durasi sewa. Pemesanan ini masih berupa simulasi.
+              {isEnglish
+                ? "The price is calculated based on the court rental rate multiplied by the rental duration. This booking is still a simulation."
+                : "Harga dihitung berdasarkan tarif lapangan dikalikan dengan durasi sewa. Pemesanan ini masih berupa simulasi."}
             </p>
 
             {/* TOMBOL LANJUT */}
@@ -198,11 +207,14 @@ function BookingContent() {
               href="/login"
               className="liquid-booking-button flex w-full mt-7 sm:mt-8 justify-center"
             >
-              Lanjut Login <span>→</span>
+              {isEnglish ? "Continue to Login" : "Lanjut Login"}
+              <span>→</span>
             </Link>
 
             <p className="text-center text-xs text-gray-400 mt-4 leading-relaxed">
-              Pastikan detail pemesanan sudah benar sebelum melanjutkan.
+              {isEnglish
+                ? "Make sure your booking details are correct before continuing."
+                : "Pastikan detail pemesanan sudah benar sebelum melanjutkan."}
             </p>
 
           </div>
@@ -215,6 +227,9 @@ function BookingContent() {
 }
 
 export default function BookingPage() {
+  const isEnglishLoading = "Loading booking summary...";
+  const isIndonesianLoading = "Memuat ringkasan booking...";
+
   return (
     <Suspense
       fallback={
@@ -223,7 +238,10 @@ export default function BookingPage() {
 
           <div className="min-h-screen flex items-center justify-center bg-background px-4">
             <p className="text-gray-500 text-sm">
-              Memuat ringkasan booking...
+              <LoadingText
+                indonesian={isIndonesianLoading}
+                english={isEnglishLoading}
+              />
             </p>
           </div>
 
@@ -234,4 +252,10 @@ export default function BookingPage() {
       <BookingContent />
     </Suspense>
   );
+}
+
+function LoadingText({ indonesian, english }) {
+  const { language } = useLanguage();
+
+  return language === "en" ? english : indonesian;
 }
