@@ -6,66 +6,80 @@ export default function CardLapangan({
   nama,
   lokasi,
   harga,
-  fasilitas,
+  fasilitas = [],
   gambar,
 }) {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition">
+    <div className="liquid-card group flex flex-col h-full">
 
       {/* Foto Lapangan */}
-      <div className="relative h-52 w-full">
+      <div className="relative h-48 sm:h-56 w-full overflow-hidden">
         <Image
           src={gambar}
           alt={nama}
           fill
-          className="object-cover"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 px-3 py-1.5 rounded-full bg-white/80 backdrop-blur-xl border border-white/70 text-primary text-xs font-semibold shadow-sm">
+          Sportify Choice
+        </div>
       </div>
 
       {/* Informasi Lapangan */}
-      <div className="p-5">
+      <div className="p-4 sm:p-6 flex flex-col flex-1">
 
-        <h3 className="text-xl font-bold text-dark-text">
+        <h3 className="text-lg sm:text-xl font-bold text-dark-text group-hover:text-primary transition line-clamp-1">
           {nama}
         </h3>
 
-        <p className="text-sm text-gray-500 mt-2">
-          📍 {lokasi}
+        <p className="text-xs sm:text-sm text-gray-500 mt-2 flex items-start gap-2">
+          <span>📍</span>
+          <span className="line-clamp-2">{lokasi}</span>
         </p>
 
         {/* Fasilitas */}
-        <div className="flex flex-wrap gap-2 mt-4">
-          {fasilitas.map((item) => (
-            <span
-              key={item}
-              className="text-xs bg-soft-mint text-primary px-3 py-1 rounded-full"
-            >
+        <div className="flex flex-wrap gap-2 mt-4 sm:mt-5">
+          {fasilitas.slice(0, 4).map((item) => (
+            <span key={item} className="liquid-facility">
               {item}
             </span>
           ))}
+
+          {fasilitas.length > 4 && (
+            <span className="liquid-facility">
+              +{fasilitas.length - 4} lainnya
+            </span>
+          )}
         </div>
 
+        {/* Garis Pemisah */}
+        <div className="border-t border-gray-100 my-4 sm:my-5 mt-auto" />
+
         {/* Harga dan Tombol */}
-        <div className="flex justify-between items-center mt-5">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
 
           <div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 mb-1">
               Harga sewa
             </p>
 
             <p className="text-lg font-bold text-primary">
               Rp {harga.toLocaleString("id-ID")}
               <span className="text-xs font-normal text-gray-500">
-                /jam
+                /sesi
               </span>
             </p>
           </div>
 
           <Link
             href={`/lapangan/${id}`}
-            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition text-sm"
+            className="liquid-detail-button w-full sm:w-auto justify-center text-center"
           >
-            Lihat Detail
+            Lihat Detail →
           </Link>
 
         </div>

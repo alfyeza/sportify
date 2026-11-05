@@ -1,355 +1,528 @@
+
 "use client";
 
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import CardLapangan from "@/components/CardLapangan";
 import { daftarLapangan } from "@/lib/lapangan";
 
-const daftarUlasan = [
-  {
-    nama: "Andi Pratama",
-    tanggal: "12 Oktober 2026",
-    rating: 5,
-    komentar: "Tempatnya nyaman, lapangannya bagus dan bersih. Cocok untuk bermain bersama teman.",
-  },
-  {
-    nama: "Dina Putri",
-    tanggal: "18 Oktober 2026",
-    rating: 4,
-    komentar: "Fasilitas cukup lengkap dan tempatnya nyaman. Pelayanannya juga baik.",
-  },
-  {
-    nama: "Rizky Maulana",
-    tanggal: "25 Oktober 2026",
-    rating: 5,
-    komentar: "Pengalaman bermain yang menyenangkan. Area parkirnya juga cukup luas.",
-  },
-];
+export default function DetailLapangan() {
+  const params = useParams();
+  const id = Number(params.id);
 
-export default function DetailLapanganPage() {
-  const { id } = useParams();
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showAllFacilities, setShowAllFacilities] = useState(false);
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+
 
   const lapangan = daftarLapangan.find(
-    (item) => String(item.id) === String(id)
+    (item) => item.id === id
   );
 
   if (!lapangan) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold">
-          Tempat tidak ditemukan
-        </h1>
+      <>
+        <Navbar />
+        <main className="min-h-screen flex items-center justify-center px-4">
+          <div className="liquid-info-card text-center p-8 sm:p-10">
+            <h1 className="text-2xl font-bold text-dark-text">
+              Lapangan tidak ditemukan
+            </h1>
 
-        <Link href="/lapangan" className="text-primary mt-4">
-          Kembali ke katalog
-        </Link>
-      </main>
+            <Link
+              href="/lapangan"
+              className="text-primary mt-4 inline-block font-semibold"
+            >
+              Kembali ke daftar lapangan
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
-  // Rekomendasi venue lain berdasarkan kategori dan lokasi.
-  // Untuk sementara menggunakan data lokasi dari katalog.
-  const rekomendasi = daftarLapangan
-    .filter((item) => String(item.id) !== String(lapangan.id))
-    .sort((a, b) => {
-      const lokasiA =
-        a.lokasi === lapangan.lokasi ? 1 : 0;
-      const lokasiB =
-        b.lokasi === lapangan.lokasi ? 1 : 0;
+  // GALERI FOTO
+  const daftarFoto = lapangan.foto?.length
+    ? lapangan.foto
+    : [lapangan.gambar];
 
-      return lokasiB - lokasiA;
-    })
-    .slice(0, 4);
+  // KATEGORI LAPANGAN
+  const kategoriLapangan = Array.isArray(lapangan.kategori)
+    ? lapangan.kategori
+    : [lapangan.kategori];
+
+  // REKOMENDASI VENUE
+  const rekomendasi = daftarLapangan.filter((item) => {
+    const kategoriItem = Array.isArray(item.kategori)
+      ? item.kategori
+      : [item.kategori];
+
+    return (
+      item.id !== lapangan.id &&
+      kategoriItem.some((kategori) =>
+        kategoriLapangan.includes(kategori)
+      )
+    );
+  });
+
+  // RATING VENUE
+  const jumlahUlasan = lapangan.ulasan?.length || 0;
+
+  const rataRataRating =
+    lapangan.rating ??
+    (jumlahUlasan > 0
+      ? (
+          lapangan.ulasan.reduce(
+            (total, ulasan) => total + ulasan.rating,
+            0
+          ) / jumlahUlasan
+        ).toFixed(1)
+      : null);
+
+  const jumlahRating = lapangan.jumlahRating ?? jumlahUlasan;
 
   return (
-    <main className="min-h-screen bg-background">
+    <>
+      <Navbar />
 
-      {/* Tombol Kembali */}
-      <section className="max-w-7xl mx-auto px-6 pt-8">
-        <Link
-          href="/lapangan"
-          className="text-primary font-semibold hover:underline"
-        >
-          ← Kembali ke Daftar Lapangan
-        </Link>
-      </section>
+      <main className="min-h-screen bg-background">
 
-      {/* Galeri dan Informasi Tempat */}
-      <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+        {/* HEADER DETAIL */}
+        <section className="relative overflow-hidden px-4 sm:px-6 py-10 sm:py-12 md:py-16">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4">
+          <div className="absolute top-0 right-10 w-64 h-64 bg-soft-mint rounded-full blur-3xl opacity-80" />
 
-            <div className="relative h-64 md:h-[420px] bg-gray-200 rounded-xl overflow-hidden">
-              <img
-                src={lapangan.foto?.[0] || lapangan.gambar}
-                alt={`${lapangan.nama} foto 1`}
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div className="relative max-w-7xl mx-auto">
+            <div className="liquid-detail-header p-6 sm:p-8 md:p-12 rounded-3xl">
 
-            <div className="grid grid-cols-2 grid-rows-2 gap-3">
-              {[1, 2, 3, 4].map((index) => (
-                <div
-                  key={index}
-                  className="h-32 md:h-[203px] bg-gray-200 rounded-xl overflow-hidden"
-                >
-                  <img
-                    src={
-                      lapangan.foto?.[index] || lapangan.gambar
-                    }
-                    alt={`${lapangan.nama} foto ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+              <Link
+                href="/lapangan"
+                className="text-primary font-semibold text-xs sm:text-sm hover:text-secondary transition"
+              >
+                ← Kembali ke Daftar Lapangan
+              </Link>
 
-          </div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-dark-text mt-6 leading-tight">
+                {lapangan.nama}
+              </h1>
 
-          {/* Informasi Tempat */}
-          <div className="p-6 md:p-8">
+              <p className="text-gray-600 mt-4 text-sm sm:text-base break-words">
+                📍 {lapangan.lokasi}
+              </p>
 
-            <span className="bg-soft-mint text-primary px-4 py-2 rounded-full text-sm font-semibold">
-              {lapangan.kategori}
-            </span>
-
-            <h1 className="text-3xl font-bold text-dark-text mt-4">
-              {lapangan.nama}
-            </h1>
-
-            <p className="text-gray-500 mt-3">
-              {lapangan.alamat || lapangan.lokasi}
-            </p>
-
-            <p className="text-gray-600 mt-5 leading-relaxed">
-              {lapangan.deskripsi}
-            </p>
-            {/* Fasilitas */}
-            <div className="mt-6">
-            <h2 className="font-bold text-lg mb-3">
-                Fasilitas
-            </h2>
-
-            <div className="flex flex-wrap gap-2">
-                {lapangan.fasilitas.map((item) => (
-                <span
-                    key={item}
-                    className="bg-soft-mint text-primary px-4 py-2 rounded-lg text-sm"
-                >
-                    {item}
-                </span>
+              <div className="flex flex-wrap gap-2 mt-5">
+                {kategoriLapangan.map((kategori) => (
+                  <span
+                    key={kategori}
+                    className="liquid-detail-category"
+                  >
+                    {kategori}
+                  </span>
                 ))}
+              </div>
+
             </div>
-            </div>
-
-            {/* Harga */}
-            <p className="text-primary font-bold text-xl mt-6">
-              Rp {lapangan.harga.toLocaleString("id-ID")}
-              <span className="text-sm text-gray-500 font-normal">
-                {" "}/ sesi
-              </span>
-            </p>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Google Maps Khusus Unity Sports Center */}
-      {lapangan.nama === "Unity Sports Center" && (
-        <section className="max-w-7xl mx-auto px-6 pb-10">
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-
-            <h2 className="text-2xl font-bold text-dark-text mb-2">
-              Lokasi Unity Sports Center
-            </h2>
-
-            <p className="text-gray-500 mb-5">
-              Temukan lokasi Unity Sports Center melalui Google Maps.
-            </p>
-
-            <div className="w-full h-[350px] rounded-xl overflow-hidden">
-              <iframe
-                title="Lokasi Unity Sports Center"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3959.943363764403!2d110.4239082!3d-7.015943399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708b5ac826a411%3A0x3cceec8f4296255!2sUnity%20Sports%20Center!5e0!3m2!1sen!2sid!4v1793722006474!5m2!1sen!2sid"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                loading="lazy"
-                allowFullScreen
-              />
-            </div>
-
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=Unity+Sports+Center+Semarang"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-5 bg-primary text-white px-5 py-3 rounded-lg font-semibold hover:bg-secondary transition"
-            >
-              Buka Google Maps
-            </a>
-
           </div>
         </section>
-      )}
 
-      {/* ULASAN PENGGUNA */}
-      <section className="max-w-7xl mx-auto px-6 pb-10">
-        <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
+        {/* GALERI FOTO */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-dark-text">
-                Ulasan Pengguna
-              </h2>
-              <p className="text-gray-500 text-sm mt-2">
-                Pengalaman pengguna saat bermain di {lapangan.nama}.
-              </p>
-            </div>
+          <div className="mb-6">
+            <p className="text-primary font-semibold text-xs sm:text-sm mb-2">
+              GALERI
+            </p>
 
-            <div className="bg-soft-mint px-4 py-3 rounded-xl">
-              <p className="text-primary font-bold text-xl">
-                ★ 4.7 / 5
-              </p>
-              <p className="text-xs text-gray-500">
-                Contoh tampilan rating
-              </p>
-            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-dark-text">
+              Galeri Lapangan
+            </h2>
           </div>
 
-          <div className="space-y-4">
-            {daftarUlasan.map((ulasan, index) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {(showAllPhotos
+              ? daftarFoto
+              : daftarFoto.slice(0, 4)
+            ).map((foto, index) => (
               <div
                 key={index}
-                className="border border-gray-100 rounded-xl p-5"
+                className="liquid-photo overflow-hidden h-56 sm:h-64 md:h-80"
               >
-                <div className="flex justify-between items-start gap-3">
-                  <div>
-                    <h3 className="font-bold text-dark-text">
-                      {ulasan.nama}
-                    </h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      {ulasan.tanggal}
-                    </p>
-                  </div>
-
-                  <span className="text-yellow-500 font-semibold whitespace-nowrap">
-                    {"★".repeat(ulasan.rating)}
-                    <span className="text-gray-300">
-                      {"★".repeat(5 - ulasan.rating)}
-                    </span>
-                  </span>
-                </div>
-
-                <p className="text-gray-600 text-sm mt-4 leading-relaxed">
-                  {ulasan.komentar}
-                </p>
+                <img
+                  src={foto}
+                  alt={`${lapangan.nama} ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                />
               </div>
             ))}
           </div>
 
-          <p className="text-xs text-gray-400 mt-5">
-            Ulasan di atas merupakan data contoh, bukan ulasan pengguna sebenarnya.
-          </p>
+          {daftarFoto.length > 4 && (
+            <button
+              onClick={() => setShowAllPhotos(!showAllPhotos)}
+              className="text-primary font-semibold text-sm mt-5 hover:text-secondary transition"
+            >
+              {showAllPhotos
+                ? "Tampilkan Lebih Sedikit ↑"
+                : "Baca Selengkapnya ↓"}
+            </button>
+          )}
 
-        </div>
-      </section>
+        </section>
 
-      {/* REKOMENDASI VENUE */}
-      <section className="max-w-7xl mx-auto px-6 pb-10">
+        {/* INFORMASI VENUE */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
 
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-dark-text">
-            Rekomendasi Venue Terdekat
-          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
-          <p className="text-gray-500 mt-2">
-            Temukan tempat olahraga lainnya di sekitar {lapangan.lokasi}.
-          </p>
-        </div>
+            {/* INFORMASI UTAMA */}
+            <div className="lg:col-span-2 space-y-5 sm:space-y-6">
 
-        {rekomendasi.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {/* DESKRIPSI */}
+              <div className="liquid-info-card p-5 sm:p-6 md:p-8">
 
-            {rekomendasi.map((item) => (
-              <Link
-                key={item.id}
-                href={`/lapangan/${item.id}`}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition group"
-              >
-                <div className="h-48 overflow-hidden bg-gray-200">
-                  <img
-                    src={item.gambar}
-                    alt={item.nama}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                  />
+                <p className="text-primary text-xs sm:text-sm font-semibold mb-2">
+                  TENTANG VENUE
+                </p>
+
+                <h2 className="text-xl font-bold text-dark-text mb-4">
+                  Deskripsi
+                </h2>
+
+                <p
+                  className={`text-gray-600 text-sm leading-relaxed whitespace-pre-line break-words ${
+                    showFullDescription ? "" : "line-clamp-4"
+                  }`}
+                >
+                  {lapangan.deskripsi}
+                </p>
+
+                {lapangan.deskripsi?.length > 150 && (
+                  <button
+                    onClick={() =>
+                      setShowFullDescription(!showFullDescription)
+                    }
+                    className="text-primary font-semibold text-sm mt-4 hover:text-secondary transition"
+                  >
+                    {showFullDescription
+                      ? "Tampilkan Lebih Sedikit"
+                      : "Baca Selengkapnya"}
+                  </button>
+                )}
+
+              </div>
+
+              {/* FASILITAS */}
+              <div className="liquid-info-card p-5 sm:p-6 md:p-8">
+
+                <p className="text-primary text-xs sm:text-sm font-semibold mb-2">
+                  KENYAMANAN
+                </p>
+
+                <h2 className="text-xl font-bold text-dark-text mb-6">
+                  Fasilitas Venue
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {(showAllFacilities
+                    ? lapangan.fasilitas
+                    : lapangan.fasilitas?.slice(0, 6)
+                  )?.map((fasilitas, index) => (
+                    <div
+                      key={index}
+                      className="liquid-facility-detail"
+                    >
+                      <span className="text-primary">✓</span>
+                      {fasilitas}
+                    </div>
+                  ))}
                 </div>
 
-                <div className="p-5">
+                {lapangan.fasilitas?.length > 6 && (
+                  <button
+                    onClick={() => setShowAllFacilities(!showAllFacilities)}
+                    className="text-primary font-semibold text-sm mt-5 hover:text-secondary transition"
+                  >
+                    {showAllFacilities
+                      ? "Tampilkan Lebih Sedikit ↑"
+                      : "Baca Selengkapnya ↓"}
+                  </button>
+                )}
 
-                  <span className="text-xs bg-soft-mint text-primary px-3 py-1 rounded-full">
-                    {item.kategori}
-                  </span>
+              </div>
 
-                  <h3 className="font-bold text-lg text-dark-text mt-3">
-                    {item.nama}
-                  </h3>
+              {/* ALAMAT */}
+              <div className="liquid-info-card p-5 sm:p-6 md:p-8">
 
-                  <p className="text-sm text-gray-500 mt-2">
-                    {item.lokasi}
-                  </p>
+                <p className="text-primary text-xs sm:text-sm font-semibold mb-2">
+                  TEMUKAN LOKASI
+                </p>
 
-                  <p className="text-primary font-bold mt-4">
-                    Rp {item.harga.toLocaleString("id-ID")}
-                    <span className="text-xs text-gray-500 font-normal">
-                      {" "}/ jam
-                    </span>
-                  </p>
+                <h2 className="text-xl font-bold text-dark-text mb-4">
+                  Lokasi Venue
+                </h2>
 
-                  <span className="inline-block mt-4 text-sm text-primary font-semibold">
-                    Lihat Venue →
-                  </span>
+                <p className="text-gray-600 text-sm leading-relaxed break-words">
+                  {lapangan.alamat}
+                </p>
+
+                {lapangan.mapsUrl && (
+                <div className="mt-5 sm:mt-6">
+
+                  <div className="rounded-2xl overflow-hidden border border-white shadow-sm">
+                    <iframe
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                        lapangan.alamat
+                      )}&output=embed`}
+                      width="100%"
+                      height="350"
+                      loading="lazy"
+                      className="border-0 w-full h-[250px] sm:h-[350px]"
+                      title={`Lokasi ${lapangan.nama}`}
+                    />
+                  </div>
+
+                  <a
+                    href={lapangan.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-4 text-primary font-semibold text-sm hover:text-secondary transition"
+                  >
+                    📍 Buka Lokasi di Google Maps →
+                  </a>
 
                 </div>
-              </Link>
-            ))}
+              )}
+
+              </div>
+
+            </div>
+
+            {/* INFORMASI BOOKING */}
+            <div className="space-y-6">
+
+              <div className="liquid-booking-card p-5 sm:p-6 md:p-7 lg:sticky lg:top-28">
+
+                <p className="text-primary text-xs sm:text-sm font-semibold mb-2">
+                  PEMESANAN
+                </p>
+
+                <h2 className="text-xl font-bold text-dark-text mb-6">
+                  Informasi Booking
+                </h2>
+
+                <p className="text-gray-500 text-sm">
+                  Harga sewa mulai dari
+                </p>
+
+                <p className="text-2xl sm:text-3xl font-bold text-primary mt-2">
+                  Rp{lapangan.harga.toLocaleString("id-ID")}
+                </p>
+
+                <p className="text-gray-500 text-sm mt-1">
+                  / sesi
+                </p>
+
+                <div className="border-t border-gray-200/70 my-6" />
+
+                <div className="space-y-4 text-sm">
+
+                  <div>
+                    <p className="font-semibold text-dark-text">
+                      Nama Venue
+                    </p>
+                    <p className="text-gray-600 mt-1">
+                      {lapangan.nama}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold text-dark-text">
+                      Kategori
+                    </p>
+                    <p className="text-gray-600 mt-1">
+                      {kategoriLapangan.join(", ")}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold text-dark-text">
+                      Lokasi
+                    </p>
+                    <p className="text-gray-600 mt-1">
+                      {lapangan.lokasi}
+                    </p>
+                  </div>
+
+                </div>
+
+                <Link
+                  href={`/lapangan/${lapangan.id}/booking`}
+                  className="liquid-booking-button block w-full text-center mt-7"
+                >
+                  Booking Sekarang →
+                </Link>
+
+              </div>
+
+            </div>
 
           </div>
-        ) : (
-          <div className="bg-white rounded-xl p-8 text-center text-gray-500">
-            Belum ada rekomendasi venue lainnya.
+
+        </section>
+
+        
+        {/* ULASAN PENGUNJUNG */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
+          <div className="liquid-info-card p-5 sm:p-6 md:p-8">
+
+            <div className="flex items-center justify-between gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-dark-text">
+                Ulasan
+              </h2>
+
+              {jumlahUlasan > 0 && (
+                <button
+                  onClick={() => setShowAllReviews(!showAllReviews)}
+                  className="text-primary text-sm font-semibold hover:text-secondary"
+                >
+                  {showAllReviews ? "Tampilkan Lebih Sedikit" : "Lihat Semua Ulasan"}
+                </button>
+              )}
+            </div>
+
+            {jumlahUlasan > 0 ? (
+              <>
+                {/* RINGKASAN RATING */}
+                <div className="flex flex-wrap items-center gap-3 mb-7">
+                  <span className="text-3xl font-bold text-dark-text">
+                    {Number(rataRataRating).toFixed(1)}
+                  </span>
+
+                  <span className="text-gray-500 text-sm">/5</span>
+
+                  <span className="text-yellow-500 text-xl tracking-wider">
+                    ★★★★★
+                  </span>
+
+                  <span className="text-xs text-gray-500">
+                    {jumlahRating} rating · {jumlahUlasan} ulasan
+                  </span>
+                </div>
+
+                {/* ASPEK PENILAIAN */}
+                {lapangan.aspekRating?.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+                    {lapangan.aspekRating.map((aspek, index) => (
+                      <div key={index}>
+                        <div className="flex justify-between gap-2 text-xs mb-2">
+                          <span className="text-gray-600">
+                            {aspek.nama}
+                          </span>
+                          <span className="font-semibold text-dark-text">
+                            {aspek.nilai.toFixed(2)}
+                          </span>
+                        </div>
+
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div
+                            className="bg-primary h-1.5 rounded-full"
+                            style={{
+                              width: `${(aspek.nilai / 5) * 100}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* DAFTAR ULASAN */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(showAllReviews
+                    ? lapangan.ulasan
+                    : lapangan.ulasan.slice(0, 2)
+                  ).map((ulasan, index) => (
+                    <div
+                      key={index}
+                      className="liquid-review-item border border-gray-200 rounded-xl p-4 sm:p-5"
+                    >
+                      <div className="flex justify-between items-start gap-3">
+
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-dark-text text-sm">
+                            {ulasan.nama}
+                          </h3>
+
+                          <p className="text-xs text-gray-400 mt-1">
+                            Diulas: {ulasan.tanggal}
+                          </p>
+                        </div>
+
+                        <span className="text-yellow-500 text-sm font-semibold whitespace-nowrap">
+                          ★ {Number(ulasan.rating).toFixed(1)}
+                        </span>
+                      </div>
+
+                      <p className="text-gray-600 text-sm mt-4 leading-relaxed">
+                        {ulasan.komentar}
+                      </p>
+
+                      {ulasan.court && (
+                        <p className="text-xs text-gray-400 mt-5">
+                          {ulasan.court}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+              </>
+            ) : (
+              <p className="text-gray-500 text-center py-8">
+                Belum ada ulasan untuk venue ini.
+              </p>
+            )}
+
           </div>
+        </section>
+
+
+        {/* REKOMENDASI VENUE */}
+        {rekomendasi.length > 0 && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
+
+            <div className="mb-8">
+              <p className="text-primary text-xs sm:text-sm font-semibold mb-2">
+                REKOMENDASI SPORTIFY
+              </p>
+
+              <h2 className="text-2xl md:text-3xl font-bold text-dark-text">
+                Venue Olahraga Lainnya
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+
+              {rekomendasi.map((item) => (
+                <CardLapangan
+                  key={item.id}
+                  {...item}
+                />
+              ))}
+
+            </div>
+
+          </section>
         )}
 
-        <p className="text-xs text-gray-400 mt-4">
-          Rekomendasi sementara diurutkan berdasarkan kesamaan informasi lokasi, bukan jarak GPS sebenarnya.
-        </p>
+      </main>
 
-      </section>
-
-      {/* TOMBOL BOOKING */}
-      <section className="max-w-7xl mx-auto px-6 pb-16">
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col md:flex-row justify-between items-center gap-5">
-
-          <div>
-            <h2 className="text-xl font-bold text-dark-text">
-              Tertarik bermain di sini?
-            </h2>
-
-            <p className="text-gray-500 mt-2">
-              Pilih lapangan dan jadwal bermain sesuai keinginanmu.
-            </p>
-          </div>
-
-          <Link
-            href={`/lapangan/${lapangan.id}/booking`}
-            className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition"
-          >
-            Pilih Lapangan dan Booking
-          </Link>
-
-        </div>
-      </section>
-
-    </main>
+      <Footer />
+    </>
   );
 }

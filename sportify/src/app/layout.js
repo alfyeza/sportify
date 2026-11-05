@@ -1,15 +1,20 @@
+
 import "./globals.css";
+import { LanguageProvider } from "@/components/LanguageProvider";
 
 export const metadata = {
-  title: "PlayCourt | Booking Lapangan Olahraga",
-  description:
-    "Platform pemesanan lapangan olahraga secara online.",
+  title: "Sportify | Booking Lapangan Olahraga",
+  description: "Platform pemesanan lapangan olahraga secara online.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="id">
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   );
 }
