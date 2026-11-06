@@ -870,4 +870,299 @@ export const daftarLapangan = [
     },
   ],
   },
+  {
+    id: 13,
+    nama: "Laparaga Sports Center Imam Bonjol Badminton",
+    kategori: "Badminton",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Jl. Imam Bonjol No.47-49, Purwosari, Kec. Semarang Utara, Kota Semarang, Jawa Tengah 50172",
+    harga: 60000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Cafe & Resto", "Wi-fi", "Jual Minuman", "Parkir Mobil", "Parkir Motor", "Jual Makanan Ringan", "Tribun Penonton", "Musholla"],
+    mapsUrl: "https://maps.app.goo.gl/hxryXQxXkZ8Ada1cA",
+    deskripsi: 
+    `5 Courts Ready Now!
+
+    Laparaga Sports Center Imam Bonjol Badminton memiliki 5 lapangan padel bertaraf international dan merupakan sports hub yang dapat memberikan pengalaman bermain badminton yang menarik dan berkesan bagi semua level pemain. Dengan Lokasi yang berada di tengah kota dan pusat perbelanjaan, semakin memudahkan pemain untuk bisa bermain badminton dan melakukan aktifitas social bersama rekan dan keluarga.
+    Secara detail, Laparaga Sports Center Imam Bonjol Badminton memiliki fasilitas seperti :
+    1. 5 indoor padel courts
+    2. Pencahayaan yang terang dan nyaman dalam bermain
+    3. Cafe ber-AC
+    4. Kamar Mandi, Ruang Ganti ber-AC
+    5. Parkiran Mobil & Sepeda Motor yang luas
+
+    Aturan Venue
+
+    Setiap pihak yang sudah melakukan pemesanan dianggap mengetahui, menyetujui dan akan mematuhi peraturan lapangan dalam Laparaga Sports Center Imam Bonjol Badminton.
+
+    1. Ketepatan Waktu
+    Pemain wajib datang sebelum jadwal bermain. Waktu permainan dimulai dan berakhir sesuai dengan jadwal yang telah di pesan.
+
+    2. Kendala Teknis Operasional
+    Jika terjadi kendala operasional dari pihak Laparaga Sports Center Imam Bonjol Badminton seperti perbaikan lapangan, Listrik padam, dan lain-lain, yang menyebabkan permainan tidak bisa berlangsung, maka pihak Laparaga Sports Center Imam Bonjol Badminton akan menginformasikan hal tersebut kepada pemesan, dan jadwal akan digantikan pada minggu berikutnya sesuai dengan ketersediaan lapangan. Atas kendala teknis ini, maka penggantian dalam bentuk uang tidak dapat dilakukan.
+
+    3. Makanan/Minuman Pada saat pertandingan
+    Tidak diperkenankan untuk mengunyah permen karet, merokok(baik rokok tembakau/elektrik/iqos), meludah serta membawa makanan/minuman ke area lapangan.
+
+    4. Obat-obatan terlarang, Alkohol & Senjata Tajam
+    Dilarang keras membawa/menggunakan obat-obatan terlarang (narkoba), mengonsumsi minuman beralkohol, membawa/menggunakan senjata tajam di area Laparaga Sports Center Imam Bonjol Badminton.
+
+    5. Menjaga sikap dalam area lapangan
+    Setiap pemain diharapkan menjaga sikap antar pemain. Dilarang untuk melakukan Tindakan kekerasan, perkelahian atau hal yang menyebabkan perkelahian di area Laparaga Sports Center Imam Bonjol Badminton.
+
+    6. Perlengkapan olahraga
+    Pemain diharapkan menggunakan peralatan olahraga yang mendukung dalam permainan badminton dan wajib menggunakan Sepatu olahraga yang sesuai dalam bermain badminton. Penggunaan sandal atau tanpa alas kaki tidak diperbolehkan dalam Laparaga Sports Center Imam Bonjol Badminton. Dan cedera yang timbul dari penggunaan perlengkapan olahraga yang tidak sesuai dalam permainan badminton bukan menjadi tanggung jawab Laparaga Sports Center Imam Bonjol Badminton.
+
+    7. Kondisi Kesehatan Pemain
+    Pemain yang akan bermain wajib dalam kondisi sehat. Resiko yang timbul dalam permainan seperti cedera, kecelakaan atau kondisi medis lainnya pada saat bermain menjadi tanggung jawab pemain masing-masing dan bukan menjadi tanggung jawab Laparaga Sports Center Imam Bonjol Badminton.
+
+    8. Barang Pribadi
+    Pemain wajib menjaga barang-barang Pribadi selama berada di lingkungan Laparaga Sports Center Imam Bonjol Badminton. Kehilangan ataupun kerusakan barang Pribadi bukan menjadi tanggung jawab Laparaga Sports Center Imam Bonjol Badminton.
+
+    9. Hewan Peliharaan
+    Pemain dilarang membawa hewan peliharaan ke dalam area Laparaga Sports Center Imam Bonjol Badminton . Batas hewan peliharaan yang diperbolehkan hanya sampai lobby luar Laparaga Sports Center Imam Bonjol Badminton .
+
+    10. Pembatalan & Perubahan Jadwal
+    Pemesanan jadwal permainan bersifat final dan tidak dapat dibatalkan/refund. Jika terjadi perpindahtanganan pemesanan jadwal tanpa pemberitahuan resmi kepada pihak Laparaga Sports Center Imam Bonjol Badminton, maka segala sesuatu kerugian yang ditimbulkan bukan menjadi tanggung jawab Laparaga Sports Center Imam Bonjol Badminton.
+
+    11. Maksimal booking 3 jam per court. Hubungi 📞 087800227888 untuk keanggotaan bulanan, booking arena, atau event spesial. Jika pada hari H didapati penyewa mempergunakan lapangan untuk Event dengan pemesanan melalui Ayo dan tanpa melalui WA Admin, serta menyelenggarakan event tanpa ijin, maka petugas berhak menghentikan acara tersebut. (Catatan: Terdapat biaya administrasi tambahan untuk event.)
+
+    ⚠ Penting: Penggunaan tanpa izin resmi akan dikenakan sanksi.`,
+    gambar: "/images/lapangan/badminton/badminton4/IB1.jpg",
+    foto: [
+    "/images/lapangan/badminton/badminton4/IB1.jpg",
+    "/images/lapangan/badminton/badminton4/IB2.jpg",
+    "/images/lapangan/badminton/badminton4/IB3.jpg",
+    "/images/lapangan/badminton/badminton4/IB4.jpg",
+    "/images/lapangan/badminton/badminton4/IB5.jpg",
+    "/images/lapangan/badminton/badminton4/IB6.jpg",
+    "/images/lapangan/badminton/badminton4/IB7.jpg",
+     "/images/lapangan/badminton/badminton4/IB8.jpg",
+     "/images/lapangan/badminton/badminton4/IB9.jpg",
+     "/images/lapangan/badminton/badminton4/IB10.jPg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Lapangan 1", gambar: "/images/lapangan/badminton/badminton4/LP1.jpg" },
+      { id: 2, nama: "Lapangan 2", gambar: "/images/lapangan/badminton/badminton4/LP2.jpg" },
+      { id: 3, nama: "Lapangan 3", gambar: "/images/lapangan/badminton/badminton4/LP3.jpg" },
+      { id: 4, nama: "Lapangan 4", gambar: "/images/lapangan/badminton/badminton4/LP4.jpg" },
+      { id: 5, nama: "Lapangan 5", gambar: "/images/lapangan/badminton/badminton4/LP5.jpg" },
+    ],
+    rating: 5,
+  },
+  {
+    id: 14,
+    nama: "Lapangan Badminton Bulusan Square",
+    kategori: "Badminton",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Jalan Timoho Raya / Jl Imam Suparto Kav.19, Bulusan, Tembalang, Semarang City, Central Java 50277",
+    harga: 35000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Jual Minuman", "Parkir Motor", "Jual Makanan Ringan", "Musholla"],
+    mapsUrl: "https://maps.app.goo.gl/b7FNhzKGZGQQQURx7",
+    deskripsi: 
+    `...`,
+    gambar: "/images/lapangan/badminton/badminton5/BL1.jpg",
+    foto: [
+     "/images/lapangan/badminton/badminton5/BL1.jpg",
+     "/images/lapangan/badminton/badminton5/BL2.jpg",
+     "/images/lapangan/badminton/badminton5/BL3.jpg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Lapangan 1", gambar: "/images/lapangan/badminton/badminton5/LAPA.jpg" },
+      { id: 2, nama: "Lapangan 2", gambar: "/images/lapangan/badminton/badminton5/LAPB.jpg" },
+    ],
+    rating: 4.9,
+    jumlahRating: 314,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.72
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.77
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 4.73
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Uni Setyiani",
+      tanggal: "22 Juli 2026",
+      rating: 4.7,
+      komentar: "Harga merakyat, lapangan ada 2 bikin terasa private satu gedung. hanya kurang terang dan parkir mobil terbatas. penjaga baik meski bukan type friendly",
+    },
+    {
+      nama: "M. Afiq Nugraha",
+      tanggal: "25 Februari 2026",
+      rating: 5,
+      komentar: "Mas nya ramah, murah lagi",
+    },
+  ],
+},
+{
+    id: 15,
+    nama: "Golden Minisoccer",
+    kategori: "Mini Soccer",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Jl. Gendong Raya, Sendangmulyo, Kec. Tembalang, Kota Semarang, Jawa Tengah 50272",
+    harga: 275000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Jual Minuman", "Shower", "Tribun Penonton", "Wi-fi", "Parkir Motor", "Jual Makanan Ringan", "Musholla"],
+    mapsUrl: "https://maps.app.goo.gl/v5kmCWLbvGwu775x5",
+    deskripsi: 
+    `Golden minisoccer di semarang
+    tersedia 2 lapangan Minisoccer
+
+    Aturan Venue
+
+    wajib pakai sepatu olahraga
+    dilarang merokok di dalam lapangan`,
+    gambar: "/images/lapangan/minsoc/minsoc1/LC1.jpg",
+    foto: [
+     "/images/lapangan/minsoc/minsoc1/LC1.jpg",
+     "/images/lapangan/minsoc/minsoc1/LC2.jpg",
+     "/images/lapangan/minsoc/minsoc1/LC3.jpg",
+     "/images/lapangan/minsoc/minsoc1/LC4.jpg",
+     "/images/lapangan/minsoc/minsoc1/LC5.jpg",
+     "/images/lapangan/minsoc/minsoc1/LC6.jpg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Lapangan 1", gambar: "/images/lapangan/minsoc/minsoc1/L1.jpg" },
+      { id: 2, nama: "Lapangan 2", gambar: "/images/lapangan/minsoc/minsoc1/L2.jpg" },
+    ],
+    rating: 4.8,
+    jumlahRating: 4,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.75
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.50
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 5
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Moh Aqwam Farid",
+      tanggal: "6 Juni 2025",
+      rating: 5,
+      komentar: "lapangan berkualitas dan penjaga ramah",
+    },
+  ],
+},
+{
+    id: 16,
+    nama: "UPTOWN Soccer BSB City",
+    kategori: "Mini Soccer",
+    lokasi: "Kota Semarang, Jawa Tengah",
+    alamat: "Pesantren, Mijen, Semarang City, Central Java 50212",
+    harga: 400000,
+    fasilitas: ["Ruang Ganti", "Toilet", "Jual Minuman", "Shower", "Tribun Penonton", "Tersedia peminjaman rompi dan area pemanasan", "Parkir Motor", "Jual Makanan Ringan"],
+    mapsUrl: "https://maps.app.goo.gl/342vnh9NTTqREDzG8",
+    deskripsi: 
+    `UPTOWN SOCCER merupakan lapangan minisoccer terbaik di Jawa Tengah, khususnya di Kota Semarang yang berlokasi di UPTOWN MALL BSBcity Semarang, dengan pemandangan alam dan pepohonan yang asri.
+
+    Lapangan UPTOWN SOCCER dibekali dengan rumput sintetis bersertifikat standart FIFA dan dikerjakan oleh ahli lapangan rumput (PT Lestarindo), serta didukung dengan pencahayaan lampu yang maksimal di malam hari sehingga menjadikan lapangan UPTOWN SOCCER adalah pilihan utama bagi pencinta sepakbola di Kota Semarang.
+
+    Lapangan UPTOWN SOCCER memiliki 2 (dua) lapangan rumput sintetis dengan ukuran yang sama, yaitu :
+    Panjang 52 meter dan lebar 30 meter dengan clear area pinggir lapangan 3 meter
+
+    Kami mengundang tim football di Kota Semarang untuk merasakan sendiri pengalaman dan suasana sejuk berolahraga di fasilitas terbaik yang kami sediakan.
+
+    Aturan Venue
+
+    1. Cara Booking:
+    • Booking melalui aplikasi AYO
+    • Reservasi tidak dapat dibatalkan/di refund
+    • Pemesanan melalui aplikasi maksimal dapat dilakukan 30 menit sebelum jam main.
+    • Penggantian jadwal hanya dapat dilakukan 1 kali oleh Admin.
+    • Pemain harus datang 15 menit sebelum jam main
+    • Keterlambatan datang tidak diberikan waktu tambahan
+    • Menunjukkan bukti booking ke Admin (Customer Service Uptwon Mall BSBcity – Lantai GF)
+
+    2. Perlengkapan:
+    • Penyewa wajib membawa perlengkapan sendiri (jersey, sepatu, dll)
+    • Disarankan menggunakan Sepatu FG/AG, dilarang menggunakan sepatu pull besi/SG
+    • Lapangan tidak menyediakan bola, bola disewakan 50.000/2jam. (mulai bulan mei 2025)
+    • Lapangan tidak menyediakan rompi, rompi disewakan 50.000/1set (7pcs) (mulai bulan mei 2025)
+    • Penyewa disarankan membawa Fotographer sebagai dokumentasi, link foto dapat dikirim maksimal 24 jam setelah match
+    • Penyewa membawa air minum sendiri
+
+    3. Keamanan:
+    • Penyewa wajib menjaga keamanan dan ketertiban selama berada di lapangan.
+    • Dilarang melakukan tindakan yang membahayakan diri sendiri atau orang lain.
+    • Menjunjung semangat sportifitas sehinga Penyewa wajib menjaga emosi saat bermain. Tidak boleh melakukan tindakan anarki atau vandalisme.
+    • Penyewa wajib menjaga barang-barang bawaan sendiri. Kehilangan atau kerusakan bukan menjadi tanggung jawab Pihak Management Uptown Soccer.
+    • Anak-anak wajib didampingi oleh orang dewasa.
+    • Dilarang membawa minuman beralkohol dan atau barang ilegal ke dalam lapangan dan area tribun.
+    • Dilarang bersandar di jaring.
+    • Penyewa yang akan bermain wajib dalam kondisi sehat. Apabila terjadi hal-hal yang tidak diinginkan (kecelakaan, cider, sakit, dll) bukan tanggung jawab UPTOWN SOCCER.
+
+    4. Kerusakan:
+    • Memecahkan bola dan atau menghilangkan bola akan dikenakan denda sebesar Rp 200.000/bola
+    • Kerusakan rompi akan dikenakan denda sebesar Rp. 50.000/rompi
+    • Penyewa bertanggung jawab atas kerusakan yang terjadi pada fasilitas akibat kelalaiannya.
+    • Biaya perbaikan ditanggung oleh penyewa.
+
+
+    5. Kebersihan:
+    • Masuk area lapangan dengan alas Sepatu yang bersih (tidak ada tanah).
+    • Penyewa wajib menjaga kebersihan lapangan dan membuang sampah pada tempatnya, setiap selesai bermain wajib membersihkan sampah masing-masing diarea tribun dan toilet.
+    • Dilarang keras merokok dalam area lapangan.
+    • Dilarang meludah di area lapangan.
+    • Dilarang membawa makanan dan minuman ke dalam area lapangan.
+    • Dilarang buang air kecil/besar dalam area lapangan.
+    • Dilarang membawa binatang peliharaan kedalam lapangan ataupun tribun.
+
+    6. Parkiran kendaraan:
+    • Area parkir sepeda motor dan mobil menggunakan area parkir UPTOWN MALL
+    • Dilarang parkir kendaraan di pinggir jalan ataupun area green spine.`,
+    gambar: "/images/lapangan/minsoc/minsoc2/UP3.jpg",
+    foto: [
+     "/images/lapangan/minsoc/minsoc2/UP3.jpg",
+    ],
+    unitLapangan: [
+      { id: 1, nama: "Lapangan UPTOWN Soccer 1", gambar: "/images/lapangan/minsoc/minsoc2/UP1.jpg" },
+      { id: 2, nama: "Lapangan UPTOWN Soccer 2", gambar: "/images/lapangan/minsoc/minsoc2/UP2.jpg" },
+    ],
+    rating: 4.8,
+    jumlahRating: 222,
+
+    aspekRating: [
+      {
+        nama: "Kebersihan",
+        nilai: 4.78
+      },
+      {
+        nama: "Kondisi Lapangan",
+        nilai: 4.75
+      },
+      {
+        nama: "Komunikasi",
+        nilai: 4.58
+      }
+    ],
+    ulasan: [
+    {
+      nama: "Budi Setyo Nugroho",
+      tanggal: "25 Oktober 2026",
+      rating: 3,
+      komentar: "jaring lapangan bolong, jadi sering keluar dan waktu terbuang sia sia buat ngambil bola",
+    },
+    {
+      nama: "Nur Ariyanto",
+      tanggal: "24 Oktober 2026",
+      rating: 5,
+      komentar: "lapangannya bagus, saran tolong jaring nya dibenerin biar ga bolong bolong ",
+    },
+  ],
+},
 ];
