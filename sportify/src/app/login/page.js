@@ -1,13 +1,97 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
+import { apiRequest } from "@/lib/api";
 
 export default function LoginPage() {
   const { language } = useLanguage();
   const isEnglish = language === "en";
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!email.trim() || !password.trim()) {
+      setError(
+        isEnglish
+          ? "Email and password are required."
+          : "Email dan password wajib diisi."
+      );
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      setError(
+        isEnglish
+          ? "Please enter a valid email address."
+          : "Masukkan alamat email yang valid."
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      setError(
+        isEnglish
+          ? "Password must contain at least 6 characters."
+          : "Password minimal harus 6 karakter."
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const data = await apiRequest("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password,
+        }),
+      });
+
+      // Simpan token jika diberikan oleh backend
+      const token =
+        data?.token ||
+        data?.accessToken ||
+        data?.access_token;
+
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+
+      if (data?.user) {
+        localStorage.setItem("sportify_user", JSON.stringify(data.user));
+      }
+
+      window.dispatchEvent(new Event("sportify-auth-change"));
+
+      // Arahkan pengguna setelah login berhasil
+      router.push("/profile");
+    } catch (err) {
+      setError(
+        err.message ||
+          (isEnglish
+            ? "Login failed. Please try again."
+            : "Login gagal. Silakan coba lagi.")
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -43,8 +127,9 @@ export default function LoginPage() {
           </div>
 
           {/* FORM LOGIN */}
-          <form className="space-y-4 sm:space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
 
+            {/* EMAIL */}
             <div>
               <label className="block text-sm font-semibold text-dark-text mb-2">
                 Email
@@ -56,30 +141,76 @@ export default function LoginPage() {
                   isEnglish ? "Enter your email" : "Masukkan email"
                 }
                 className="liquid-auth-input"
-                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError("");
+                }}
+                autoComplete="email"
+                disabled={loading}
               />
             </div>
 
+            {/* PASSWORD */}
             <div>
               <label className="block text-sm font-semibold text-dark-text mb-2">
                 {isEnglish ? "Password" : "Kata Sandi"}
               </label>
 
-              <input
-                type="password"
-                placeholder={
-                  isEnglish ? "Enter your password" : "Masukkan password"
-                }
-                className="liquid-auth-input"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder={
+                    isEnglish ? "Enter your password" : "Masukkan password"
+                  }
+                  className="liquid-auth-input pr-16"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
+                  autoComplete="current-password"
+                  disabled={loading}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-primary"
+                >
+                  {showPassword
+                    ? isEnglish
+                      ? "Hide"
+                      : "Sembunyi"
+                    : isEnglish
+                      ? "Show"
+                      : "Lihat"}
+                </button>
+              </div>
             </div>
 
+            {/* PESAN ERROR */}
+            {error && (
+              <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
+            {/* BUTTON LOGIN */}
             <button
-              type="button"
-              className="liquid-booking-button w-full mt-3"
+              type="submit"
+              disabled={loading}
+              className="liquid-booking-button w-full mt-3 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isEnglish ? "Login" : "Masuk"} <span>→</span>
+              {loading
+                ? isEnglish
+                  ? "Logging in..."
+                  : "Sedang masuk..."
+                : isEnglish
+                  ? "Login"
+                  : "Masuk"}
+
+              {!loading && <span>→</span>}
             </button>
 
           </form>

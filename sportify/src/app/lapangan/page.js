@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -20,42 +20,64 @@ const kategoriOlahraga = [
 // Komponen utama katalog
 function KontenHalamanLapangan() {
   const [pencarian, setPencarian] = useState("");
-  const [kategoriAktif, setKategoriAktif] = useState("Semua");
+  const [kategoriPilihan, setKategoriPilihan] = useState(null);
+  const [urutan, setUrutan] = useState("rekomendasi");
+  const [filterHarga, setFilterHarga] = useState("semua");
 
   const { language } = useLanguage();
   const t = translations[language].lapangan;
 
   const searchParams = useSearchParams();
+  const kategoriURL = searchParams.get("kategori");
 
-  // Membaca kategori dari URL homepage
-  useEffect(() => {
-    const kategoriURL = searchParams.get("kategori");
-
-    if (kategoriURL && kategoriOlahraga.includes(kategoriURL)) {
-      setKategoriAktif(kategoriURL);
-    }
-  }, [searchParams]);
+  // Kategori aktif: pilihan manual atau dari URL atau default 'Semua'
+  const kategoriAktif =
+    kategoriPilihan ??
+    (kategoriURL && kategoriOlahraga.includes(kategoriURL)
+      ? kategoriURL
+      : "Semua");
 
   // Fungsi reset filter
   const resetFilter = () => {
     setPencarian("");
-    setKategoriAktif("Semua");
+    setKategoriPilihan("Semua");
+    setUrutan("rekomendasi");
+    setFilterHarga("semua");
   };
 
-  // Pencarian dan filter lapangan
-  const hasilFilter = daftarLapangan.filter((lapangan) => {
-    const cocokKategori =
-      kategoriAktif === "Semua" ||
-      (Array.isArray(lapangan.kategori)
-        ? lapangan.kategori.includes(kategoriAktif)
-        : lapangan.kategori === kategoriAktif);
+  const isFiltered =
+    pencarian ||
+    kategoriAktif !== "Semua" ||
+    filterHarga !== "semua" ||
+    urutan !== "rekomendasi";
 
-    const cocokPencarian =
-      lapangan.nama.toLowerCase().includes(pencarian.toLowerCase()) ||
-      lapangan.lokasi.toLowerCase().includes(pencarian.toLowerCase());
+  // Pencarian, filter harga, dan urutan lapangan
+  const hasilFilter = daftarLapangan
+    .filter((lapangan) => {
+      const cocokKategori =
+        kategoriAktif === "Semua" ||
+        (Array.isArray(lapangan.kategori)
+          ? lapangan.kategori.includes(kategoriAktif)
+          : lapangan.kategori === kategoriAktif);
 
-    return cocokKategori && cocokPencarian;
-  });
+      const cocokPencarian =
+        lapangan.nama.toLowerCase().includes(pencarian.toLowerCase()) ||
+        lapangan.lokasi.toLowerCase().includes(pencarian.toLowerCase());
+
+      const harga = Number(lapangan.harga) || 0;
+      let cocokHarga = true;
+      if (filterHarga === "dibawah100k") cocokHarga = harga < 100000;
+      else if (filterHarga === "100k-150k") cocokHarga = harga >= 100000 && harga <= 150000;
+      else if (filterHarga === "diatas150k") cocokHarga = harga > 150000;
+
+      return cocokKategori && cocokPencarian && cocokHarga;
+    })
+    .sort((a, b) => {
+      if (urutan === "termurah") return a.harga - b.harga;
+      if (urutan === "termahal") return b.harga - a.harga;
+      if (urutan === "rating") return (b.rating || 0) - (a.rating || 0);
+      return 0; // rekomendasi / default
+    });
 
   return (
     <>
@@ -118,8 +140,8 @@ function KontenHalamanLapangan() {
           </div>
         </section>
 
-        {/* FILTER KATEGORI */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-12">
+        {/* KATEGORI */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
           <div className="mb-6">
 
@@ -142,10 +164,9 @@ function KontenHalamanLapangan() {
             {kategoriOlahraga.map((kategori) => (
               <button
                 key={kategori}
-                onClick={() => setKategoriAktif(kategori)}
-                className={`liquid-filter-button shrink-0 ${
-                  kategoriAktif === kategori ? "active" : ""
-                }`}
+                onClick={() => setKategoriPilihan(kategori)}
+                className={`liquid-filter-button shrink-0 ${kategoriAktif === kategori ? "active" : ""
+                  }`}
               >
                 {t.categories[kategori]}
               </button>
@@ -157,6 +178,52 @@ function KontenHalamanLapangan() {
         {/* DAFTAR LAPANGAN */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 md:pb-20">
 
+          {/* BAR FILTER HARGA & URUTKAN */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-7 bg-white/80 p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm backdrop-blur-sm">
+            {/* Filter Harga */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mr-1">
+                {language === "en" ? "Budget:" : "Harga:"}
+              </span>
+              {[
+                { value: "semua", label: language === "en" ? "All" : "Semua" },
+                { value: "dibawah100k", label: "< Rp100rb" },
+                { value: "100k-150k", label: "Rp100rb - 150rb" },
+                { value: "diatas150k", label: "> Rp150rb" },
+              ].map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => setFilterHarga(item.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${filterHarga === item.value
+                    ? "bg-primary text-white shadow-sm"
+                    : "bg-white text-gray-600 border border-gray-200 hover:border-primary"
+                    }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Urutkan */}
+            <div className="flex items-center gap-2 self-start md:self-auto">
+              <label htmlFor="select-urutan" className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {language === "en" ? "Sort:" : "Urutkan:"}
+              </label>
+              <select
+                id="select-urutan"
+                value={urutan}
+                onChange={(e) => setUrutan(e.target.value)}
+                className="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold text-dark-text outline-none focus:border-primary cursor-pointer shadow-sm"
+              >
+                <option value="rekomendasi">{language === "en" ? " Recommendation" : " Rekomendasi"}</option>
+                <option value="termurah">{language === "en" ? " Lowest Price" : " Harga Terendah"}</option>
+                <option value="termahal">{language === "en" ? " Highest Price" : " Harga Tertinggi"}</option>
+                <option value="rating">{language === "en" ? " Top Rated" : " Rating Tertinggi"}</option>
+              </select>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-7">
 
             <div>
@@ -165,19 +232,19 @@ function KontenHalamanLapangan() {
                 {t.searchResult}
               </p>
 
-              <h2 className="text-2xl md:text-3xl font-bold text-dark-text">
+              <h2 className="text-2xl sm:text-3xl font-bold text-dark-text">
                 {t.listTitle}
               </h2>
 
-              <p className="text-gray-500 mt-2 text-sm">
-                {language === "en"
-                  ? `Showing ${hasilFilter.length} ${t.resultText}.`
-                  : `Menampilkan ${hasilFilter.length} ${t.resultText}.`}
+              <p className="text-gray-500 text-sm mt-1">
+                {hasilFilter.length} {t.resultText}
+                {kategoriAktif !== "Semua" && ` · ${kategoriAktif}`}
+                {pencarian && ` · "${pencarian}"`}
               </p>
 
             </div>
 
-            {(pencarian || kategoriAktif !== "Semua") && (
+            {isFiltered && (
               <button
                 onClick={resetFilter}
                 className="text-primary font-semibold text-sm hover:text-secondary transition self-start"
@@ -219,7 +286,7 @@ function KontenHalamanLapangan() {
 
               <button
                 onClick={resetFilter}
-                className="liquid-primary-button mt-7"
+                className="liquid-booking-button inline-block mt-6"
               >
                 {t.resetSearch}
               </button>
@@ -229,6 +296,7 @@ function KontenHalamanLapangan() {
           )}
 
         </section>
+
       </main>
 
       <Footer />
@@ -236,7 +304,6 @@ function KontenHalamanLapangan() {
   );
 }
 
-// Halaman dengan Suspense Boundary
 export default function HalamanLapangan() {
   const { language } = useLanguage();
   const t = translations[language].lapangan;
@@ -245,7 +312,7 @@ export default function HalamanLapangan() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-background">
-          <p className="text-primary font-semibold">
+          <p className="text-gray-500 text-sm">
             {t.loading}
           </p>
         </div>

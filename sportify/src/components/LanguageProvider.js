@@ -1,4 +1,3 @@
-
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -10,19 +9,21 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem("sportify-language");
-
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
+    if (savedLanguage && (savedLanguage === "id" || savedLanguage === "en")) {
+      requestAnimationFrame(() => {
+        setLanguage(savedLanguage);
+      });
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("sportify-language", language);
     document.documentElement.lang = language;
   }, [language]);
 
   const changeLanguage = (lang) => {
     setLanguage(lang);
+    localStorage.setItem("sportify-language", lang);
+    document.documentElement.lang = lang;
   };
 
   return (

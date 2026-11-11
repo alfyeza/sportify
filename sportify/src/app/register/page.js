@@ -1,13 +1,141 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
+import { apiRequest } from "@/lib/api";
 
 export default function RegisterPage() {
   const { language } = useLanguage();
   const isEnglish = language === "en";
+  const router = useRouter();
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // VALIDASI INPUT
+    if (
+      !fullName.trim() ||
+      !email.trim() ||
+      !phone.trim() ||
+      !password ||
+      !confirmPassword
+    ) {
+      setError(
+        isEnglish
+          ? "All fields are required."
+          : "Semua kolom wajib diisi."
+      );
+      return;
+    }
+
+    // VALIDASI EMAIL
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      setError(
+        isEnglish
+          ? "Please enter a valid email address."
+          : "Masukkan alamat email yang valid."
+      );
+      return;
+    }
+
+    // VALIDASI NOMOR HP
+    const phonePattern = /^\+?[0-9\s-]+$/;
+    const cleanPhone = phone.replace(/[\s-]/g, "");
+
+    if (
+      !phonePattern.test(phone) ||
+      cleanPhone.replace(/\D/g, "").length < 10 ||
+      cleanPhone.replace(/\D/g, "").length > 15
+    ) {
+      setError(
+        isEnglish
+          ? "Please enter a valid phone number."
+          : "Masukkan nomor HP yang valid (10–15 angka)."
+      );
+      return;
+    }
+
+    // VALIDASI PASSWORD
+    if (password.length < 6) {
+      setError(
+        isEnglish
+          ? "Password must contain at least 6 characters."
+          : "Password minimal harus 6 karakter."
+      );
+      return;
+    }
+
+    // VALIDASI KONFIRMASI PASSWORD
+    if (password !== confirmPassword) {
+      setError(
+        isEnglish
+          ? "Passwords do not match."
+          : "Konfirmasi password tidak cocok."
+      );
+      return;
+    }
+
+    // KIRIM DATA KE BACKEND
+    try {
+      setLoading(true);
+
+      const data = await apiRequest("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          password: password,
+        }),
+      });
+
+      const token =
+        data?.token ||
+        data?.accessToken ||
+        data?.access_token;
+
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+
+      if (data?.user) {
+        localStorage.setItem("sportify_user", JSON.stringify(data.user));
+      }
+
+      window.dispatchEvent(new Event("sportify-auth-change"));
+
+      // JIKA PENDAFTARAN BERHASIL
+      router.push("/profile");
+
+    } catch (err) {
+      setError(
+        err.message ||
+          (isEnglish
+            ? "Registration failed. Please try again."
+            : "Pendaftaran gagal. Silakan coba lagi.")
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -43,7 +171,10 @@ export default function RegisterPage() {
           </div>
 
           {/* FORM REGISTER */}
-          <form className="space-y-4 sm:space-y-5">
+          <form
+            onSubmit={handleRegister}
+            className="space-y-4 sm:space-y-5"
+          >
 
             {/* NAMA LENGKAP */}
             <div>
@@ -57,7 +188,13 @@ export default function RegisterPage() {
                   isEnglish ? "Enter your full name" : "Masukkan nama lengkap"
                 }
                 className="liquid-auth-input w-full text-sm"
-                required
+                value={fullName}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  setError("");
+                }}
+                autoComplete="name"
+                disabled={loading}
               />
             </div>
 
@@ -73,7 +210,13 @@ export default function RegisterPage() {
                   isEnglish ? "Enter your email" : "Masukkan email"
                 }
                 className="liquid-auth-input w-full text-sm"
-                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError("");
+                }}
+                autoComplete="email"
+                disabled={loading}
               />
             </div>
 
@@ -89,7 +232,13 @@ export default function RegisterPage() {
                   isEnglish ? "Enter your phone number" : "Masukkan nomor HP"
                 }
                 className="liquid-auth-input w-full text-sm"
-                required
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setError("");
+                }}
+                autoComplete="tel"
+                disabled={loading}
               />
             </div>
 
@@ -99,14 +248,37 @@ export default function RegisterPage() {
                 Password
               </label>
 
-              <input
-                type="password"
-                placeholder={
-                  isEnglish ? "Create a password" : "Buat password"
-                }
-                className="liquid-auth-input w-full text-sm"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder={
+                    isEnglish ? "Create a password" : "Buat password"
+                  }
+                  className="liquid-auth-input w-full text-sm pr-16"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
+                  autoComplete="new-password"
+                  disabled={loading}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-primary"
+                  disabled={loading}
+                >
+                  {showPassword
+                    ? isEnglish
+                      ? "Hide"
+                      : "Sembunyi"
+                    : isEnglish
+                      ? "Show"
+                      : "Lihat"}
+                </button>
+              </div>
             </div>
 
             {/* KONFIRMASI PASSWORD */}
@@ -115,22 +287,63 @@ export default function RegisterPage() {
                 {isEnglish ? "Confirm Password" : "Konfirmasi Password"}
               </label>
 
-              <input
-                type="password"
-                placeholder={
-                  isEnglish ? "Re-enter your password" : "Ulangi password"
-                }
-                className="liquid-auth-input w-full text-sm"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder={
+                    isEnglish ? "Re-enter your password" : "Ulangi password"
+                  }
+                  className="liquid-auth-input w-full text-sm pr-16"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    setError("");
+                  }}
+                  autoComplete="new-password"
+                  disabled={loading}
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-primary"
+                  disabled={loading}
+                >
+                  {showConfirmPassword
+                    ? isEnglish
+                      ? "Hide"
+                      : "Sembunyi"
+                    : isEnglish
+                      ? "Show"
+                      : "Lihat"}
+                </button>
+              </div>
             </div>
+
+            {/* PESAN ERROR */}
+            {error && (
+              <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
 
             {/* TOMBOL DAFTAR */}
             <button
-              type="button"
-              className="liquid-booking-button w-full mt-3 text-sm sm:text-base"
+              type="submit"
+              disabled={loading}
+              className="liquid-booking-button w-full mt-3 text-sm sm:text-base disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isEnglish ? "Register Now" : "Daftar Sekarang"} <span>→</span>
+              {loading
+                ? isEnglish
+                  ? "Registering..."
+                  : "Sedang mendaftar..."
+                : isEnglish
+                  ? "Register Now"
+                  : "Daftar Sekarang"}
+
+              {!loading && <span>→</span>}
             </button>
 
           </form>

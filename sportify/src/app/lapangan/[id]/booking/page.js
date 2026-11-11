@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { daftarLapangan } from "@/lib/lapangan";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -276,10 +277,12 @@ export default function BookingLapanganPage() {
                     <div className="p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-gray-100">
 
                       <div className="relative h-48 sm:h-52 lg:h-44 rounded-xl overflow-hidden">
-                        <img
+                        <Image
                           src={item.gambar || lapangan.gambar}
                           alt={item.nama}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 320px"
+                          className="object-cover"
                         />
                       </div>
 

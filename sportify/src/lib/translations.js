@@ -4,8 +4,11 @@ export const translations = {
       home: "Home",
       lapangan: "Lapangan",
       tentang: "Tentang Kami",
+      riwayat: "Riwayat",
+      profil: "Profil",
       login: "Login",
       daftar: "Daftar",
+      logout: "Keluar",
       cari: "Cari Lapangan",
     },
 
@@ -178,8 +181,11 @@ export const translations = {
       home: "Home",
       lapangan: "Courts",
       tentang: "About Us",
+      riwayat: "History",
+      profil: "Profile",
       login: "Login",
       daftar: "Register",
+      logout: "Logout",
       cari: "Find a Court",
     },
 

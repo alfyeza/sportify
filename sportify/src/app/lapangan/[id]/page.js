@@ -1,8 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CardLapangan from "@/components/CardLapangan";
@@ -12,7 +13,6 @@ import { translations } from "@/lib/translations";
 
 export default function DetailLapangan() {
   const params = useParams();
-  const id = Number(params.id);
 
   const { language } = useLanguage();
   const t = translations[language]?.detail || translations.id.detail;
@@ -22,9 +22,90 @@ export default function DetailLapangan() {
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
+  // Fitur Bagikan & Ulasan Baru
+  const [copied, setCopied] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [namaReviewer, setNamaReviewer] = useState("");
+  const [ratingInput, setRatingInput] = useState(5);
+  const [komentarInput, setKomentarInput] = useState("");
+  const [ulasanTambahan, setUlasanTambahan] = useState([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(`sportify_reviews_${params.id}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          requestAnimationFrame(() => {
+            setUlasanTambahan(parsed);
+          });
+        }
+      }
+      const savedUser = localStorage.getItem("sportify_user");
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        if (u.fullName) {
+          requestAnimationFrame(() => {
+            setNamaReviewer(u.fullName);
+          });
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [params.id]);
+
   const lapangan = daftarLapangan.find(
-    (item) => item.id === id
+    (item) => String(item.id) === String(params.id)
   );
+
+  const handleShareWA = () => {
+    if (typeof window === "undefined" || !lapangan) return;
+    const text = `Ayo main di ${lapangan.nama}! Cek jadwal & booking di Sportify: ${window.location.href}`;
+    window.open(
+      `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,
+      "_blank"
+    );
+  };
+
+  const handleCopyLink = async () => {
+    if (typeof window === "undefined") return;
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+    }
+  };
+
+  const handleSubmitReview = (e) => {
+    e.preventDefault();
+    if (!komentarInput.trim()) return;
+
+    const newRev = {
+      nama:
+        namaReviewer.trim() ||
+        (language === "en" ? "Sportify Player" : "Pengunjung Sportify"),
+      tanggal: language === "en" ? "Just now" : "Baru saja",
+      rating: Number(ratingInput),
+      komentar: komentarInput.trim(),
+    };
+
+    const updated = [newRev, ...ulasanTambahan];
+    setUlasanTambahan(updated);
+    try {
+      localStorage.setItem(
+        `sportify_reviews_${params.id}`,
+        JSON.stringify(updated)
+      );
+    } catch {
+      // ignore
+    }
+
+    setKomentarInput("");
+    setShowReviewForm(false);
+  };
 
   if (!lapangan) {
     return (
@@ -76,20 +157,20 @@ export default function DetailLapangan() {
   });
 
   // RATING VENUE
-  const jumlahUlasan = lapangan.ulasan?.length || 0;
+  const daftarSemuaUlasan = [...ulasanTambahan, ...(lapangan.ulasan || [])];
+  const jumlahUlasan = daftarSemuaUlasan.length;
 
   const rataRataRating =
-    lapangan.rating ??
-    (jumlahUlasan > 0
+    jumlahUlasan > 0
       ? (
-          lapangan.ulasan.reduce(
-            (total, ulasan) => total + ulasan.rating,
+          daftarSemuaUlasan.reduce(
+            (total, ulasan) => total + Number(ulasan.rating || 5),
             0
           ) / jumlahUlasan
         ).toFixed(1)
-      : null);
+      : (lapangan.rating ? Number(lapangan.rating).toFixed(1) : "5.0");
 
-  const jumlahRating = lapangan.jumlahRating ?? jumlahUlasan;
+  const jumlahRating = (lapangan.jumlahRating ?? 0) + ulasanTambahan.length;
 
   return (
     <>
@@ -120,15 +201,48 @@ export default function DetailLapangan() {
                 📍 {lapangan.lokasi}
               </p>
 
-              <div className="flex flex-wrap gap-2 mt-5">
-                {kategoriLapangan.map((kategori) => (
-                  <span
-                    key={kategori}
-                    className="liquid-detail-category"
+              <div className="flex flex-wrap items-center justify-between gap-4 mt-5">
+                <div className="flex flex-wrap gap-2">
+                  {kategoriLapangan.map((kategori) => (
+                    <span
+                      key={kategori}
+                      className="liquid-detail-category"
+                    >
+                      {kategori}
+                    </span>
+                  ))}
+                </div>
+
+                {/* TOMBOL BAGIKAN */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleShareWA}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-sm transition"
+                    title={language === "en" ? "Share to WhatsApp" : "Bagikan ke WhatsApp"}
                   >
-                    {kategori}
-                  </span>
-                ))}
+                    <span>💬</span>
+                    <span>WhatsApp</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-700 hover:border-primary hover:text-primary text-xs font-semibold shadow-sm transition"
+                    title={language === "en" ? "Copy Link" : "Salin Tautan"}
+                  >
+                    <span>🔗</span>
+                    <span>
+                      {copied
+                        ? language === "en"
+                          ? "Copied!"
+                          : "Tersalin!"
+                        : language === "en"
+                        ? "Copy Link"
+                        : "Salin Link"}
+                    </span>
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -155,12 +269,14 @@ export default function DetailLapangan() {
             ).map((foto, index) => (
               <div
                 key={index}
-                className="liquid-photo overflow-hidden h-56 sm:h-64 md:h-80"
+                className="liquid-photo relative overflow-hidden h-56 sm:h-64 md:h-80"
               >
-                <img
+                <Image
                   src={foto}
                   alt={`${lapangan.nama} ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
             ))}
@@ -387,22 +503,120 @@ export default function DetailLapangan() {
 
           <div className="liquid-info-card p-5 sm:p-6 md:p-8">
 
-            <div className="flex items-center justify-between gap-3 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <h2 className="text-2xl font-bold text-dark-text">
                 {t.reviewTitle}
               </h2>
 
-              {jumlahUlasan > 0 && (
+              <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setShowAllReviews(!showAllReviews)}
-                  className="text-primary text-sm font-semibold hover:text-secondary"
+                  type="button"
+                  onClick={() => setShowReviewForm(!showReviewForm)}
+                  className="px-4 py-2 rounded-xl bg-soft-mint text-primary text-xs sm:text-sm font-semibold hover:bg-green-100 transition cursor-pointer"
                 >
-                  {showAllReviews
-                    ? t.reviewLess
-                    : t.allReviews}
+                  {showReviewForm
+                    ? language === "en"
+                      ? "✕ Close Form"
+                      : "✕ Tutup Form"
+                    : language === "en"
+                    ? "✍️ Write Review"
+                    : "✍️ Tulis Ulasan"}
                 </button>
-              )}
+
+                {jumlahUlasan > 0 && (
+                  <button
+                    onClick={() => setShowAllReviews(!showAllReviews)}
+                    className="text-primary text-sm font-semibold hover:text-secondary cursor-pointer"
+                  >
+                    {showAllReviews
+                      ? t.reviewLess
+                      : t.allReviews}
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* FORMULIR TULIS ULASAN */}
+            {showReviewForm && (
+              <form
+                onSubmit={handleSubmitReview}
+                className="mb-8 p-5 bg-white/95 border border-primary/20 rounded-2xl shadow-sm space-y-4"
+              >
+                <h3 className="font-bold text-dark-text text-sm sm:text-base">
+                  {language === "en"
+                    ? "Leave Your Feedback"
+                    : "Berikan Penilaian & Ulasan Lapangan"}
+                </h3>
+
+                {/* Pilih Bintang */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">
+                    {language === "en" ? "Rating:" : "Rating Bintang:"}
+                  </label>
+                  <div className="flex items-center gap-1.5 text-2xl">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRatingInput(star)}
+                        className={`transition hover:scale-125 cursor-pointer ${
+                          star <= ratingInput
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                    <span className="text-xs font-bold text-gray-600 ml-2">
+                      ({ratingInput}/5)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1">
+                      {language === "en" ? "Your Name" : "Nama Kamu"}
+                    </label>
+                    <input
+                      type="text"
+                      value={namaReviewer}
+                      onChange={(e) => setNamaReviewer(e.target.value)}
+                      placeholder={
+                        language === "en" ? "Enter your name" : "Masukkan nama"
+                      }
+                      className="liquid-auth-input w-full text-sm py-2"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">
+                    {language === "en" ? "Review / Feedback" : "Ulasan / Feedback"} <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={komentarInput}
+                    onChange={(e) => setKomentarInput(e.target.value)}
+                    placeholder={
+                      language === "en"
+                        ? "How was the court, facilities, and playing experience?"
+                        : "Bagaimana kondisi lapangan, kebersihan, dan fasilitasnya?"
+                    }
+                    className="liquid-auth-input w-full text-sm resize-none"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="liquid-booking-button inline-flex text-xs sm:text-sm py-2.5 px-6 cursor-pointer"
+                >
+                  {language === "en" ? "Submit Review" : "Kirim Ulasan"} →
+                </button>
+              </form>
+            )}
 
             {jumlahUlasan > 0 ? (
               <>
