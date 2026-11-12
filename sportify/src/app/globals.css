@@ -14,26 +14,6 @@
 body {
   background-color: #F7F9F7;
   color: #202B25;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "SF Pro Text", "Helvetica Neue", sans-serif;
-}
-
-@import "tailwindcss";
-
-@theme {
-  --color-primary: #146B45;
-  --color-secondary: #27A36B;
-  --color-soft-mint: #EAF5EF;
-  --color-lime: #B7E34A;
-  --color-background: #F7F9F7;
-  --color-dark-text: #202B25;
-  --color-warning: #E9A23B;
-  --color-danger: #DC5555;
-}
-
-body {
-  background-color: #F7F9F7;
-  color: #202B25;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -62,12 +42,10 @@ body {
   inset: 0;
   pointer-events: none;
 
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.65),
-    transparent 45%,
-    rgba(255, 255, 255, 0.15)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.65),
+      transparent 45%,
+      rgba(255, 255, 255, 0.15));
 }
 
 .liquid-nav-link {
@@ -157,12 +135,10 @@ body {
 
 .liquid-hero {
   position: relative;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.85),
-    rgba(234, 245, 239, 0.75),
-    rgba(255, 255, 255, 0.65)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.85),
+      rgba(234, 245, 239, 0.75),
+      rgba(255, 255, 255, 0.65));
 
   backdrop-filter: blur(25px) saturate(160%);
   -webkit-backdrop-filter: blur(25px) saturate(160%);
@@ -207,11 +183,9 @@ body {
 }
 
 .liquid-cta {
-  background: linear-gradient(
-    135deg,
-    rgba(20, 107, 69, 0.96),
-    rgba(39, 163, 107, 0.92)
-  );
+  background: linear-gradient(135deg,
+      rgba(20, 107, 69, 0.96),
+      rgba(39, 163, 107, 0.92));
 
   border: 1px solid rgba(255, 255, 255, 0.25);
 
@@ -303,12 +277,10 @@ body {
 .liquid-catalog-header {
   position: relative;
 
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.88),
-    rgba(234, 245, 239, 0.78),
-    rgba(255, 255, 255, 0.7)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.88),
+      rgba(234, 245, 239, 0.78),
+      rgba(255, 255, 255, 0.7));
 
   backdrop-filter: blur(25px) saturate(160%);
   -webkit-backdrop-filter: blur(25px) saturate(160%);
@@ -398,12 +370,10 @@ body {
 ================================= */
 
 .liquid-detail-header {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(234, 245, 239, 0.8),
-    rgba(255, 255, 255, 0.7)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(234, 245, 239, 0.8),
+      rgba(255, 255, 255, 0.7));
 
   backdrop-filter: blur(25px) saturate(160%);
   -webkit-backdrop-filter: blur(25px) saturate(160%);
@@ -469,11 +439,9 @@ body {
 }
 
 .liquid-booking-card {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.94),
-    rgba(234, 245, 239, 0.82)
-  );
+  background: linear-gradient(145deg,
+      rgba(255, 255, 255, 0.94),
+      rgba(234, 245, 239, 0.82));
 
   backdrop-filter: blur(25px) saturate(160%);
   -webkit-backdrop-filter: blur(25px) saturate(160%);
@@ -573,7 +541,7 @@ body {
   gap: 16px;
 }
 
-.liquid-booking-step > span {
+.liquid-booking-step>span {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -665,11 +633,9 @@ body {
   gap: 24px;
   padding: 24px;
   border-radius: 22px;
-  background: linear-gradient(
-    135deg,
-    rgba(234, 245, 239, 0.95),
-    rgba(255, 255, 255, 0.9)
-  );
+  background: linear-gradient(135deg,
+      rgba(234, 245, 239, 0.95),
+      rgba(255, 255, 255, 0.9));
   border: 1px solid rgba(20, 107, 69, 0.08);
 }
 
@@ -717,36 +683,79 @@ body {
    LIQUID GLASS - BOOKING SUMMARY
 ================================= */
 
-.liquid-summary-row {
+.liquid-booking-summary {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  padding: 24px;
+  border-radius: 22px;
+
+  background: linear-gradient(135deg,
+      rgba(234, 245, 239, 0.95),
+      rgba(255, 255, 255, 0.9));
+
+  border: 1px solid rgba(20, 107, 69, 0.08);
+  box-sizing: border-box;
+}
+
+/* BARIS INFORMASI */
+.liquid-summary-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
   padding-bottom: 15px;
+
   border-bottom: 1px solid rgba(32, 43, 37, 0.07);
 }
 
 .liquid-summary-row span {
+  min-width: 0;
   color: #89918C;
   font-size: 14px;
+  overflow-wrap: break-word;
 }
 
 .liquid-summary-row strong {
+  min-width: 0;
   color: #202B25;
   font-size: 14px;
   font-weight: 700;
   text-align: right;
+  overflow-wrap: break-word;
 }
 
-@media (max-width: 480px) {
-  .liquid-summary-row {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
+/* NOMINAL HARGA */
+.liquid-summary-row strong.price {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .liquid-booking-summary {
+    padding: 18px;
+    border-radius: 18px;
+    gap: 18px;
   }
 
+  .liquid-summary-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .liquid-summary-row span,
   .liquid-summary-row strong {
-    text-align: left;
+    font-size: 13px;
   }
 }
 
@@ -791,6 +800,7 @@ body {
     border-radius: 24px;
   }
 }
+
 /* ABOUT PAGE - LIQUID GLASS */
 
 .liquid-about-hero {
@@ -944,10 +954,11 @@ body {
     padding-right: 12px;
   }
 
-  .liquid-navbar > a {
+  .liquid-navbar>a {
     font-size: 20px;
   }
 }
+
 /* CARD LAPANGAN RESPONSIVE */
 
 .liquid-card {
@@ -1158,8 +1169,49 @@ body {
   }
 }
 
-/* BOOKING SUMMARY RESPONSIVE */
+/* ========================================
+   BOOKING SUMMARY RESPONSIVE
+======================================== */
 
+.liquid-booking-page-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* BARIS INFORMASI BOOKING */
+.liquid-summary-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(32, 43, 37, 0.07);
+}
+
+.liquid-summary-row span {
+  min-width: 0;
+  font-size: 14px;
+  color: #89918C;
+  line-height: 1.5;
+}
+
+.liquid-summary-row strong {
+  min-width: 0;
+  max-width: 100%;
+  font-size: 14px;
+  font-weight: 700;
+  color: #202B25;
+  text-align: right;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* RESPONSIVE HP */
 @media (max-width: 640px) {
   .liquid-booking-page-card {
     padding: 18px;
@@ -1167,24 +1219,13 @@ body {
   }
 
   .liquid-summary-row {
-    align-items: flex-start;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 10px;
   }
 
-  .liquid-summary-row span {
-    font-size: 13px;
-  }
-
+  .liquid-summary-row span,
   .liquid-summary-row strong {
     font-size: 13px;
-    text-align: right;
-    max-width: 55%;
-    overflow-wrap: anywhere;
-  }
-
-  .liquid-booking-button {
-    min-height: 48px;
-    justify-content: center;
   }
 }
 

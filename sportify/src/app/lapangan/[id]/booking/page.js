@@ -15,17 +15,20 @@ export default function BookingLapanganPage() {
   const router = useRouter();
 
   const { language } = useLanguage();
-  const t = translations[language]?.booking || translations.id.booking;
+  const isEnglish = language === "en";
+
+  const t =
+    translations[language]?.booking || translations.id.booking;
 
   const lapangan = daftarLapangan.find(
     (item) => String(item.id) === String(params.id)
   );
 
   const getTanggalHariIni = () => {
-    const today = new Date();
-    const tahun = today.getFullYear();
-    const bulan = String(today.getMonth() + 1).padStart(2, "0");
-    const tanggal = String(today.getDate()).padStart(2, "0");
+    const sekarang = new Date();
+    const tahun = sekarang.getFullYear();
+    const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
+    const tanggal = String(sekarang.getDate()).padStart(2, "0");
 
     return `${tahun}-${bulan}-${tanggal}`;
   };
@@ -35,27 +38,55 @@ export default function BookingLapanganPage() {
   const [jam, setJam] = useState("");
   const [durasi, setDurasi] = useState("1");
   const [expandedUnit, setExpandedUnit] = useState(null);
-
   const [filterWaktu, setFilterWaktu] = useState("Semua Waktu");
   const [filterCabor, setFilterCabor] = useState("Semua");
+
+  const formatRupiah = (nominal) => {
+    return `Rp ${Number(nominal || 0).toLocaleString("id-ID")}`;
+  };
+
+  const formatTanggal = (value) => {
+    if (!value) return "-";
+
+    const date = new Date(`${value}T00:00:00`);
+
+    return date.toLocaleDateString(
+      isEnglish ? "en-US" : "id-ID",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }
+    );
+  };
 
   if (!lapangan) {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen flex items-center justify-center bg-background px-4">
-          <div className="liquid-info-card text-center max-w-md w-full p-6">
+
+        <main className="min-h-screen bg-background flex items-center justify-center px-5">
+          <div className="text-center">
             <h1 className="text-2xl font-bold text-dark-text">
-              {t.notFound}
+              {isEnglish ? "Court not found" : "Lapangan tidak ditemukan"}
             </h1>
+
+            <p className="mt-2 text-gray-500">
+              {isEnglish
+                ? "The court you are looking for is unavailable."
+                : "Lapangan yang kamu cari tidak tersedia."}
+            </p>
+
             <Link
               href="/lapangan"
-              className="liquid-booking-button inline-block mt-5"
+              className="inline-flex mt-6 rounded-full bg-primary px-6 py-3 text-white font-semibold hover:bg-secondary transition"
             >
-              {t.backToList}
+              {isEnglish ? "Back to courts" : "Kembali ke lapangan"}
             </Link>
           </div>
         </main>
+
         <Footer />
       </>
     );
@@ -63,73 +94,95 @@ export default function BookingLapanganPage() {
 
   const daftarUnit = lapangan.unitLapangan || [];
 
-  const daftarJam = [
-    "08:00", "09:00", "10:00", "11:00",
-    "12:00", "13:00", "14:00", "15:00",
-    "16:00", "17:00", "18:00", "19:00",
-    "20:00", "21:00", "22:00",
-  ];
+  const daftarJam = Array.from({ length: 15 }, (_, index) => {
+    return `${String(index + 8).padStart(2, "0")}:00`;
+  });
 
   const kategoriLapangan = Array.isArray(lapangan.kategori)
     ? lapangan.kategori
-    : [lapangan.kategori];
+    : lapangan.kategori
+      ? [lapangan.kategori]
+      : [];
 
   const daftarTanggal = Array.from({ length: 7 }, (_, index) => {
     const date = new Date();
-    date.setHours(0, 0, 0, 0);
     date.setDate(date.getDate() + index);
 
+    const tahun = date.getFullYear();
+    const bulan = String(date.getMonth() + 1).padStart(2, "0");
+    const hari = String(date.getDate()).padStart(2, "0");
+
     return {
-      value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
-      hari: date.toLocaleDateString(
-        language === "en" ? "en-US" : "id-ID",
+      value: `${tahun}-${bulan}-${hari}`,
+      namaHari: date.toLocaleDateString(
+        isEnglish ? "en-US" : "id-ID",
         { weekday: "short" }
       ),
       tanggal: date.getDate(),
       bulan: date.toLocaleDateString(
-        language === "en" ? "en-US" : "id-ID",
+        isEnglish ? "en-US" : "id-ID",
         { month: "short" }
       ),
     };
   });
 
-  const daftarJamFilter = daftarJam.filter((item) => {
-    const angka = Number(item.split(":")[0]);
+  const daftarJamFilter = daftarJam.filter((waktu) => {
+    const jamAngka = Number(waktu.split(":")[0]);
 
-    if (filterWaktu === "Pagi") return angka >= 6 && angka < 12;
-    if (filterWaktu === "Siang") return angka >= 12 && angka < 18;
-    if (filterWaktu === "Malam") return angka >= 18;
+    if (filterWaktu === "Pagi") {
+      return jamAngka >= 6 && jamAngka < 12;
+    }
+
+    if (filterWaktu === "Siang") {
+      return jamAngka >= 12 && jamAngka < 18;
+    }
+
+    if (filterWaktu === "Malam") {
+      return jamAngka >= 18;
+    }
 
     return true;
   });
 
   const daftarUnitFilter = daftarUnit.filter((item) => {
-    if (filterCabor === "Semua" || !item.kategori) return true;
+    if (filterCabor === "Semua") return true;
 
-    const kategori = Array.isArray(item.kategori)
+    const kategoriUnit = Array.isArray(item.kategori)
       ? item.kategori
-      : [item.kategori];
+      : item.kategori
+        ? [item.kategori]
+        : [];
 
-    return kategori.includes(filterCabor);
+    if (kategoriUnit.length === 0) return true;
+
+    return kategoriUnit.includes(filterCabor);
   });
 
-  // SIMULASI JADWAL BOOKING
-  // Belum terhubung dengan database.
-
+  // Simulasi jadwal yang sudah dipesan.
+  // Nantinya akan diganti dengan data dari backend.
   const jamSudahDipesan = (indexUnit, indexJam) => {
     return (indexUnit + indexJam) % 5 === 1;
   };
 
-  function formatJamSelesai(jamMulai) {
-    const angka = Number(jamMulai.split(":")[0]) + 1;
-    return `${String(angka).padStart(2, "0")}:00`;
-  }
+  const formatJamSelesai = (jamMulai) => {
+    if (!jamMulai) return "-";
 
-  const totalHarga = lapangan.harga * Number(durasi);
+    const jamAngka = Number(jamMulai.split(":")[0]);
+    const jamSelesai = jamAngka + Number(durasi);
 
-  function lanjutBooking() {
+    return `${String(jamSelesai).padStart(2, "0")}:00`;
+  };
+
+  const totalHarga =
+    Number(lapangan.harga || 0) * Number(durasi);
+
+  const lanjutBooking = () => {
     if (!unit || !tanggal || !jam || !durasi) {
-      alert(t.alert);
+      alert(
+        isEnglish
+          ? "Please complete all booking details."
+          : "Lengkapi pilihan lapangan, tanggal, jam, dan durasi terlebih dahulu."
+      );
       return;
     }
 
@@ -142,7 +195,7 @@ export default function BookingLapanganPage() {
     });
 
     router.push(`/booking?${query.toString()}`);
-  }
+  };
 
   const filterWaktuOptions = [
     { value: "Semua Waktu", label: t.allTimes },
@@ -151,358 +204,554 @@ export default function BookingLapanganPage() {
     { value: "Malam", label: t.evening },
   ];
 
+  const pilihUnit = (namaUnit) => {
+    setUnit(namaUnit);
+    setJam("");
+  };
+
   return (
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-background px-4 sm:px-6 py-8 sm:py-10">
-        <div className="max-w-7xl mx-auto">
+      <main className="min-h-screen bg-background pb-20">
+        {/* HEADER */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-soft-mint via-background to-white">
+          <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-primary/10 blur-3xl" />
 
-          {/* KEMBALI */}
-          <Link
-            href={`/lapangan/${lapangan.id}`}
-            className="inline-flex items-center gap-2 text-primary font-semibold text-sm"
-          >
-            ← {t.backToDetail}
-          </Link>
+          <div className="relative max-w-7xl mx-auto px-5 lg:px-8 pt-8 pb-10">
+            <Link
+              href={`/lapangan/${lapangan.id}`}
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-secondary transition"
+            >
+              <span className="text-lg">‹</span>
+              {t.backToDetail}
+            </Link>
 
-          {/* HEADER */}
-          <div className="mt-7 mb-6">
-            <p className="text-primary font-semibold text-sm mb-2">
-              {t.headerLabel}
-            </p>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/80 border border-primary/10 px-4 py-2 text-xs font-semibold text-primary shadow-sm backdrop-blur-lg">
+                  <span className="w-2 h-2 rounded-full bg-secondary" />
+                  {t.headerLabel}
+                </div>
 
-            <h1 className="text-2xl sm:text-3xl font-bold text-dark-text">
-              {t.title}
-            </h1>
+                <h1 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-dark-text">
+                  {t.title}
+                </h1>
 
-            <p className="text-gray-500 text-sm mt-2">
-              {t.description}
-            </p>
-          </div>
+                <p className="mt-3 max-w-xl text-sm md:text-base leading-relaxed text-gray-600">
+                  {t.description}
+                </p>
 
-          {/* PILIH TANGGAL */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {daftarTanggal.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => {
-                      setTanggal(item.value);
-                      setJam("");
-                    }}
-                    className={`min-w-[65px] px-3 py-3 rounded-xl text-center transition ${
-                      tanggal === item.value
-                        ? "bg-primary text-white shadow-md"
-                        : "bg-white text-gray-600 hover:bg-soft-mint"
-                    }`}
-                  >
-                    <p className="text-xs">{item.hari}</p>
-                    <p className="font-bold text-sm mt-1">
-                      {item.tanggal}
-                    </p>
-                    <p className="text-xs mt-1">{item.bulan}</p>
-                  </button>
-                ))}
-
-                <input
-                  type="date"
-                  value={tanggal}
-                  min={getTanggalHariIni()}
-                  onChange={(e) => {
-                    setTanggal(e.target.value);
-                    setJam("");
-                  }}
-                  className="border border-gray-200 rounded-lg p-2 text-xs w-36 shrink-0"
-                />
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {kategoriLapangan.map((kategori) => (
+                    <span
+                      key={kategori}
+                      className="rounded-full bg-soft-mint px-4 py-2 text-xs font-semibold text-primary"
+                    >
+                      {kategori}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <select
-                  value={filterWaktu}
-                  onChange={(e) => setFilterWaktu(e.target.value)}
-                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
-                >
-                  {filterWaktuOptions.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
+              <div className="rounded-3xl border border-white/80 bg-white/70 backdrop-blur-xl p-5 shadow-lg shadow-primary/5 md:min-w-[260px]">
+                <p className="text-xs font-medium text-gray-500">
+                  {isEnglish ? "Selected court" : "Lapangan pilihan"}
+                </p>
 
-                <select
-                  value={filterCabor}
-                  onChange={(e) => setFilterCabor(e.target.value)}
-                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
-                >
-                  <option value="Semua">{t.allCategories}</option>
-                  {kategoriLapangan.map((kategori) => (
-                    <option key={kategori} value={kategori}>
-                      {kategori}
-                    </option>
-                  ))}
-                </select>
+                <h2 className="mt-2 text-xl font-bold text-dark-text">
+                  {lapangan.nama}
+                </h2>
+
+                <p className="mt-2 text-sm text-gray-500">
+                  {lapangan.lokasi}
+                </p>
+
+                <div className="mt-4 border-t border-primary/10 pt-4">
+                  <p className="text-xs text-gray-500">
+                    {isEnglish ? "Starting from" : "Mulai dari"}
+                  </p>
+
+                  <p className="mt-1 text-xl font-bold text-primary">
+                    {formatRupiah(lapangan.harga)}
+                    <span className="text-xs font-medium text-gray-400">
+                      {" "}
+                      / {isEnglish ? "hour" : "jam"}
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* DAFTAR COURT */}
-          <div className="space-y-5">
+        <div className="max-w-7xl mx-auto px-5 lg:px-8 mt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-7 items-start">
 
-            {daftarUnitFilter.map((item, index) => {
-              const unitTerpilih = unit === item.nama;
+            {/* BAGIAN KIRI */}
+            <div className="space-y-7">
 
-              const jadwalTersedia = daftarJamFilter.filter((itemJam) => {
-                const indexAsli = daftarJam.indexOf(itemJam);
-                return !jamSudahDipesan(index, indexAsli);
-              }).length;
+              {/* PILIH TANGGAL */}
+              <section className="liquid-booking-page-card p-5 md:p-7">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-soft-mint text-xl">
+                    📅
+                  </div>
 
-              const jadwalTerbuka = expandedUnit === item.nama;
+                  <div>
+                    <h2 className="text-lg font-bold text-dark-text">
+                      {isEnglish ? "Choose a date" : "Pilih Tanggal"}
+                    </h2>
 
-              return (
-                <div
-                  key={item.id}
-                  className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition ${
-                    unitTerpilih
-                      ? "border-primary ring-1 ring-primary"
-                      : "border-gray-100"
-                  }`}
-                >
-                  <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr]">
-
-                    {/* FOTO DAN INFORMASI COURT */}
-                    <div className="p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-gray-100">
-
-                      <div className="relative h-48 sm:h-52 lg:h-44 rounded-xl overflow-hidden">
-                        <Image
-                          src={item.gambar || lapangan.gambar}
-                          alt={item.nama}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 320px"
-                          className="object-cover"
-                        />
-                      </div>
-
-                      <div className="mt-4">
-                        <button
-                          type="button"
-                          onClick={() => setUnit(item.nama)}
-                          className="text-left w-full"
-                        >
-                          <h2 className="font-bold text-dark-text text-lg hover:text-primary">
-                            {item.nama}{" "}
-                            <span className="text-primary">›</span>
-                          </h2>
-                        </button>
-
-                        <p className="text-xs text-gray-500 mt-2">
-                          {lapangan.nama}
-                        </p>
-
-                        <p className="text-xs text-gray-500 mt-2">
-                          {kategoriLapangan.join(", ")}
-                        </p>
-
-                        <p className="text-xs text-gray-500 mt-2">
-                          {lapangan.lokasi}
-                        </p>
-
-                        <p className="text-sm font-bold text-primary mt-3">
-                          Rp{lapangan.harga.toLocaleString("id-ID")}
-                          <span className="text-xs text-gray-400 font-normal">
-                            {" "}/ {t.session.toLowerCase()}
-                          </span>
-                        </p>
-
-                        {unitTerpilih && (
-                          <span className="inline-block mt-3 text-xs bg-soft-mint text-primary font-semibold px-3 py-2 rounded-lg">
-                            ✓ {t.selected}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* BAGIAN JADWAL */}
-                    <div className="p-4 sm:p-5">
-
-                      {/* TOMBOL JADWAL */}
-                      <div className="flex flex-wrap justify-between items-center gap-3">
-                        <div>
-                          <h3 className="font-bold text-dark-text">
-                            {item.nama}
-                          </h3>
-
-                          <p className="text-xs text-gray-400 mt-1">
-                            {t.playingSchedule}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setExpandedUnit(
-                              jadwalTerbuka ? null : item.nama
-                            )
-                          }
-                          className="bg-primary hover:bg-secondary text-white rounded-lg px-5 py-3 flex items-center gap-2 text-xs sm:text-sm font-semibold transition"
-                        >
-                          {jadwalTersedia} {t.availableSchedules}
-
-                          <span>
-                            {jadwalTerbuka ? "⌃" : "⌄"}
-                          </span>
-                        </button>
-                      </div>
-
-                      {/* JADWAL MUNCUL SETELAH TOMBOL DIKLIK */}
-                      {jadwalTerbuka && (
-                        <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-
-                          {daftarJamFilter.map((itemJam) => {
-                            const indexAsli = daftarJam.indexOf(itemJam);
-
-                            const booked = jamSudahDipesan(index, indexAsli);
-
-                            const jamDipilih =
-                              unit === item.nama && jam === itemJam;
-
-                            return (
-                              <button
-                                key={itemJam}
-                                type="button"
-                                disabled={booked}
-                                onClick={() => {
-                                  setUnit(item.nama);
-                                  setJam(itemJam);
-                                }}
-                                className={`min-h-[76px] rounded-xl border p-3 text-center transition ${
-                                  booked
-                                    ? "bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed"
-                                    : jamDipilih
-                                    ? "bg-primary border-primary text-white shadow-md"
-                                    : "bg-white border-gray-200 hover:border-primary hover:bg-soft-mint"
-                                }`}
-                              >
-                                <p className="text-[10px] opacity-70">
-                                  {t.minutes}
-                                </p>
-
-                                <p className="text-sm font-bold mt-1">
-                                  {itemJam} - {formatJamSelesai(itemJam)}
-                                </p>
-
-                                {booked ? (
-                                  <p className="text-xs mt-1">
-                                    {t.booked}
-                                  </p>
-                                ) : (
-                                  <p className="text-xs mt-1">
-                                    Rp{lapangan.harga.toLocaleString("id-ID")}
-                                  </p>
-                                )}
-                              </button>
-                            );
-                          })}
-
-                        </div>
-                      )}
-
-                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {isEnglish
+                        ? "Select your preferred booking date"
+                        : "Tentukan tanggal bermain yang kamu inginkan"}
+                    </p>
                   </div>
                 </div>
-              );
-            })}
 
-            {daftarUnitFilter.length === 0 && (
-              <div className="bg-white rounded-2xl p-8 text-center text-gray-500">
-                {t.noUnits}
-              </div>
-            )}
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                  {daftarTanggal.map((item) => {
+                    const aktif = tanggal === item.value;
 
-          </div>
+                    return (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => {
+                          setTanggal(item.value);
+                          setJam("");
+                        }}
+                        className={`rounded-2xl border px-2 py-4 text-center transition-all ${aktif
+                          ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
+                          : "border-gray-100 bg-background text-dark-text hover:border-secondary hover:bg-soft-mint"
+                          }`}
+                      >
+                        <span
+                          className={`block text-xs ${aktif ? "text-white/80" : "text-gray-400"
+                            }`}
+                        >
+                          {item.namaHari}
+                        </span>
 
-          {/* RINGKASAN BOOKING */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6 mt-7">
+                        <span className="block my-1 text-xl font-bold">
+                          {item.tanggal}
+                        </span>
 
-            <h2 className="text-lg font-bold text-dark-text mb-5">
-              {t.summary}
-            </h2>
+                        <span
+                          className={`block text-xs ${aktif ? "text-white/80" : "text-gray-400"
+                            }`}
+                        >
+                          {item.bulan}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div className="mt-5">
+                  <label className="block text-sm font-semibold text-dark-text mb-2">
+                    {isEnglish
+                      ? "Or choose another date"
+                      : "Atau pilih tanggal lainnya"}
+                  </label>
 
-              <div>
-                <p className="text-xs text-gray-400">{t.place}</p>
-                <p className="font-semibold text-dark-text mt-1">
-                  {lapangan.nama}
-                </p>
-              </div>
+                  <input
+                    type="date"
+                    value={tanggal}
+                    min={getTanggalHariIni()}
+                    onChange={(e) => {
+                      setTanggal(e.target.value);
+                      setJam("");
+                    }}
+                    className="liquid-booking-input w-full sm:w-auto"
+                  />
+                </div>
+              </section>
 
-              <div>
-                <p className="text-xs text-gray-400">{t.courtUnit}</p>
-                <p className="font-semibold text-dark-text mt-1">
-                  {unit || t.notSelected}
-                </p>
-              </div>
+              {/* PILIH LAPANGAN */}
+              <section className="liquid-booking-page-card p-5 md:p-7">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-bold text-dark-text">
+                      {isEnglish ? "Available courts" : "Pilih Lapangan"}
+                    </h2>
 
-              <div>
-                <p className="text-xs text-gray-400">{t.dateTime}</p>
-                <p className="font-semibold text-dark-text mt-1">
-                  {tanggal} {jam && `· ${jam}`}
-                </p>
-              </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      {isEnglish
+                        ? "Choose a court and its available schedule"
+                        : "Pilih unit lapangan dan jadwal yang tersedia"}
+                    </p>
+                  </div>
 
-              <div>
-                <p className="text-xs text-gray-400">{t.duration}</p>
-                <select
-                  value={durasi}
-                  onChange={(e) => setDurasi(e.target.value)}
-                  className="border border-gray-200 rounded-lg p-2 mt-1 text-sm w-full"
-                >
-                  {[1, 2, 3, 4].map((jumlah) => (
-                    <option key={jumlah} value={jumlah}>
-                      {jumlah} {t.session}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  <span className="rounded-full bg-soft-mint px-4 py-2 text-xs font-semibold text-primary">
+                    {formatTanggal(tanggal)}
+                  </span>
+                </div>
 
+                {/* FILTER */}
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-2">
+                      {isEnglish ? "Time" : "Waktu"}
+                    </label>
+
+                    <select
+                      value={filterWaktu}
+                      onChange={(e) => setFilterWaktu(e.target.value)}
+                      className="liquid-booking-input w-full"
+                    >
+                      {filterWaktuOptions.map((item) => (
+                        <option key={item.value} value={item.value}>
+                          {item.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {kategoriLapangan.length > 1 && (
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-2">
+                        {isEnglish ? "Sport category" : "Kategori Olahraga"}
+                      </label>
+
+                      <select
+                        value={filterCabor}
+                        onChange={(e) => setFilterCabor(e.target.value)}
+                        className="liquid-booking-input w-full"
+                      >
+                        <option value="Semua">
+                          {isEnglish ? "All categories" : "Semua"}
+                        </option>
+
+                        {kategoriLapangan.map((kategori) => (
+                          <option key={kategori} value={kategori}>
+                            {kategori}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+
+                {/* LEGENDA */}
+                <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded bg-primary" />
+                    {isEnglish ? "Selected" : "Dipilih"}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded border border-secondary bg-soft-mint" />
+                    {isEnglish ? "Available" : "Tersedia"}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded bg-gray-200" />
+                    {isEnglish ? "Booked" : "Sudah dipesan"}
+                  </div>
+                </div>
+
+                {/* DAFTAR UNIT */}
+                <div className="mt-5 space-y-4">
+                  {daftarUnitFilter.length === 0 ? (
+                    <div className="rounded-2xl bg-background p-8 text-center">
+                      <p className="font-semibold text-dark-text">
+                        {isEnglish
+                          ? "No courts found"
+                          : "Tidak ada lapangan ditemukan"}
+                      </p>
+
+                      <p className="mt-1 text-sm text-gray-400">
+                        {isEnglish
+                          ? "Try another category."
+                          : "Coba pilih kategori lainnya."}
+                      </p>
+                    </div>
+                  ) : (
+                    daftarUnitFilter.map((item) => {
+                      const namaUnit =
+                        item.nama || item.namaUnit || item.unit;
+
+                      const indexUnit = daftarUnit.indexOf(item);
+                      const isExpanded = expandedUnit === namaUnit;
+                      const isSelected = unit === namaUnit;
+
+                      return (
+                        <div
+                          key={namaUnit}
+                          className={`overflow-hidden rounded-3xl border transition-all ${isSelected
+                            ? "border-primary bg-soft-mint/50 shadow-md shadow-primary/5"
+                            : "border-gray-100 bg-white hover:border-secondary/50"
+                            }`}
+                        >
+                          <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
+
+                            {/* FOTO UNIT */}
+                            <div className="relative h-48 sm:h-full min-h-[190px] bg-soft-mint">
+                              <Image
+                                src={item.gambar || lapangan.gambar}
+                                alt={namaUnit}
+                                fill
+                                sizes="(max-width: 640px) 100vw, 180px"
+                                className="object-cover"
+                              />
+
+                              <div className="absolute left-3 top-3 rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
+                                {item.kategori || kategoriLapangan[0] || "Court"}
+                              </div>
+                            </div>
+
+                            {/* INFO UNIT */}
+                            <div className="p-5">
+                              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                <div>
+                                  <h3 className="text-lg font-bold text-dark-text">
+                                    {namaUnit}
+                                  </h3>
+
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    {lapangan.nama}
+                                  </p>
+
+                                  <p className="mt-3 text-sm font-semibold text-primary">
+                                    {formatRupiah(lapangan.harga)}
+                                    <span className="font-normal text-gray-400">
+                                      {" "}
+                                      / {isEnglish ? "hour" : "jam"}
+                                    </span>
+                                  </p>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => pilihUnit(namaUnit)}
+                                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${isSelected
+                                    ? "bg-primary text-white"
+                                    : "border border-primary text-primary hover:bg-soft-mint"
+                                    }`}
+                                >
+                                  {isSelected
+                                    ? isEnglish
+                                      ? "Selected"
+                                      : "Dipilih"
+                                    : isEnglish
+                                      ? "Choose court"
+                                      : "Pilih Lapangan"}
+                                </button>
+                              </div>
+
+                              <div className="mt-5 border-t border-primary/10 pt-4">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setExpandedUnit(
+                                      isExpanded ? null : namaUnit
+                                    )
+                                  }
+                                  className="flex w-full items-center justify-between text-sm font-semibold text-dark-text hover:text-primary transition"
+                                >
+                                  <span>
+                                    {isEnglish
+                                      ? "View available schedule"
+                                      : "Lihat jadwal tersedia"}
+                                  </span>
+
+                                  <span className="text-lg text-primary">
+                                    {isExpanded ? "−" : "+"}
+                                  </span>
+                                </button>
+
+                                {isExpanded && (
+                                  <div className="mt-4">
+                                    <p className="mb-3 text-xs text-gray-500">
+                                      {isEnglish
+                                        ? "Select your preferred starting time."
+                                        : "Pilih jam mulai yang kamu inginkan."}
+                                    </p>
+
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                      {daftarJamFilter.map((waktu) => {
+                                        const indexJam =
+                                          daftarJam.indexOf(waktu);
+
+                                        const sudahDipesan =
+                                          jamSudahDipesan(
+                                            indexUnit,
+                                            indexJam
+                                          );
+
+                                        const isJamSelected =
+                                          isSelected && jam === waktu;
+
+                                        return (
+                                          <button
+                                            key={waktu}
+                                            type="button"
+                                            disabled={sudahDipesan}
+                                            onClick={() => {
+                                              setUnit(namaUnit);
+                                              setJam(waktu);
+                                            }}
+                                            className={`rounded-xl border px-2 py-3 text-xs font-semibold transition ${sudahDipesan
+                                              ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
+                                              : isJamSelected
+                                                ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
+                                                : "border-secondary/20 bg-soft-mint/60 text-primary hover:border-secondary hover:bg-soft-mint"
+                                              }`}
+                                          >
+                                            {waktu}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </section>
             </div>
 
-            <div className="border-t border-gray-100 mt-6 pt-5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            {/* RINGKASAN BOOKING */}
+            <aside className="lg:sticky lg:top-24 self-start min-w-0">
+              <div className="liquid-booking-summary w-full">
+                <div className="bg-gradient-to-br from-primary to-secondary p-6 text-white">
+                  <p className="text-sm text-white/80">
+                    {isEnglish ? "Your booking" : "Booking Kamu"}
+                  </p>
 
-              <div>
-                <p className="text-sm text-gray-500">
-                  {t.estimatedTotal}
-                </p>
+                  <h2 className="mt-1 text-2xl font-bold">
+                    {isEnglish ? "Booking Summary" : "Ringkasan Booking"}
+                  </h2>
 
-                <p className="text-2xl font-bold text-primary mt-1">
-                  Rp{totalHarga.toLocaleString("id-ID")}
-                </p>
+                  <p className="mt-2 text-xs leading-relaxed text-white/80">
+                    {isEnglish
+                      ? "Check your booking details before continuing."
+                      : "Periksa kembali detail pesanan sebelum melanjutkan."}
+                  </p>
+                </div>
 
-                <p className="text-xs text-gray-400 mt-1">
-                  {durasi} {t.session} × Rp
-                  {lapangan.harga.toLocaleString("id-ID")}
-                </p>
+                <div className="p-5">
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs text-gray-400">
+                        {isEnglish ? "Court" : "Lapangan"}
+                      </p>
+
+                      <p className="mt-1 font-semibold text-dark-text">
+                        {lapangan.nama}
+                      </p>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-4">
+                      <p className="text-xs text-gray-400">
+                        {isEnglish ? "Court unit" : "Unit Lapangan"}
+                      </p>
+
+                      <p className="mt-1 font-semibold text-dark-text">
+                        {unit || "-"}
+                      </p>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-4">
+                      <p className="text-xs text-gray-400">
+                        {isEnglish ? "Date" : "Tanggal"}
+                      </p>
+
+                      <p className="mt-1 font-semibold text-dark-text">
+                        {formatTanggal(tanggal)}
+                      </p>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-4">
+                      <p className="text-xs text-gray-400">
+                        {isEnglish ? "Time" : "Jam"}
+                      </p>
+
+                      <p className="mt-1 font-semibold text-dark-text">
+                        {jam
+                          ? `${jam} - ${formatJamSelesai(jam)}`
+                          : "-"}
+                      </p>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-4">
+                      <label
+                        htmlFor="durasi"
+                        className="block text-xs text-gray-400"
+                      >
+                        {isEnglish ? "Duration" : "Durasi"}
+                      </label>
+
+                      <select
+                        id="durasi"
+                        value={durasi}
+                        onChange={(e) => setDurasi(e.target.value)}
+                        className="liquid-booking-input mt-2 w-full"
+                      >
+                        {[1, 2, 3, 4].map((angka) => (
+                          <option key={angka} value={String(angka)}>
+                            {angka} {isEnglish ? "hour(s)" : "jam"}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-2xl bg-soft-mint p-4">
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>
+                        {isEnglish ? "Price per hour" : "Harga per jam"}
+                      </span>
+
+                      <span>{formatRupiah(lapangan.harga)}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-2 text-sm text-gray-500">
+                      <span>{isEnglish ? "Duration" : "Durasi"}</span>
+
+                      <span>
+                        {durasi} {isEnglish ? "hour(s)" : "jam"}
+                      </span>
+                    </div>
+
+                    <div className="my-3 border-t border-primary/15" />
+
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-sm font-semibold text-dark-text">
+                        {isEnglish ? "Total price" : "Total Harga"}
+                      </span>
+
+                      <span className="text-xl font-bold text-primary">
+                        {formatRupiah(totalHarga)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={lanjutBooking}
+                    className="liquid-booking-button mt-5 flex w-full items-center justify-center gap-2"
+                  >
+                    {isEnglish ? "Continue booking" : "Lanjutkan Booking"}
+                    <span className="text-lg">›</span>
+                  </button>
+
+                  <p className="mt-4 text-center text-xs leading-relaxed text-gray-400">
+                    {t.simulation}
+                  </p>
+                </div>
               </div>
-
-              <button
-                type="button"
-                onClick={lanjutBooking}
-                className="liquid-booking-button w-full sm:w-auto"
-              >
-                {t.continue} →
-              </button>
-
-            </div>
+            </aside>
           </div>
-
-          <p className="text-xs text-gray-400 text-center mt-5">
-            {t.simulation}
-          </p>
-
         </div>
       </main>
 

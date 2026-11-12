@@ -3,7 +3,10 @@ export const translations = {
     navbar: {
       home: "Home",
       lapangan: "Lapangan",
+      artikel: "Berita & Artikel",
       tentang: "Tentang Kami",
+      bantuan: "Bantuan",
+      contact: "Contact Us",
       riwayat: "Riwayat",
       profil: "Profil",
       login: "Login",
@@ -100,6 +103,83 @@ export const translations = {
       ctaButton: "Lihat Lapangan",
     },
 
+    bantuan: {
+      heroLabel: "PUSAT BANTUAN SPORTIFY",
+      heroTitle: "Ada yang Bisa Kami",
+      heroHighlight: "Bantu?",
+      heroDescription:
+        "Temukan jawaban atas pertanyaan seputar penggunaan Sportify, pencarian lapangan, dan pemesanan.",
+      searchPlaceholder: "Cari pertanyaan atau bantuan...",
+      categoryTitle: "Jelajahi Berdasarkan Kategori",
+      allCategories: "Semua",
+      faqTitle: "Pertanyaan yang Sering Diajukan",
+      faqDescription:
+        "Temukan jawaban dari pertanyaan yang sering ditanyakan pengguna.",
+      noResults: "Pertanyaan tidak ditemukan",
+      noResultsDescription:
+        "Coba gunakan kata kunci atau kategori lainnya.",
+      contactTitle: "Masih Membutuhkan Bantuan?",
+      contactDescription:
+        "Jika belum menemukan jawaban yang kamu cari, silakan hubungi tim Sportify.",
+      contactButton: "Hubungi Kami",
+      categories: [
+        "Akun",
+        "Pencarian Lapangan",
+        "Pemesanan",
+        "Jadwal",
+      ],
+      faqs: [
+        {
+          category: "Akun",
+          question: "Bagaimana cara membuat akun Sportify?",
+          answer:
+            "Pilih menu Daftar pada navbar, kemudian isi informasi yang diminta seperti nama, email, nomor telepon, dan kata sandi.",
+        },
+        {
+          category: "Akun",
+          question: "Bagaimana cara login ke Sportify?",
+          answer:
+            "Pilih menu Login, masukkan email dan kata sandi yang sudah terdaftar, kemudian tekan tombol Login.",
+        },
+        {
+          category: "Pencarian Lapangan",
+          question: "Bagaimana cara mencari lapangan olahraga?",
+          answer:
+            "Buka halaman Lapangan, kemudian gunakan kolom pencarian atau filter kategori untuk menemukan tempat olahraga yang diinginkan.",
+        },
+        {
+          category: "Pencarian Lapangan",
+          question: "Apakah saya bisa melihat fasilitas lapangan?",
+          answer:
+            "Bisa. Pilih salah satu tempat olahraga untuk melihat informasi detail, foto, fasilitas, lokasi, dan harga sewanya.",
+        },
+        {
+          category: "Pemesanan",
+          question: "Bagaimana cara melakukan booking lapangan?",
+          answer:
+            "Pilih lapangan yang diinginkan, buka halaman detail, kemudian pilih jadwal dan unit lapangan yang tersedia untuk melanjutkan proses booking.",
+        },
+        {
+          category: "Pemesanan",
+          question: "Apakah saya bisa melihat riwayat booking?",
+          answer:
+            "Kamu dapat membuka menu Riwayat untuk melihat informasi pemesanan yang tersimpan pada akunmu.",
+        },
+        {
+          category: "Jadwal",
+          question: "Bagaimana cara memilih jadwal bermain?",
+          answer:
+            "Pada halaman booking, pilih tanggal, unit lapangan, dan jam bermain yang tersedia sesuai kebutuhanmu.",
+        },
+        {
+          category: "Jadwal",
+          question: "Apakah jadwal yang ditampilkan selalu tersedia?",
+          answer:
+            "Informasi jadwal pada tahap pengembangan ini masih berupa simulasi dan belum terhubung sepenuhnya dengan sistem pemesanan sebenarnya.",
+        },
+      ],
+    },
+
     detail: {
       notFound: "Lapangan tidak ditemukan",
       backToList: "Kembali ke daftar lapangan",
@@ -180,7 +260,10 @@ export const translations = {
     navbar: {
       home: "Home",
       lapangan: "Courts",
+      artikel: "News & Articles",
       tentang: "About Us",
+      bantuan: "Help Center",
+      contact: "Contact Us",
       riwayat: "History",
       profil: "Profile",
       login: "Login",
@@ -275,6 +358,83 @@ export const translations = {
       ctaDescription:
         "Start finding a sports venue that suits your needs through Sportify.",
       ctaButton: "View Courts",
+    },
+
+    bantuan: {
+      heroLabel: "SPORTIFY HELP CENTER",
+      heroTitle: "How Can We",
+      heroHighlight: "Help You?",
+      heroDescription:
+        "Find answers to questions about using Sportify, finding sports venues, and making bookings.",
+      searchPlaceholder: "Search questions or help...",
+      categoryTitle: "Browse by Category",
+      allCategories: "All",
+      faqTitle: "Frequently Asked Questions",
+      faqDescription:
+        "Find answers to questions frequently asked by users.",
+      noResults: "No questions found",
+      noResultsDescription:
+        "Try another keyword or category.",
+      contactTitle: "Still Need Help?",
+      contactDescription:
+        "If you cannot find the answer you are looking for, feel free to contact the Sportify team.",
+      contactButton: "Contact Us",
+      categories: [
+        "Account",
+        "Finding a Venue",
+        "Booking",
+        "Schedule",
+      ],
+      faqs: [
+        {
+          category: "Account",
+          question: "How do I create a Sportify account?",
+          answer:
+            "Select Register in the navbar, then fill in the required information such as your name, email, phone number, and password.",
+        },
+        {
+          category: "Account",
+          question: "How do I log in to Sportify?",
+          answer:
+            "Select Login, enter your registered email and password, then click the Login button.",
+        },
+        {
+          category: "Finding a Venue",
+          question: "How do I find a sports venue?",
+          answer:
+            "Open the Courts page, then use the search bar or category filters to find your preferred sports venue.",
+        },
+        {
+          category: "Finding a Venue",
+          question: "Can I view the venue facilities?",
+          answer:
+            "Yes. Select a sports venue to view its details, photos, facilities, location, and rental price.",
+        },
+        {
+          category: "Booking",
+          question: "How do I book a sports venue?",
+          answer:
+            "Select your preferred venue, open its detail page, then choose an available schedule and court unit to continue booking.",
+        },
+        {
+          category: "Booking",
+          question: "Can I view my booking history?",
+          answer:
+            "You can open the History menu to view booking information saved to your account.",
+        },
+        {
+          category: "Schedule",
+          question: "How do I choose a playing schedule?",
+          answer:
+            "On the booking page, select your preferred date, court unit, and available playing time.",
+        },
+        {
+          category: "Schedule",
+          question: "Are the displayed schedules always available?",
+          answer:
+            "At this development stage, schedule information is still simulated and is not yet fully connected to the actual booking system.",
+        },
+      ],
     },
 
     detail: {

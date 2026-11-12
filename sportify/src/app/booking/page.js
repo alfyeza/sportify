@@ -34,7 +34,7 @@ function BookingContent() {
     (item) => String(item.id) === String(lapanganId)
   );
 
-  // Form State Pemesan & Pembayaran
+  // FORM DATA PEMESAN
   const [namaPemesan, setNamaPemesan] = useState("");
   const [emailPemesan, setEmailPemesan] = useState("");
   const [teleponPemesan, setTeleponPemesan] = useState("");
@@ -43,12 +43,14 @@ function BookingContent() {
   const [errorMessage, setErrorMessage] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(null);
 
-  // Isi otomatis jika user sudah login
+  // ISI OTOMATIS JIKA USER SUDAH LOGIN
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem("sportify_user");
+
       if (savedUser) {
         const user = JSON.parse(savedUser);
+
         requestAnimationFrame(() => {
           if (user.fullName) setNamaPemesan(user.fullName);
           if (user.email) setEmailPemesan(user.email);
@@ -56,7 +58,7 @@ function BookingContent() {
         });
       }
     } catch {
-      // ignore JSON parse error
+      // Abaikan jika JSON tidak valid
     }
   }, []);
 
@@ -97,13 +99,16 @@ function BookingContent() {
 
   const hitungJamSelesai = (jamMulai, totalDurasi) => {
     if (!jamMulai) return "-";
+
     const [jamAwal] = jamMulai.split(":").map(Number);
     const jamAkhir = (jamAwal + totalDurasi) % 24;
+
     return `${String(jamAkhir).padStart(2, "0")}:00`;
   };
 
   const jamSelesai = hitungJamSelesai(jam, durasi);
 
+  // PROSES BOOKING
   const handleProsesBooking = (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -128,6 +133,7 @@ function BookingContent() {
 
     try {
       const bookingId = generateBookingId();
+
       const kategoriUtama = Array.isArray(lapangan.kategori)
         ? lapangan.kategori[0]
         : lapangan.kategori || "Padel";
@@ -152,10 +158,10 @@ function BookingContent() {
         createdAt: getTodayDateString(),
       };
 
-      // Simpan ke riwayat localStorage
       const existing = JSON.parse(
         localStorage.getItem("sportify_bookings") || "[]"
       );
+
       localStorage.setItem(
         "sportify_bookings",
         JSON.stringify([newBooking, ...existing])
@@ -178,7 +184,7 @@ function BookingContent() {
       <Navbar />
 
       <main className="min-h-screen bg-background px-4 sm:px-6 py-8 sm:py-12 md:py-14">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto min-w-0">
 
           {/* TOMBOL KEMBALI */}
           <Link
@@ -206,7 +212,7 @@ function BookingContent() {
           </div>
 
           {/* KARTU RINGKASAN */}
-          <div className="liquid-booking-page-card">
+          <div className="liquid-booking-page-card w-full min-w-0">
 
             {/* INFORMASI TEMPAT */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -221,21 +227,22 @@ function BookingContent() {
                 </h2>
 
                 <p className="text-sm text-gray-500 mt-2 flex items-start gap-2">
-                  <span>📍</span>
-                  <span>{lapangan.lokasi}</span>
+                  <span className="shrink-0">📍</span>
+                  <span className="min-w-0 break-words">
+                    {lapangan.lokasi}
+                  </span>
                 </p>
               </div>
 
               <div className="bg-soft-mint text-primary px-4 py-2 rounded-full text-sm font-semibold w-fit shrink-0">
                 Sportify Booking
               </div>
-
             </div>
 
             <div className="liquid-booking-divider" />
 
             {/* INFORMASI BOOKING */}
-            <div className="space-y-4 sm:space-y-5">
+            <div className="space-y-4 sm:space-y-5 w-full min-w-0">
 
               <div className="liquid-summary-row">
                 <span>{isEnglish ? "Sports Venue" : "Tempat Olahraga"}</span>
@@ -254,9 +261,7 @@ function BookingContent() {
 
               <div className="liquid-summary-row">
                 <span>{isEnglish ? "Playing Time" : "Waktu Bermain"}</span>
-                <strong>
-                  {jam ? `${jam} - ${jamSelesai}` : "-"}
-                </strong>
+                <strong>{jam ? `${jam} - ${jamSelesai}` : "-"}</strong>
               </div>
 
               <div className="liquid-summary-row">
@@ -271,15 +276,17 @@ function BookingContent() {
             <div className="liquid-booking-divider" />
 
             {/* FORM DATA PEMESAN */}
-            <div className="space-y-4">
+            <div className="space-y-4 min-w-0">
               <h3 className="font-bold text-dark-text text-base sm:text-lg">
                 {isEnglish ? "Customer Information" : "Data Pemesan"}
               </h3>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                  {isEnglish ? "Full Name" : "Nama Lengkap"} <span className="text-red-500">*</span>
+                  {isEnglish ? "Full Name" : "Nama Lengkap"}{" "}
+                  <span className="text-red-500">*</span>
                 </label>
+
                 <input
                   type="text"
                   value={namaPemesan}
@@ -290,10 +297,12 @@ function BookingContent() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                    {isEnglish ? "WhatsApp / Phone" : "No. WhatsApp / HP"} <span className="text-red-500">*</span>
+                    {isEnglish ? "WhatsApp / Phone" : "No. WhatsApp / HP"}{" "}
+                    <span className="text-red-500">*</span>
                   </label>
+
                   <input
                     type="tel"
                     value={teleponPemesan}
@@ -303,10 +312,11 @@ function BookingContent() {
                   />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5">
                     Email ({isEnglish ? "Optional" : "Opsional"})
                   </label>
+
                   <input
                     type="email"
                     value={emailPemesan}
@@ -321,127 +331,142 @@ function BookingContent() {
             <div className="liquid-booking-divider" />
 
             {/* PILIH METODE PEMBAYARAN */}
-            <div className="space-y-3">
+            <div className="space-y-3 min-w-0">
               <h3 className="font-bold text-dark-text text-base sm:text-lg">
                 {isEnglish ? "Payment Method" : "Metode Pembayaran"}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                {/* QRIS */}
                 <button
                   type="button"
                   onClick={() => setMetodePembayaran("qris")}
-                  className={`p-3.5 rounded-2xl border text-left transition ${
-                    metodePembayaran === "qris"
+                  className={`p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "qris"
                       ? "border-primary bg-soft-mint text-primary ring-1 ring-primary"
                       : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
+                    }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="font-bold text-sm">QRIS</span>
-                    <span className="text-xs bg-primary text-white px-1.5 py-0.5 rounded">
+
+                    <span className="text-xs bg-primary text-white px-1.5 py-0.5 rounded shrink-0">
                       Instan
                     </span>
                   </div>
+
                   <p className="text-xs text-gray-500 mt-1">
                     Gopay, OVO, Dana, BCA
                   </p>
                 </button>
 
+                {/* TRANSFER BANK */}
                 <button
                   type="button"
                   onClick={() => setMetodePembayaran("transfer")}
-                  className={`p-3.5 rounded-2xl border text-left transition ${
-                    metodePembayaran === "transfer"
+                  className={`p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "transfer"
                       ? "border-primary bg-soft-mint text-primary ring-1 ring-primary"
                       : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
+                    }`}
                 >
-                  <div className="font-bold text-sm">Transfer Bank</div>
+                  <div className="font-bold text-sm">
+                    Transfer Bank
+                  </div>
+
                   <p className="text-xs text-gray-500 mt-1">
                     Virtual Account BCA, BNI
                   </p>
                 </button>
 
+                {/* BAYAR DI TEMPAT */}
                 <button
                   type="button"
                   onClick={() => setMetodePembayaran("cod")}
-                  className={`p-3.5 rounded-2xl border text-left transition ${
-                    metodePembayaran === "cod"
+                  className={`p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "cod"
                       ? "border-primary bg-soft-mint text-primary ring-1 ring-primary"
                       : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
+                    }`}
                 >
-                  <div className="font-bold text-sm">Bayar di Tempat</div>
+                  <div className="font-bold text-sm">
+                    Bayar di Tempat
+                  </div>
+
                   <p className="text-xs text-gray-500 mt-1">
                     Bayar langsung di kasir
                   </p>
                 </button>
+
               </div>
             </div>
 
             <div className="liquid-booking-divider" />
 
             {/* RINCIAN HARGA */}
-            <div className="bg-soft-mint/70 rounded-2xl p-4 sm:p-6">
+            <div className="bg-soft-mint/70 rounded-2xl p-4 sm:p-6 w-full min-w-0">
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 font-medium">
                 {isEnglish ? "Payment Details" : "Rincian Pembayaran"}
               </p>
 
-              <div className="flex justify-between items-center gap-3 mt-4">
-                <span className="text-gray-600 text-sm">
+              {/* HARGA PER JAM */}
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mt-5">
+                <span className="text-gray-600 text-sm min-w-0">
                   {isEnglish ? "Price per hour" : "Tarif per jam"}
                 </span>
 
-                <span className="font-semibold text-dark-text text-sm sm:text-base">
+                <span className="font-semibold text-dark-text text-sm sm:text-base whitespace-nowrap tabular-nums">
                   Rp {lapangan.harga.toLocaleString("id-ID")}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center gap-3 mt-3">
-                <span className="text-gray-600 text-sm">
+              {/* DURASI */}
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mt-4">
+                <span className="text-gray-600 text-sm min-w-0">
                   {isEnglish ? "Duration" : "Durasi"}
                 </span>
 
-                <span className="font-semibold text-dark-text text-sm sm:text-base">
+                <span className="font-semibold text-dark-text text-sm sm:text-base whitespace-nowrap">
                   {durasi} {isEnglish ? "hour(s)" : "Jam"}
                 </span>
               </div>
 
               <div className="border-t border-primary/10 my-5" />
 
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                <span className="font-bold text-dark-text">
+              {/* TOTAL PEMBAYARAN */}
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                <span className="font-bold text-dark-text text-sm sm:text-base min-w-0">
                   {isEnglish ? "Total Payment" : "Total Pembayaran"}
                 </span>
 
-                <span className="text-2xl sm:text-3xl font-bold text-primary">
+                <span className="text-lg sm:text-2xl font-bold text-primary whitespace-nowrap tabular-nums">
                   Rp {totalHarga.toLocaleString("id-ID")}
                 </span>
               </div>
 
             </div>
 
+            {/* PESAN ERROR */}
             {errorMessage && (
               <div className="mt-4 p-3 rounded-xl bg-red-50 text-red-600 text-sm border border-red-200">
                 {errorMessage}
               </div>
             )}
 
-            {/* TOMBOL KONFIRMASI PEMESANAN */}
+            {/* TOMBOL KONFIRMASI */}
             <button
               type="button"
               onClick={handleProsesBooking}
               disabled={isSubmitting}
-              className="liquid-booking-button flex w-full mt-7 sm:mt-8 justify-center disabled:opacity-60 cursor-pointer"
+              className="liquid-booking-button flex w-full mt-7 sm:mt-8 justify-center items-center gap-3 disabled:opacity-60 cursor-pointer"
             >
               {isSubmitting
                 ? isEnglish
                   ? "Processing..."
                   : "Memproses..."
                 : isEnglish
-                ? "Confirm & Pay Now"
-                : "Konfirmasi & Bayar Sekarang"}
+                  ? "Confirm & Pay Now"
+                  : "Konfirmasi & Bayar Sekarang"}
+
               <span>→</span>
             </button>
 
@@ -477,48 +502,77 @@ function BookingContent() {
                   : "Pemesanan kamu telah dicatat. Berikut adalah rincian pemesanan:"}
               </p>
 
-              <div className="bg-soft-mint/70 rounded-2xl p-4 my-6 text-left space-y-2.5 text-sm">
-                <div className="flex justify-between">
+              <div className="bg-soft-mint/70 rounded-2xl p-4 my-6 text-left space-y-3 text-sm">
+
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
                   <span className="text-gray-500">ID Booking:</span>
-                  <span className="font-bold text-primary">{bookingSuccess.id}</span>
+                  <span className="font-bold text-primary text-right break-words">
+                    {bookingSuccess.id}
+                  </span>
                 </div>
-                <div className="flex justify-between">
+
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
                   <span className="text-gray-500">Venue:</span>
-                  <span className="font-semibold text-dark-text">{bookingSuccess.tempat}</span>
+                  <span className="font-semibold text-dark-text text-right break-words">
+                    {bookingSuccess.tempat}
+                  </span>
                 </div>
-                <div className="flex justify-between">
+
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
                   <span className="text-gray-500">Unit:</span>
-                  <span className="font-semibold text-dark-text">{bookingSuccess.lapangan}</span>
+                  <span className="font-semibold text-dark-text text-right break-words">
+                    {bookingSuccess.lapangan}
+                  </span>
                 </div>
-                <div className="flex justify-between">
+
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
                   <span className="text-gray-500">Jadwal:</span>
-                  <span className="font-semibold text-dark-text">
+                  <span className="font-semibold text-dark-text text-right break-words">
                     {bookingSuccess.tanggal} • {bookingSuccess.jam}
                   </span>
                 </div>
-                <div className="flex justify-between">
+
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
                   <span className="text-gray-500">Pemesan:</span>
-                  <span className="font-semibold text-dark-text">{bookingSuccess.customer.name}</span>
+                  <span className="font-semibold text-dark-text text-right break-words">
+                    {bookingSuccess.customer.name}
+                  </span>
                 </div>
-                <div className="border-t border-primary/10 pt-2.5 flex justify-between">
-                  <span className="font-bold text-dark-text">Total Bayar:</span>
-                  <span className="font-bold text-primary text-base">
+
+                <div className="border-t border-primary/10 pt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
+                  <span className="font-bold text-dark-text">
+                    Total Bayar:
+                  </span>
+
+                  <span className="font-bold text-primary text-base whitespace-nowrap tabular-nums">
                     Rp {bookingSuccess.total.toLocaleString("id-ID")}
                   </span>
                 </div>
+
               </div>
 
               {metodePembayaran === "qris" && (
                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 mb-6 text-xs text-gray-600">
-                  <p className="font-bold text-gray-800 mb-1">Pembayaran QRIS Terverifikasi</p>
-                  <p>Status pemesanan kamu telah <strong>Dikonfirmasi (Lunas)</strong>.</p>
+                  <p className="font-bold text-gray-800 mb-1">
+                    Pembayaran QRIS Terverifikasi
+                  </p>
+
+                  <p>
+                    Status pemesanan kamu telah{" "}
+                    <strong>Dikonfirmasi (Lunas)</strong>.
+                  </p>
                 </div>
               )}
 
               {metodePembayaran === "cod" && (
                 <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-200 mb-6 text-xs text-yellow-800">
-                  <p className="font-bold mb-1">Bayar di Tempat (Kasir)</p>
-                  <p>Tunjukkan ID Booking ini ke petugas kasir saat tiba di lokasi sebelum bermain.</p>
+                  <p className="font-bold mb-1">
+                    Bayar di Tempat (Kasir)
+                  </p>
+
+                  <p>
+                    Tunjukkan ID Booking ini ke petugas kasir saat tiba di lokasi sebelum bermain.
+                  </p>
                 </div>
               )}
 
@@ -543,6 +597,7 @@ function BookingContent() {
             </div>
           </div>
         )}
+
       </main>
 
       <Footer />

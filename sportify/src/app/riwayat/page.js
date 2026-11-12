@@ -223,11 +223,10 @@ export default function RiwayatPage() {
               <button
                 key={item.value}
                 onClick={() => setFilter(item.value)}
-                className={`rounded-full border px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 ${
-                  filter === item.value
+                className={`rounded-full border px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 ${filter === item.value
                     ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
                     : "border-white bg-white/80 text-gray-600 shadow-sm backdrop-blur-xl hover:border-green-300 hover:text-primary"
-                }`}
+                  }`}
               >
                 {item.label}
               </button>
@@ -264,10 +263,9 @@ export default function RiwayatPage() {
                       </div>
 
                       <span
-                        className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
-                          statusBookingStyle[booking.statusBooking] ||
+                        className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${statusBookingStyle[booking.statusBooking] ||
                           "bg-gray-100 text-gray-700 border-gray-200"
-                        }`}
+                          }`}
                       >
                         {getBookingStatus(booking.statusBooking)}
                       </span>
@@ -314,10 +312,9 @@ export default function RiwayatPage() {
 
                           <div className="mt-2">
                             <span
-                              className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                                statusPembayaranStyle[booking.statusPembayaran] ||
+                              className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${statusPembayaranStyle[booking.statusPembayaran] ||
                                 "bg-gray-100 text-gray-700"
-                              }`}
+                                }`}
                             >
                               {getPaymentStatus(booking.statusPembayaran)}
                             </span>

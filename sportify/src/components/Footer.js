@@ -7,54 +7,172 @@ import { translations } from "@/lib/translations";
 export default function Footer() {
   const { language } = useLanguage();
 
+  const isEnglish = language === "en";
   const t = translations[language]?.footer || translations.id.footer;
 
   return (
-    <footer className="bg-primary text-white py-8 sm:py-10 mt-12 sm:mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <footer className="bg-primary text-white mt-12 sm:mt-16">
 
-        {/* Footer Content */}
-        <div className="flex flex-col items-center text-center">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 pt-10 sm:pt-14 pb-6">
 
-          {/* Logo */}
-          <Link
-            href="/"
-            className="text-xl sm:text-2xl font-bold tracking-tight hover:text-green-100 transition"
-          >
-            Sportify
-          </Link>
+        {/* FOOTER CONTENT */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-9 lg:gap-10">
 
-          {/* Deskripsi */}
-          <p className="mt-2 text-xs sm:text-sm text-green-50 leading-relaxed">
-            {t.description}
-          </p>
+          {/* KOLOM 1 - BRAND */}
+          <div className="sm:col-span-2 lg:col-span-1">
 
-          {/* Navigasi Footer */}
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-3 mt-5 text-xs sm:text-sm text-green-100">
-
-            <Link href="/" className="hover:text-white transition">
-              {t.home}
+            <Link
+              href="/"
+              className="inline-block text-2xl sm:text-3xl font-bold tracking-tight hover:text-green-100 transition"
+            >
+              Sportify
             </Link>
 
-            <Link href="/lapangan" className="hover:text-white transition">
-              {t.lapangan}
-            </Link>
+            <p className="mt-4 text-sm text-green-50 leading-relaxed max-w-sm">
+              {t.description}
+            </p>
 
-            <Link href="/tentang" className="hover:text-white transition">
-              {t.tentang}
-            </Link>
+            <p className="mt-4 text-xs text-green-100 font-medium">
+              {isEnglish
+                ? "Find your game. Book your court."
+                : "Temukan olahraga favoritmu. Pesan lapangan dengan mudah."}
+            </p>
+
+            {/* SOCIAL MEDIA */}
+            <div className="flex items-center gap-3 mt-5">
+
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold hover:bg-white hover:text-primary transition"
+              >
+                IG
+              </a>
+
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold hover:bg-white hover:text-primary transition"
+              >
+                f
+              </a>
+
+              <a
+                href="https://tiktok.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold hover:bg-white hover:text-primary transition"
+              >
+                TT
+              </a>
+
+            </div>
 
           </div>
 
-          {/* Copyright */}
-          <div className="w-full border-t border-white/20 mt-7 pt-5">
-            <p className="text-[11px] sm:text-sm text-green-100">
-              © 2026 Sportify. {t.copyright}
-            </p>
+          {/* KOLOM 2 - EXPLORE */}
+          <div>
+
+            <h3 className="font-bold text-base mb-5">
+              {isEnglish ? "Explore" : "Jelajahi"}
+            </h3>
+
+            <div className="flex flex-col gap-3 text-sm text-green-100">
+
+              <Link href="/" className="hover:text-white hover:translate-x-1 transition w-fit">
+                {t.home}
+              </Link>
+
+              <Link href="/lapangan" className="hover:text-white hover:translate-x-1 transition w-fit">
+                {t.lapangan}
+              </Link>
+
+              <Link href="/artikel" className="hover:text-white hover:translate-x-1 transition w-fit">
+                {isEnglish ? "News & Articles" : "Berita & Artikel"}
+              </Link>
+
+              <Link href="/tentang" className="hover:text-white hover:translate-x-1 transition w-fit">
+                {t.tentang}
+              </Link>
+
+            </div>
+
+          </div>
+
+          {/* KOLOM 3 - BANTUAN */}
+          <div>
+
+            <h3 className="font-bold text-base mb-5">
+              {isEnglish ? "Help & Support" : "Bantuan"}
+            </h3>
+
+            <div className="flex flex-col gap-3 text-sm text-green-100">
+
+              <Link href="/bantuan" className="hover:text-white hover:translate-x-1 transition w-fit">
+                {isEnglish ? "Help Center" : "Pusat Bantuan"}
+              </Link>
+
+              <Link href="/bantuan" className="hover:text-white hover:translate-x-1 transition w-fit">
+                FAQ
+              </Link>
+
+              <Link href="/contact" className="hover:text-white hover:translate-x-1 transition w-fit">
+                Contact Us
+              </Link>
+
+            </div>
+
+          </div>
+
+          {/* KOLOM 4 - INFORMASI */}
+          <div>
+
+            <h3 className="font-bold text-base mb-5">
+              {isEnglish ? "Information" : "Informasi"}
+            </h3>
+
+            <div className="flex flex-col gap-3 text-sm text-green-100">
+
+              <Link href="/kebijakan-privasi" className="hover:text-white hover:translate-x-1 transition w-fit">
+                {isEnglish ? "Privacy Policy" : "Kebijakan Privasi"}
+              </Link>
+
+              <Link href="/syarat-ketentuan" className="hover:text-white hover:translate-x-1 transition w-fit">
+                {isEnglish ? "Terms & Conditions" : "Syarat & Ketentuan"}
+              </Link>
+
+            </div>
+
           </div>
 
         </div>
+
+        {/* GARIS PEMISAH */}
+        <div className="border-t border-white/20 mt-10 pt-6">
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+
+            <p className="text-xs sm:text-sm text-green-100">
+              © 2026 Sportify. {t.copyright}
+            </p>
+
+            <p className="text-xs text-green-100">
+              {isEnglish
+                ? "Made for every sports enthusiast."
+                : "Dibuat untuk semua pecinta olahraga."}
+            </p>
+
+          </div>
+
+        </div>
+
       </div>
+
     </footer>
   );
 }

@@ -9,6 +9,7 @@ export default function Navbar() {
   const { language, changeLanguage } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -17,11 +18,15 @@ export default function Navbar() {
     return pathname.startsWith(path);
   };
 
+  // TERJEMAHAN
   const text = {
     id: {
       home: "Home",
       lapangan: "Lapangan",
+      artikel: "Berita & Artikel",
       tentang: "Tentang Kami",
+      bantuan: "Bantuan",
+      contact: "Contact Us",
       riwayat: "Riwayat",
       profil: "Profil",
       login: "Login",
@@ -29,10 +34,14 @@ export default function Navbar() {
       logout: "Keluar",
       cari: "Cari Lapangan",
     },
+
     en: {
       home: "Home",
       lapangan: "Courts",
+      artikel: "News & Articles",
       tentang: "About Us",
+      bantuan: "Help Center",
+      contact: "Contact Us",
       riwayat: "History",
       profil: "Profile",
       login: "Login",
@@ -44,7 +53,7 @@ export default function Navbar() {
 
   const t = text[language] || text.id;
 
-  // Cek status autentikasi pengguna
+  // CEK STATUS AUTENTIKASI
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem("token");
@@ -78,28 +87,46 @@ export default function Navbar() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  // GANTI BAHASA
   const handleLanguageChange = (e) => {
     changeLanguage(e.target.value);
     closeMenu();
   };
 
+  // LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("sportify_user");
+
     setUser(null);
     closeMenu();
+
     window.dispatchEvent(new Event("sportify-auth-change"));
+
     router.push("/");
   };
+
+  // KOMPONEN LINK NAVBAR
+  const navLinkClass = (path) =>
+    `liquid-nav-link transition-colors ${isActive(path)
+      ? "text-primary font-bold bg-soft-mint px-3 py-1.5 rounded-full"
+      : ""
+    }`;
+
+  const mobileLinkClass = (path) =>
+    `liquid-nav-link py-2 px-3 rounded-xl ${isActive(path)
+      ? "bg-soft-mint text-primary font-bold"
+      : ""
+    }`;
 
   return (
     <nav className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
       <div className="max-w-7xl mx-auto">
 
-        {/* Navbar Utama */}
-        <div className="liquid-navbar flex items-center justify-between gap-2 sm:gap-3 px-3 sm:px-5 lg:px-6 py-3 sm:py-4">
+        {/* NAVBAR UTAMA */}
+        <div className="liquid-navbar flex items-center justify-between gap-2 sm:gap-3 px-3 sm:px-5 lg:px-5 py-3 sm:py-4">
 
-          {/* Logo */}
+          {/* LOGO */}
           <Link
             href="/"
             onClick={closeMenu}
@@ -108,67 +135,76 @@ export default function Navbar() {
             Sportify
           </Link>
 
-          {/* Menu Desktop */}
-          <div className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm xl:text-base">
-            <Link
-              href="/"
-              className={`liquid-nav-link transition-colors ${
-                isActive("/")
-                  ? "text-primary font-bold bg-soft-mint px-3.5 py-1.5 rounded-full"
-                  : ""
-              }`}
-            >
+          {/* MENU DESKTOP */}
+          <div className="hidden lg:flex items-center gap-2 xl:gap-3 text-sm">
+
+            <Link href="/" className={navLinkClass("/")}>
               {t.home}
             </Link>
 
             <Link
               href="/lapangan"
-              className={`liquid-nav-link transition-colors ${
-                isActive("/lapangan")
-                  ? "text-primary font-bold bg-soft-mint px-3.5 py-1.5 rounded-full"
-                  : ""
-              }`}
+              className={navLinkClass("/lapangan")}
             >
               {t.lapangan}
             </Link>
 
             <Link
+              href="/artikel"
+              className={navLinkClass("/artikel")}
+            >
+              {t.artikel}
+            </Link>
+
+            <Link
               href="/tentang"
-              className={`liquid-nav-link transition-colors ${
-                isActive("/tentang")
-                  ? "text-primary font-bold bg-soft-mint px-3.5 py-1.5 rounded-full"
-                  : ""
-              }`}
+              className={navLinkClass("/tentang")}
             >
               {t.tentang}
+            </Link>
+
+            <Link
+              href="/bantuan"
+              className={navLinkClass("/bantuan")}
+            >
+              {t.bantuan}
+            </Link>
+
+            <Link
+              href="/contact"
+              className={navLinkClass("/contact")}
+            >
+              {t.contact}
             </Link>
 
             {user && (
               <Link
                 href="/riwayat"
-                className={`liquid-nav-link transition-colors ${
-                  isActive("/riwayat")
-                    ? "text-primary font-bold bg-soft-mint px-3.5 py-1.5 rounded-full"
-                    : ""
-                }`}
+                className={navLinkClass("/riwayat")}
               >
                 {t.riwayat}
               </Link>
             )}
+
           </div>
 
-          {/* Aksi Desktop */}
-          <div className="hidden lg:flex items-center gap-2 xl:gap-3">
+          {/* AKSI DESKTOP */}
+          <div className="hidden lg:flex items-center gap-2">
+
             {user ? (
               <div className="flex items-center gap-2">
+
                 <Link
                   href="/profile"
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-soft-mint text-primary text-sm font-semibold hover:bg-green-100 transition"
                 >
-                  <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">
-                    {user.fullName ? user.fullName[0].toUpperCase() : "U"}
+                  <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs shrink-0">
+                    {user.fullName
+                      ? user.fullName[0].toUpperCase()
+                      : "U"}
                   </span>
-                  <span className="max-w-[120px] truncate">
+
+                  <span className="max-w-[90px] truncate">
                     {user.fullName || t.profil}
                   </span>
                 </Link>
@@ -181,6 +217,7 @@ export default function Navbar() {
                 >
                   {t.logout}
                 </button>
+
               </div>
             ) : (
               <>
@@ -202,11 +239,12 @@ export default function Navbar() {
 
             <Link
               href="/lapangan"
-              className="liquid-primary-button text-sm"
+              className="liquid-primary-button text-sm whitespace-nowrap"
             >
               {t.cari}
             </Link>
 
+            {/* PILIHAN BAHASA */}
             <select
               value={language}
               onChange={handleLanguageChange}
@@ -216,10 +254,12 @@ export default function Navbar() {
               <option value="id">ID</option>
               <option value="en">EN</option>
             </select>
+
           </div>
 
-          {/* Aksi Mobile dan Tablet */}
+          {/* AKSI MOBILE DAN TABLET */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3">
+
             <select
               value={language}
               onChange={handleLanguageChange}
@@ -240,23 +280,23 @@ export default function Navbar() {
             >
               {menuOpen ? "×" : "☰"}
             </button>
+
           </div>
+
         </div>
 
-        {/* Dropdown Mobile dan Tablet */}
+        {/* MENU MOBILE DAN TABLET */}
         {menuOpen && (
           <div
             id="mobile-navigation"
             className="liquid-mobile-menu lg:hidden mt-2 p-4 sm:p-5"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
 
               <Link
                 href="/"
                 onClick={closeMenu}
-                className={`liquid-nav-link py-2 px-3 rounded-xl ${
-                  isActive("/") ? "bg-soft-mint text-primary font-bold" : ""
-                }`}
+                className={mobileLinkClass("/")}
               >
                 {t.home}
               </Link>
@@ -264,25 +304,41 @@ export default function Navbar() {
               <Link
                 href="/lapangan"
                 onClick={closeMenu}
-                className={`liquid-nav-link py-2 px-3 rounded-xl ${
-                  isActive("/lapangan")
-                    ? "bg-soft-mint text-primary font-bold"
-                    : ""
-                }`}
+                className={mobileLinkClass("/lapangan")}
               >
                 {t.lapangan}
               </Link>
 
               <Link
+                href="/artikel"
+                onClick={closeMenu}
+                className={mobileLinkClass("/artikel")}
+              >
+                {t.artikel}
+              </Link>
+
+              <Link
                 href="/tentang"
                 onClick={closeMenu}
-                className={`liquid-nav-link py-2 px-3 rounded-xl ${
-                  isActive("/tentang")
-                    ? "bg-soft-mint text-primary font-bold"
-                    : ""
-                }`}
+                className={mobileLinkClass("/tentang")}
               >
                 {t.tentang}
+              </Link>
+
+              <Link
+                href="/bantuan"
+                onClick={closeMenu}
+                className={mobileLinkClass("/bantuan")}
+              >
+                {t.bantuan}
+              </Link>
+
+              <Link
+                href="/contact"
+                onClick={closeMenu}
+                className={mobileLinkClass("/contact")}
+              >
+                {t.contact}
               </Link>
 
               {user && (
@@ -290,29 +346,24 @@ export default function Navbar() {
                   <Link
                     href="/riwayat"
                     onClick={closeMenu}
-                    className={`liquid-nav-link py-2 px-3 rounded-xl ${
-                      isActive("/riwayat")
-                        ? "bg-soft-mint text-primary font-bold"
-                        : ""
-                    }`}
+                    className={mobileLinkClass("/riwayat")}
                   >
                     {t.riwayat}
                   </Link>
+
                   <Link
                     href="/profile"
                     onClick={closeMenu}
-                    className={`liquid-nav-link py-2 px-3 rounded-xl ${
-                      isActive("/profile")
-                        ? "bg-soft-mint text-primary font-bold"
-                        : ""
-                    }`}
+                    className={mobileLinkClass("/profile")}
                   >
                     {t.profil} ({user.fullName || "User"})
                   </Link>
                 </>
               )}
 
-              <div className="border-t border-gray-200/70 pt-4 flex flex-col gap-4">
+              {/* LOGIN DAN LOGOUT */}
+              <div className="border-t border-gray-200/70 pt-4 flex flex-col gap-3">
+
                 {user ? (
                   <button
                     type="button"
@@ -326,7 +377,7 @@ export default function Navbar() {
                     <Link
                       href="/login"
                       onClick={closeMenu}
-                      className="liquid-nav-link py-1"
+                      className="liquid-nav-link py-2 px-3"
                     >
                       {t.login}
                     </Link>
@@ -350,9 +401,11 @@ export default function Navbar() {
                 </Link>
 
               </div>
+
             </div>
           </div>
         )}
+
       </div>
     </nav>
   );
