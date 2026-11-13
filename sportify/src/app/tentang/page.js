@@ -15,9 +15,11 @@ export default function TentangPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-background overflow-hidden">
-
-        {/* Hero Section */}
+      <main
+        className="min-h-screen overflow-hidden"
+        style={{ background: "var(--bg-main)" }}
+      >
+        {/* HERO SECTION */}
         <section className="liquid-about-hero">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-10 py-6 sm:py-8">
 
@@ -25,14 +27,21 @@ export default function TentangPage() {
               {t.heroLabel}
             </span>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-dark-text mt-5 sm:mt-6 leading-tight">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mt-5 sm:mt-6 leading-tight"
+              style={{ color: "var(--text-main)" }}
+            >
               {t.heroTitle}
+
               <span className="block text-primary">
                 {t.heroHighlight}
               </span>
             </h1>
 
-            <p className="mt-5 sm:mt-7 text-gray-600 text-sm sm:text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
+            <p
+              className="mt-5 sm:mt-7 text-sm sm:text-base md:text-lg leading-relaxed max-w-3xl mx-auto"
+              style={{ color: "var(--text-secondary)" }}
+            >
               {t.heroDescription}
             </p>
 
@@ -41,7 +50,7 @@ export default function TentangPage() {
               className="liquid-primary-button inline-flex mt-7 sm:mt-9 text-sm sm:text-base"
             >
               {t.explore}
-              <span>→</span>
+              <span>&gt;</span>
             </Link>
 
           </div>
@@ -50,33 +59,42 @@ export default function TentangPage() {
           <div className="liquid-about-decoration liquid-about-decoration-two" />
         </section>
 
-        {/* Mengapa Sportify */}
+        {/* MENGAPA SPORTIFY */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
 
-            {/* Penjelasan */}
+            {/* PENJELASAN */}
             <div>
 
               <span className="text-primary font-semibold text-xs sm:text-sm tracking-widest">
                 {t.introductionLabel}
               </span>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-dark-text mt-3 mb-5 sm:mb-6 leading-tight">
+              <h2
+                className="text-2xl sm:text-3xl md:text-4xl font-bold mt-3 mb-5 sm:mb-6 leading-tight"
+                style={{ color: "var(--text-main)" }}
+              >
                 {t.whyTitle}
               </h2>
 
-              <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-4 sm:mb-5">
+              <p
+                className="text-sm sm:text-base leading-relaxed mb-4 sm:mb-5"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {t.whyDescription1}
               </p>
 
-              <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+              <p
+                className="text-sm sm:text-base leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {t.whyDescription2}
               </p>
 
             </div>
 
-            {/* Layanan */}
+            {/* LAYANAN */}
             <div className="liquid-about-card w-full p-5 sm:p-7 lg:p-8">
 
               <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-7">
@@ -86,11 +104,17 @@ export default function TentangPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-dark-text">
+                  <h3
+                    className="text-xl sm:text-2xl font-bold"
+                    style={{ color: "var(--text-main)" }}
+                  >
                     {t.serviceTitle}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                  <p
+                    className="text-xs sm:text-sm mt-1"
+                    style={{ color: "var(--text-muted)" }}
+                  >
                     {t.serviceSubtitle}
                   </p>
                 </div>
@@ -108,7 +132,10 @@ export default function TentangPage() {
                       ✓
                     </span>
 
-                    <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                    <p
+                      className="text-sm sm:text-base leading-relaxed"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       {item}
                     </p>
                   </div>
@@ -121,7 +148,7 @@ export default function TentangPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* CTA SECTION */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16 lg:pb-20">
 
           <div className="liquid-about-cta px-5 py-10 sm:px-8 sm:py-14 lg:py-16">
@@ -145,7 +172,7 @@ export default function TentangPage() {
                 className="inline-flex items-center mt-7 sm:mt-8 bg-white text-primary font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-full hover:bg-soft-mint transition duration-300 shadow-lg text-sm sm:text-base"
               >
                 {t.ctaButton}
-                <span className="ml-2">→</span>
+                <span className="ml-2">&gt;</span>
               </Link>
 
             </div>

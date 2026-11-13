@@ -35,7 +35,13 @@ export default function BantuanPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-background overflow-hidden">
+            <main
+                className="min-h-screen overflow-hidden"
+                style={{
+                    backgroundColor: "var(--bg-main)",
+                    color: "var(--text-main)",
+                }}
+            >
                 {/* HERO */}
                 <section className="relative px-4 sm:px-6 py-16 sm:py-20 lg:py-24">
                     <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -43,14 +49,17 @@ export default function BantuanPage() {
                             {t.heroLabel}
                         </span>
 
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-dark-text mt-6 leading-tight">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mt-6 leading-tight text-dark-text">
                             {t.heroTitle}
                             <span className="block text-primary">
                                 {t.heroHighlight}
                             </span>
                         </h1>
 
-                        <p className="max-w-2xl mx-auto mt-5 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
+                        <p
+                            className="max-w-2xl mx-auto mt-5 text-sm sm:text-base md:text-lg leading-relaxed"
+                            style={{ color: "var(--text-secondary)" }}
+                        >
                             {t.heroDescription}
                         </p>
 
@@ -69,7 +78,11 @@ export default function BantuanPage() {
                                         setOpenIndex(null);
                                     }}
                                     placeholder={t.searchPlaceholder}
-                                    className="w-full min-w-0 bg-transparent outline-none border-none text-sm sm:text-base text-dark-text placeholder:text-gray-400 py-2"
+                                    className="w-full min-w-0 bg-transparent outline-none border-none text-sm sm:text-base py-2"
+                                    style={{
+                                        color: "var(--input-text)",
+                                        caretColor: "var(--text-main)",
+                                    }}
                                 />
 
                                 {search && (
@@ -79,7 +92,8 @@ export default function BantuanPage() {
                                             setSearch("");
                                             setOpenIndex(null);
                                         }}
-                                        className="px-3 py-2 text-gray-500 hover:text-primary"
+                                        className="px-3 py-2 transition hover:text-primary"
+                                        style={{ color: "var(--text-secondary)" }}
                                         aria-label="Clear search"
                                     >
                                         ✕
@@ -106,6 +120,7 @@ export default function BantuanPage() {
                         </h2>
                     </div>
 
+                    {/* CATEGORY BUTTONS */}
                     <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-12">
                         {[t.allCategories, ...t.categories].map((category) => {
                             const active = selectedCategory === category;
@@ -120,8 +135,17 @@ export default function BantuanPage() {
                                     }}
                                     className={`px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 ${active
                                             ? "bg-primary text-white shadow-lg shadow-green-900/15"
-                                            : "bg-white/80 text-gray-600 border border-gray-200 hover:border-primary hover:text-primary"
+                                            : "border hover:border-primary hover:text-primary"
                                         }`}
+                                    style={
+                                        active
+                                            ? {}
+                                            : {
+                                                backgroundColor: "var(--bg-card)",
+                                                color: "var(--text-secondary)",
+                                                borderColor: "var(--border-main)",
+                                            }
+                                    }
                                 >
                                     {category}
                                 </button>
@@ -135,7 +159,10 @@ export default function BantuanPage() {
                             {t.faqTitle}
                         </h2>
 
-                        <p className="text-sm sm:text-base text-gray-500 mt-2">
+                        <p
+                            className="text-sm sm:text-base mt-2"
+                            style={{ color: "var(--text-secondary)" }}
+                        >
                             {t.faqDescription}
                         </p>
                     </div>
@@ -193,8 +220,18 @@ export default function BantuanPage() {
                                         >
                                             <div className="overflow-hidden">
                                                 <div className="px-4 sm:px-5 pb-5 pl-14 sm:pl-[4.5rem]">
-                                                    <div className="border-t border-gray-100 pt-4">
-                                                        <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                                                    <div
+                                                        className="border-t pt-4"
+                                                        style={{
+                                                            borderColor: "var(--border-soft)",
+                                                        }}
+                                                    >
+                                                        <p
+                                                            className="text-sm sm:text-base leading-relaxed"
+                                                            style={{
+                                                                color: "var(--text-secondary)",
+                                                            }}
+                                                        >
                                                             {faq.answer}
                                                         </p>
                                                     </div>
@@ -206,6 +243,7 @@ export default function BantuanPage() {
                             })}
                         </div>
                     ) : (
+                        /* EMPTY STATE */
                         <div className="liquid-about-card rounded-2xl p-8 sm:p-12 text-center">
                             <div className="w-14 h-14 rounded-2xl bg-soft-mint text-primary flex items-center justify-center text-2xl font-bold mx-auto">
                                 ?
@@ -215,7 +253,10 @@ export default function BantuanPage() {
                                 {t.noResults}
                             </h3>
 
-                            <p className="text-sm sm:text-base text-gray-500 mt-2">
+                            <p
+                                className="text-sm sm:text-base mt-2"
+                                style={{ color: "var(--text-secondary)" }}
+                            >
                                 {t.noResultsDescription}
                             </p>
 

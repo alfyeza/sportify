@@ -12,11 +12,7 @@ export default function Navbar() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
-
-  const isActive = (path) => {
-    if (path === "/") return pathname === "/";
-    return pathname.startsWith(path);
-  };
+  const [theme, setTheme] = useState("light");
 
   // TERJEMAHAN
   const text = {
@@ -33,6 +29,8 @@ export default function Navbar() {
       daftar: "Daftar",
       logout: "Keluar",
       cari: "Cari Lapangan",
+      terang: "Mode Terang",
+      gelap: "Mode Gelap",
     },
 
     en: {
@@ -48,10 +46,44 @@ export default function Navbar() {
       daftar: "Register",
       logout: "Logout",
       cari: "Find a Court",
+      terang: "Light Mode",
+      gelap: "Dark Mode",
     },
   };
 
   const t = text[language] || text.id;
+
+  // CEK HALAMAN AKTIF
+  const isActive = (path) => {
+    if (path === "/") return pathname === "/";
+    return pathname.startsWith(path);
+  };
+
+  // AMBIL TEMA YANG TERSIMPAN
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("sportify-theme") || "light";
+
+    setTheme(savedTheme);
+
+    document.documentElement.classList.toggle(
+      "dark",
+      savedTheme === "dark"
+    );
+  }, []);
+
+  // GANTI TEMA
+  const handleThemeChange = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+
+    setTheme(newTheme);
+
+    localStorage.setItem("sportify-theme", newTheme);
+
+    document.documentElement.classList.toggle(
+      "dark",
+      newTheme === "dark"
+    );
+  };
 
   // CEK STATUS AUTENTIKASI
   useEffect(() => {
@@ -106,7 +138,7 @@ export default function Navbar() {
     router.push("/");
   };
 
-  // KOMPONEN LINK NAVBAR
+  // LINK NAVBAR
   const navLinkClass = (path) =>
     `liquid-nav-link transition-colors ${isActive(path)
       ? "text-primary font-bold bg-soft-mint px-3 py-1.5 rounded-full"
@@ -118,6 +150,10 @@ export default function Navbar() {
       ? "bg-soft-mint text-primary font-bold"
       : ""
     }`;
+
+  // TOMBOL TEMA
+  const themeButtonClass =
+    "flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-gray-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 text-dark-text dark:text-white text-sm font-semibold hover:bg-soft-mint dark:hover:bg-white/10 transition-all duration-300";
 
   return (
     <nav className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
@@ -223,7 +259,7 @@ export default function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="text-dark-text font-semibold text-sm hover:text-primary transition"
+                  className="text-dark-text dark:text-white font-semibold text-sm hover:text-primary transition"
                 >
                   {t.login}
                 </Link>
@@ -244,6 +280,23 @@ export default function Navbar() {
               {t.cari}
             </Link>
 
+            {/* TOMBOL DARK / LIGHT MODE */}
+            <button
+              type="button"
+              onClick={handleThemeChange}
+              className={themeButtonClass}
+              aria-label={
+                theme === "dark"
+                  ? "Aktifkan mode terang"
+                  : "Aktifkan mode gelap"
+              }
+              title={theme === "dark" ? t.terang : t.gelap}
+            >
+              <span className="text-lg">
+                {theme === "dark" ? "☀" : "☾"}
+              </span>
+            </button>
+
             {/* PILIHAN BAHASA */}
             <select
               value={language}
@@ -260,6 +313,22 @@ export default function Navbar() {
           {/* AKSI MOBILE DAN TABLET */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3">
 
+            {/* TOMBOL DARK / LIGHT MODE */}
+            <button
+              type="button"
+              onClick={handleThemeChange}
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/70 dark:bg-white/10 border border-white/80 dark:border-white/10 text-primary dark:text-lime-300 text-xl transition hover:bg-white dark:hover:bg-white/20"
+              aria-label={
+                theme === "dark"
+                  ? "Aktifkan mode terang"
+                  : "Aktifkan mode gelap"
+              }
+              title={theme === "dark" ? t.terang : t.gelap}
+            >
+              {theme === "dark" ? "☀" : "☾"}
+            </button>
+
+            {/* PILIHAN BAHASA */}
             <select
               value={language}
               onChange={handleLanguageChange}
@@ -270,10 +339,11 @@ export default function Navbar() {
               <option value="en">EN</option>
             </select>
 
+            {/* MENU MOBILE */}
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/70 border border-white/80 text-primary text-xl sm:text-2xl transition hover:bg-white"
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/70 dark:bg-white/10 border border-white/80 dark:border-white/10 text-primary dark:text-white text-xl sm:text-2xl transition hover:bg-white dark:hover:bg-white/20"
               aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
@@ -362,7 +432,7 @@ export default function Navbar() {
               )}
 
               {/* LOGIN DAN LOGOUT */}
-              <div className="border-t border-gray-200/70 pt-4 flex flex-col gap-3">
+              <div className="border-t border-gray-200/70 dark:border-white/10 pt-4 flex flex-col gap-3">
 
                 {user ? (
                   <button

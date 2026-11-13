@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,9 +20,16 @@ export default function BookingLapanganPage() {
   const t =
     translations[language]?.booking || translations.id.booking;
 
-  const lapangan = daftarLapangan.find(
-    (item) => String(item.id) === String(params.id)
-  );
+  const [unit, setUnit] = useState("");
+  const [tanggal, setTanggal] = useState("");
+  const [jam, setJam] = useState("");
+  const [durasi, setDurasi] = useState("1");
+  const [expandedUnit, setExpandedUnit] = useState(null);
+  const [filterWaktu, setFilterWaktu] = useState("Semua Waktu");
+  const [filterCabor, setFilterCabor] = useState("Semua");
+
+  // Status pengecekan login
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const getTanggalHariIni = () => {
     const sekarang = new Date();
@@ -33,13 +40,27 @@ export default function BookingLapanganPage() {
     return `${tahun}-${bulan}-${tanggal}`;
   };
 
-  const [unit, setUnit] = useState("");
-  const [tanggal, setTanggal] = useState(getTanggalHariIni());
-  const [jam, setJam] = useState("");
-  const [durasi, setDurasi] = useState("1");
-  const [expandedUnit, setExpandedUnit] = useState(null);
-  const [filterWaktu, setFilterWaktu] = useState("Semua Waktu");
-  const [filterCabor, setFilterCabor] = useState("Semua");
+  // Memeriksa apakah pengguna sudah login
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      const bookingPath = `/lapangan/${params.id}/booking`;
+
+      router.replace(
+        `/login?redirect=${encodeURIComponent(bookingPath)}`
+      );
+
+      return;
+    }
+
+    setTanggal(getTanggalHariIni());
+    setIsCheckingAuth(false);
+  }, [params.id, router]);
+
+  const lapangan = daftarLapangan.find(
+    (item) => String(item.id) === String(params.id)
+  );
 
   const formatRupiah = (nominal) => {
     return `Rp ${Number(nominal || 0).toLocaleString("id-ID")}`;
@@ -60,6 +81,29 @@ export default function BookingLapanganPage() {
       }
     );
   };
+
+  // Loading saat memeriksa login
+  if (isCheckingAuth) {
+    return (
+      <>
+        <Navbar />
+
+        <main className="min-h-screen bg-background flex items-center justify-center px-5">
+          <div className="text-center">
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+
+            <p className="mt-4 text-sm font-medium text-gray-500">
+              {isEnglish
+                ? "Checking account access..."
+                : "Memeriksa akses akun..."}
+            </p>
+          </div>
+        </main>
+
+        <Footer />
+      </>
+    );
+  }
 
   if (!lapangan) {
     return (
@@ -325,8 +369,8 @@ export default function BookingLapanganPage() {
                           setJam("");
                         }}
                         className={`rounded-2xl border px-2 py-4 text-center transition-all ${aktif
-                          ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
-                          : "border-gray-100 bg-background text-dark-text hover:border-secondary hover:bg-soft-mint"
+                            ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
+                            : "border-gray-100 bg-background text-dark-text hover:border-secondary hover:bg-soft-mint"
                           }`}
                       >
                         <span
@@ -483,8 +527,8 @@ export default function BookingLapanganPage() {
                         <div
                           key={namaUnit}
                           className={`overflow-hidden rounded-3xl border transition-all ${isSelected
-                            ? "border-primary bg-soft-mint/50 shadow-md shadow-primary/5"
-                            : "border-gray-100 bg-white hover:border-secondary/50"
+                              ? "border-primary bg-soft-mint/50 shadow-md shadow-primary/5"
+                              : "border-gray-100 bg-white hover:border-secondary/50"
                             }`}
                         >
                           <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
@@ -529,8 +573,8 @@ export default function BookingLapanganPage() {
                                   type="button"
                                   onClick={() => pilihUnit(namaUnit)}
                                   className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${isSelected
-                                    ? "bg-primary text-white"
-                                    : "border border-primary text-primary hover:bg-soft-mint"
+                                      ? "bg-primary text-white"
+                                      : "border border-primary text-primary hover:bg-soft-mint"
                                     }`}
                                 >
                                   {isSelected
@@ -596,10 +640,10 @@ export default function BookingLapanganPage() {
                                               setJam(waktu);
                                             }}
                                             className={`rounded-xl border px-2 py-3 text-xs font-semibold transition ${sudahDipesan
-                                              ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
-                                              : isJamSelected
-                                                ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
-                                                : "border-secondary/20 bg-soft-mint/60 text-primary hover:border-secondary hover:bg-soft-mint"
+                                                ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
+                                                : isJamSelected
+                                                  ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
+                                                  : "border-secondary/20 bg-soft-mint/60 text-primary hover:border-secondary hover:bg-soft-mint"
                                               }`}
                                           >
                                             {waktu}

@@ -90,11 +90,14 @@ export default function ContactPage() {
         setSubmitted(false);
     }
 
+    const inputClass =
+        "w-full px-4 py-3.5 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--input-text)] placeholder:text-[var(--text-muted)] text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition";
+
     return (
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-background overflow-hidden">
+            <main className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] overflow-hidden transition-colors duration-300">
                 {/* HERO */}
                 <section className="relative px-4 sm:px-6 py-16 sm:py-20 lg:py-24">
                     <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -102,12 +105,14 @@ export default function ContactPage() {
                             {content.label}
                         </span>
 
-                        <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold text-dark-text leading-tight">
+                        <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold text-[var(--text-main)] leading-tight">
                             {content.title}{" "}
-                            <span className="text-primary">{content.highlight}</span>
+                            <span className="text-primary">
+                                {content.highlight}
+                            </span>
                         </h1>
 
-                        <p className="mt-5 text-sm sm:text-base lg:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+                        <p className="mt-5 text-sm sm:text-base lg:text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
                             {content.description}
                         </p>
                     </div>
@@ -126,29 +131,30 @@ export default function ContactPage() {
                                     SPORTIFY
                                 </span>
 
-                                <h2 className="text-2xl sm:text-3xl font-bold text-dark-text mt-2">
+                                <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-main)] mt-2">
                                     {isEnglish
                                         ? "Let's Talk About Sports"
                                         : "Mari Bicara tentang Olahraga"}
                                 </h2>
 
-                                <p className="text-gray-500 text-sm sm:text-base mt-3 leading-relaxed">
+                                <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-3 leading-relaxed">
                                     {isEnglish
                                         ? "We value your feedback. Your questions and suggestions help us improve the Sportify experience."
                                         : "Kami menghargai setiap masukan dari Anda. Pertanyaan dan saran yang diberikan membantu kami meningkatkan pengalaman menggunakan Sportify."}
                                 </p>
                             </div>
 
+                            {/* HELP CARD */}
                             <div className="liquid-about-card rounded-3xl p-6 sm:p-7">
                                 <div className="w-12 h-12 rounded-2xl bg-soft-mint flex items-center justify-center text-primary text-xl mb-5">
                                     ?
                                 </div>
 
-                                <h3 className="text-lg font-bold text-dark-text">
+                                <h3 className="text-lg font-bold text-[var(--text-main)]">
                                     {content.helpTitle}
                                 </h3>
 
-                                <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+                                <p className="text-sm text-[var(--text-secondary)] mt-2 leading-relaxed">
                                     {content.helpDescription}
                                 </p>
 
@@ -161,6 +167,7 @@ export default function ContactPage() {
                                 </Link>
                             </div>
 
+                            {/* PROMOTION CARD */}
                             <div className="rounded-3xl bg-primary text-white p-6 sm:p-7 relative overflow-hidden">
                                 <div className="relative z-10">
                                     <span className="text-xs font-semibold tracking-widest text-green-100">
@@ -199,11 +206,11 @@ export default function ContactPage() {
                                 {!submitted ? (
                                     <>
                                         <div className="mb-7">
-                                            <h2 className="text-xl sm:text-2xl font-bold text-dark-text">
+                                            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-main)]">
                                                 {content.formTitle}
                                             </h2>
 
-                                            <p className="text-sm text-gray-500 mt-2">
+                                            <p className="text-sm text-[var(--text-secondary)] mt-2">
                                                 {content.formDescription}
                                             </p>
                                         </div>
@@ -211,7 +218,7 @@ export default function ContactPage() {
                                         <form onSubmit={handleSubmit} className="space-y-5">
                                             {/* NAME */}
                                             <div>
-                                                <label className="block text-sm font-semibold text-dark-text mb-2">
+                                                <label className="block text-sm font-semibold text-[var(--text-main)] mb-2">
                                                     {content.name}
                                                 </label>
 
@@ -221,13 +228,13 @@ export default function ContactPage() {
                                                     value={form.nama}
                                                     onChange={handleChange}
                                                     placeholder={content.namePlaceholder}
-                                                    className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white/70 text-dark-text text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition"
+                                                    className={inputClass}
                                                 />
                                             </div>
 
                                             {/* EMAIL */}
                                             <div>
-                                                <label className="block text-sm font-semibold text-dark-text mb-2">
+                                                <label className="block text-sm font-semibold text-[var(--text-main)] mb-2">
                                                     {content.email}
                                                 </label>
 
@@ -237,13 +244,13 @@ export default function ContactPage() {
                                                     value={form.email}
                                                     onChange={handleChange}
                                                     placeholder={content.emailPlaceholder}
-                                                    className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white/70 text-dark-text text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition"
+                                                    className={inputClass}
                                                 />
                                             </div>
 
                                             {/* SUBJECT */}
                                             <div>
-                                                <label className="block text-sm font-semibold text-dark-text mb-2">
+                                                <label className="block text-sm font-semibold text-[var(--text-main)] mb-2">
                                                     {content.subject}
                                                 </label>
 
@@ -253,13 +260,13 @@ export default function ContactPage() {
                                                     value={form.subjek}
                                                     onChange={handleChange}
                                                     placeholder={content.subjectPlaceholder}
-                                                    className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white/70 text-dark-text text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition"
+                                                    className={inputClass}
                                                 />
                                             </div>
 
                                             {/* MESSAGE */}
                                             <div>
-                                                <label className="block text-sm font-semibold text-dark-text mb-2">
+                                                <label className="block text-sm font-semibold text-[var(--text-main)] mb-2">
                                                     {content.message}
                                                 </label>
 
@@ -269,7 +276,7 @@ export default function ContactPage() {
                                                     onChange={handleChange}
                                                     placeholder={content.messagePlaceholder}
                                                     rows={5}
-                                                    className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white/70 text-dark-text text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition resize-none"
+                                                    className={`${inputClass} resize-none`}
                                                 />
                                             </div>
 
@@ -288,11 +295,11 @@ export default function ContactPage() {
                                             ✓
                                         </div>
 
-                                        <h2 className="text-2xl font-bold text-dark-text">
+                                        <h2 className="text-2xl font-bold text-[var(--text-main)]">
                                             {content.successTitle}
                                         </h2>
 
-                                        <p className="text-sm text-gray-500 mt-3 max-w-sm mx-auto leading-relaxed">
+                                        <p className="text-sm text-[var(--text-secondary)] mt-3 max-w-sm mx-auto leading-relaxed">
                                             {content.successDescription}
                                         </p>
 

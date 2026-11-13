@@ -24,16 +24,28 @@ export default function DetailArtikelPage() {
         return (
             <>
                 <Navbar />
-                <main className="min-h-screen flex items-center justify-center px-5">
+
+                <main
+                    className="min-h-screen flex items-center justify-center px-5"
+                    style={{ background: "var(--bg-main)" }}
+                >
                     <div className="text-center">
-                        <h1 className="text-3xl font-bold text-dark-text">
+                        <h1
+                            className="text-3xl font-bold"
+                            style={{ color: "var(--text-main)" }}
+                        >
                             {isEnglish ? "Article Not Found" : "Artikel Tidak Ditemukan"}
                         </h1>
-                        <p className="text-gray-500 mt-3 text-sm">
+
+                        <p
+                            className="mt-3 text-sm"
+                            style={{ color: "var(--text-secondary)" }}
+                        >
                             {isEnglish
                                 ? "The article you are looking for does not exist."
                                 : "Artikel yang kamu cari tidak tersedia."}
                         </p>
+
                         <Link
                             href="/artikel"
                             className="inline-flex mt-6 px-6 py-3 bg-primary text-white rounded-xl font-semibold text-sm hover:bg-secondary transition"
@@ -42,6 +54,7 @@ export default function DetailArtikelPage() {
                         </Link>
                     </div>
                 </main>
+
                 <Footer />
             </>
         );
@@ -63,11 +76,13 @@ export default function DetailArtikelPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-background">
-
+            <main
+                className="min-h-screen"
+                style={{ background: "var(--bg-main)" }}
+            >
+                {/* HEADER ARTIKEL */}
                 <section className="bg-primary text-white">
                     <div className="max-w-4xl mx-auto px-5 sm:px-6 py-10 sm:py-14">
-
                         <Link
                             href="/artikel"
                             className="inline-flex items-center gap-2 text-sm text-green-100 hover:text-white transition mb-8"
@@ -92,14 +107,19 @@ export default function DetailArtikelPage() {
                             <span>{artikel.penulis}</span>
                             <span>{artikel.tanggal}</span>
                         </div>
-
                     </div>
                 </section>
 
                 <div className="max-w-4xl mx-auto px-5 sm:px-6 py-10 sm:py-14">
 
-                    <article className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm">
-
+                    {/* ISI ARTIKEL */}
+                    <article
+                        className="rounded-3xl overflow-hidden shadow-sm"
+                        style={{
+                            background: "var(--bg-card)",
+                            border: "1px solid var(--border-main)",
+                        }}
+                    >
                         <div className="w-full h-64 sm:h-96 overflow-hidden">
                             <img
                                 src={artikel.gambar}
@@ -109,12 +129,18 @@ export default function DetailArtikelPage() {
                         </div>
 
                         <div className="p-6 sm:p-9 lg:p-12">
-
-                            <div className="flex items-center justify-between gap-3 pb-6 border-b border-gray-100">
+                            <div
+                                className="flex items-center justify-between gap-3 pb-6"
+                                style={{ borderBottom: "1px solid var(--border-soft)" }}
+                            >
                                 <span className="text-sm font-semibold text-primary">
                                     {isEnglish ? "Sportify Journal" : "Jurnal Sportify"}
                                 </span>
-                                <span className="text-xs text-gray-400">
+
+                                <span
+                                    className="text-xs"
+                                    style={{ color: "var(--text-muted)" }}
+                                >
                                     {artikel.tanggal}
                                 </span>
                             </div>
@@ -123,21 +149,35 @@ export default function DetailArtikelPage() {
                                 {Array.isArray(isi) && isi.map((paragraf, index) => (
                                     <p
                                         key={index}
-                                        className="text-sm sm:text-base text-gray-600 leading-8 text-justify"
+                                        className="text-sm sm:text-base leading-8 text-justify"
+                                        style={{ color: "var(--text-secondary)" }}
                                     >
                                         {paragraf}
                                     </p>
                                 ))}
                             </div>
 
-                            <div className="mt-10 p-6 rounded-2xl bg-soft-mint border border-green-100">
-                                <h3 className="text-lg font-bold text-dark-text">
+                            {/* CTA SPORTIFY */}
+                            <div
+                                className="mt-10 p-6 rounded-2xl"
+                                style={{
+                                    background: "var(--bg-soft)",
+                                    border: "1px solid var(--border-main)",
+                                }}
+                            >
+                                <h3
+                                    className="text-lg font-bold"
+                                    style={{ color: "var(--text-main)" }}
+                                >
                                     {isEnglish
                                         ? "Keep Moving with Sportify!"
                                         : "Terus Bergerak Bersama Sportify!"}
                                 </h3>
 
-                                <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                                <p
+                                    className="text-sm mt-2 leading-relaxed"
+                                    style={{ color: "var(--text-secondary)" }}
+                                >
                                     {isEnglish
                                         ? "Find your favorite sports court and enjoy your next game with Sportify."
                                         : "Temukan lapangan olahraga favoritmu dan nikmati pengalaman bermain bersama Sportify."}
@@ -151,13 +191,16 @@ export default function DetailArtikelPage() {
                                     <span>&gt;</span>
                                 </Link>
                             </div>
-
                         </div>
                     </article>
 
+                    {/* ARTIKEL TERKAIT */}
                     {artikelTerkait.length > 0 && (
                         <section className="mt-14">
-                            <h2 className="text-xl sm:text-2xl font-bold text-dark-text mb-6">
+                            <h2
+                                className="text-xl sm:text-2xl font-bold mb-6"
+                                style={{ color: "var(--text-main)" }}
+                            >
                                 {isEnglish ? "Related Articles" : "Artikel Terkait"}
                             </h2>
 
@@ -166,7 +209,11 @@ export default function DetailArtikelPage() {
                                     <Link
                                         key={item.id}
                                         href={`/artikel/${item.slug}`}
-                                        className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition"
+                                        className="group rounded-2xl overflow-hidden hover:shadow-lg transition"
+                                        style={{
+                                            background: "var(--bg-card)",
+                                            border: "1px solid var(--border-main)",
+                                        }}
                                     >
                                         <div className="h-40 overflow-hidden">
                                             <img
@@ -181,11 +228,17 @@ export default function DetailArtikelPage() {
                                                 {item.kategori}
                                             </span>
 
-                                            <h3 className="mt-2 text-sm font-bold text-dark-text leading-relaxed line-clamp-2 group-hover:text-primary transition">
+                                            <h3
+                                                className="mt-2 text-sm font-bold leading-relaxed line-clamp-2 group-hover:text-primary transition"
+                                                style={{ color: "var(--text-main)" }}
+                                            >
                                                 {isEnglish ? item.judulEn : item.judul}
                                             </h3>
 
-                                            <p className="mt-3 text-xs text-gray-400">
+                                            <p
+                                                className="mt-3 text-xs"
+                                                style={{ color: "var(--text-muted)" }}
+                                            >
                                                 {item.tanggal}
                                             </p>
                                         </div>
@@ -194,7 +247,6 @@ export default function DetailArtikelPage() {
                             </div>
                         </section>
                     )}
-
                 </div>
             </main>
 

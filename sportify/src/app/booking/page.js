@@ -14,6 +14,7 @@ function generateBookingId() {
 
 function getTodayDateString() {
   const now = new Date();
+
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
@@ -43,24 +44,62 @@ function BookingContent() {
   const [errorMessage, setErrorMessage] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(null);
 
-  // ISI OTOMATIS JIKA USER SUDAH LOGIN
+  // STATUS PENGECEKAN LOGIN
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // CEK LOGIN DAN ISI DATA PEMESAN
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      const currentPath = `/booking?${searchParams.toString()}`;
+
+      router.replace(
+        `/login?redirect=${encodeURIComponent(currentPath)}`
+      );
+
+      return;
+    }
+
     try {
       const savedUser = localStorage.getItem("sportify_user");
 
       if (savedUser) {
         const user = JSON.parse(savedUser);
 
-        requestAnimationFrame(() => {
-          if (user.fullName) setNamaPemesan(user.fullName);
-          if (user.email) setEmailPemesan(user.email);
-          if (user.phone) setTeleponPemesan(user.phone);
-        });
+        if (user.fullName) setNamaPemesan(user.fullName);
+        if (user.email) setEmailPemesan(user.email);
+        if (user.phone) setTeleponPemesan(user.phone);
       }
     } catch {
       // Abaikan jika JSON tidak valid
     }
-  }, []);
+
+    setIsCheckingAuth(false);
+  }, [router, searchParams]);
+
+  // LOADING PENGECEKAN LOGIN
+  if (isCheckingAuth) {
+    return (
+      <>
+        <Navbar />
+
+        <main className="min-h-screen bg-background flex items-center justify-center px-5">
+          <div className="text-center">
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+
+            <p className="mt-4 text-sm font-medium text-gray-500">
+              {isEnglish
+                ? "Checking account access..."
+                : "Memeriksa akses akun..."}
+            </p>
+          </div>
+        </main>
+
+        <Footer />
+      </>
+    );
+  }
 
   if (!lapangan) {
     return (
@@ -113,6 +152,19 @@ function BookingContent() {
     e.preventDefault();
     setErrorMessage("");
 
+    // Pastikan token masih tersedia
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      const currentPath = `/booking?${searchParams.toString()}`;
+
+      router.replace(
+        `/login?redirect=${encodeURIComponent(currentPath)}`
+      );
+
+      return;
+    }
+
     if (!namaPemesan.trim()) {
       setErrorMessage(
         isEnglish ? "Full name is required." : "Nama pemesan wajib diisi."
@@ -129,6 +181,15 @@ function BookingContent() {
       return;
     }
 
+    if (!unit || !tanggal || !jam) {
+      setErrorMessage(
+        isEnglish
+          ? "Booking details are incomplete. Please select a court schedule again."
+          : "Detail booking belum lengkap. Silakan pilih jadwal lapangan kembali."
+      );
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -141,10 +202,10 @@ function BookingContent() {
       const newBooking = {
         id: bookingId,
         tempat: lapangan.nama,
-        lapangan: unit || "Court 1",
+        lapangan: unit,
         kategori: kategoriUtama,
-        tanggal: tanggal || getTodayDateString(),
-        jam: jam ? `${jam} - ${jamSelesai}` : "09:00 - 10:00",
+        tanggal: tanggal,
+        jam: `${jam} - ${jamSelesai}`,
         durasi: `${durasi} Jam`,
         total: totalHarga,
         statusBooking: "Confirmed",

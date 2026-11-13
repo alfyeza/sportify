@@ -28,7 +28,6 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    // VALIDASI INPUT
     if (
       !fullName.trim() ||
       !email.trim() ||
@@ -44,7 +43,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // VALIDASI EMAIL
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email)) {
@@ -56,7 +54,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // VALIDASI NOMOR HP
     const phonePattern = /^\+?[0-9\s-]+$/;
     const cleanPhone = phone.replace(/[\s-]/g, "");
 
@@ -73,7 +70,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // VALIDASI PASSWORD
     if (password.length < 6) {
       setError(
         isEnglish
@@ -83,7 +79,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // VALIDASI KONFIRMASI PASSWORD
     if (password !== confirmPassword) {
       setError(
         isEnglish
@@ -93,7 +88,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // KIRIM DATA KE BACKEND
     try {
       setLoading(true);
 
@@ -122,15 +116,13 @@ export default function RegisterPage() {
 
       window.dispatchEvent(new Event("sportify-auth-change"));
 
-      // JIKA PENDAFTARAN BERHASIL
       router.push("/profile");
-
     } catch (err) {
       setError(
         err.message ||
-          (isEnglish
-            ? "Registration failed. Please try again."
-            : "Pendaftaran gagal. Silakan coba lagi.")
+        (isEnglish
+          ? "Registration failed. Please try again."
+          : "Pendaftaran gagal. Silakan coba lagi.")
       );
     } finally {
       setLoading(false);
@@ -141,7 +133,7 @@ export default function RegisterPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-background flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+      <main className="min-h-screen bg-[var(--bg-main)] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
         <div className="liquid-auth-card w-full max-w-md mx-auto p-5 sm:p-7 lg:p-8">
 
           {/* HEADER REGISTER */}
@@ -158,11 +150,11 @@ export default function RegisterPage() {
                 {isEnglish ? "JOIN SPORTIFY" : "GABUNG SPORTIFY"}
               </span>
 
-              <h1 className="text-2xl sm:text-3xl font-bold text-dark-text mt-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-main)] mt-4">
                 {isEnglish ? "Create a New Account" : "Buat Akun Baru"}
               </h1>
 
-              <p className="text-gray-500 mt-2 text-xs sm:text-sm leading-relaxed">
+              <p className="text-[var(--text-secondary)] mt-2 text-xs sm:text-sm leading-relaxed">
                 {isEnglish
                   ? "Register now and start booking your favorite sports venue."
                   : "Daftar sekarang dan mulai pesan lapangan favoritmu."}
@@ -178,7 +170,7 @@ export default function RegisterPage() {
 
             {/* NAMA LENGKAP */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-dark-text mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-[var(--text-main)] mb-2">
                 {isEnglish ? "Full Name" : "Nama Lengkap"}
               </label>
 
@@ -200,7 +192,7 @@ export default function RegisterPage() {
 
             {/* EMAIL */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-dark-text mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-[var(--text-main)] mb-2">
                 Email
               </label>
 
@@ -222,7 +214,7 @@ export default function RegisterPage() {
 
             {/* NOMOR HP */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-dark-text mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-[var(--text-main)] mb-2">
                 {isEnglish ? "Phone Number" : "Nomor HP"}
               </label>
 
@@ -244,7 +236,7 @@ export default function RegisterPage() {
 
             {/* PASSWORD */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-dark-text mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-[var(--text-main)] mb-2">
                 Password
               </label>
 
@@ -283,7 +275,7 @@ export default function RegisterPage() {
 
             {/* KONFIRMASI PASSWORD */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-dark-text mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-[var(--text-main)] mb-2">
                 {isEnglish ? "Confirm Password" : "Konfirmasi Password"}
               </label>
 
@@ -324,7 +316,7 @@ export default function RegisterPage() {
 
             {/* PESAN ERROR */}
             {error && (
-              <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+              <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-4 py-3 text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
@@ -345,11 +337,10 @@ export default function RegisterPage() {
 
               {!loading && <span>→</span>}
             </button>
-
           </form>
 
           {/* LINK LOGIN */}
-          <div className="text-center text-xs sm:text-sm text-gray-500 mt-6 sm:mt-7">
+          <div className="text-center text-xs sm:text-sm text-[var(--text-secondary)] mt-6 sm:mt-7">
             {isEnglish ? "Already have an account?" : "Sudah punya akun?"}{" "}
 
             <Link
@@ -361,10 +352,10 @@ export default function RegisterPage() {
           </div>
 
           {/* KEMBALI KE BERANDA */}
-          <div className="text-center mt-6 sm:mt-7 pt-5 sm:pt-6 border-t border-gray-100">
+          <div className="text-center mt-6 sm:mt-7 pt-5 sm:pt-6 border-t border-[var(--border-main)]">
             <Link
               href="/"
-              className="text-xs sm:text-sm text-gray-500 hover:text-primary transition"
+              className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-primary transition"
             >
               ← {isEnglish ? "Back to Home" : "Kembali ke Beranda"}
             </Link>

@@ -98,20 +98,20 @@ export default function SyaratKetentuanPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-background px-4 sm:px-6 py-14 sm:py-20">
+            <main className="min-h-screen bg-[var(--bg-main)] px-4 sm:px-6 py-14 sm:py-20">
                 <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-12">
                         <span className="inline-flex px-4 py-2 rounded-full bg-soft-mint text-primary text-xs sm:text-sm font-semibold tracking-wider">
                             SPORTIFY
                         </span>
 
-                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-text mt-6">
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--text-main)] mt-6">
                             {isEnglish
                                 ? "Terms & Conditions"
                                 : "Syarat & Ketentuan"}
                         </h1>
 
-                        <p className="text-gray-500 text-sm sm:text-base mt-4 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-4 max-w-2xl mx-auto leading-relaxed">
                             {isEnglish
                                 ? "Please read these terms carefully before using Sportify services."
                                 : "Silakan baca ketentuan berikut sebelum menggunakan layanan Sportify."}
@@ -119,8 +119,8 @@ export default function SyaratKetentuanPage() {
                     </div>
 
                     <div className="liquid-about-card rounded-3xl p-5 sm:p-8 lg:p-10">
-                        <div className="mb-8 pb-6 border-b border-gray-200">
-                            <p className="text-sm text-gray-500 leading-relaxed">
+                        <div className="mb-8 pb-6 border-b border-[var(--border-main)]">
+                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                                 {isEnglish
                                     ? "These terms govern your access to and use of the Sportify platform, including its court discovery and booking features."
                                     : "Syarat & Ketentuan ini mengatur penggunaan platform Sportify, termasuk fitur pencarian dan pemesanan lapangan olahraga."}
@@ -130,19 +130,19 @@ export default function SyaratKetentuanPage() {
                         <div className="space-y-8">
                             {sections.map((section, index) => (
                                 <section key={index}>
-                                    <h2 className="text-lg sm:text-xl font-bold text-dark-text mb-3">
+                                    <h2 className="text-lg sm:text-xl font-bold text-[var(--text-main)] mb-3">
                                         {section.title}
                                     </h2>
 
-                                    <p className="text-sm sm:text-base text-gray-500 leading-8">
+                                    <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-8">
                                         {section.content}
                                     </p>
                                 </section>
                             ))}
                         </div>
 
-                        <div className="mt-10 pt-6 border-t border-gray-200">
-                            <p className="text-xs text-gray-400">
+                        <div className="mt-10 pt-6 border-t border-[var(--border-main)]">
+                            <p className="text-xs text-[var(--text-muted)]">
                                 {isEnglish
                                     ? "Last updated: November 2026"
                                     : "Terakhir diperbarui: November 2026"}
