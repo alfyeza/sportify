@@ -135,7 +135,7 @@ function KontenHalamanLapangan() {
       <Navbar />
 
       <main
-        className="min-h-screen"
+        className="min-h-screen sportify-catalog-page"
         style={{
           backgroundColor: "var(--bg-main)",
           color: "var(--text-main)",
@@ -154,10 +154,10 @@ function KontenHalamanLapangan() {
           />
 
           <div className="relative max-w-7xl mx-auto">
-            <div className="liquid-catalog-header rounded-3xl p-6 sm:p-10 md:p-14 relative overflow-hidden">
+            <div className="liquid-catalog-header rounded-3xl p-6 sm:p-10 md:p-14 relative overflow-hidden sportify-catalog-hero">
               <div className="relative z-10 max-w-2xl">
                 <div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md mb-5"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md mb-5 sportify-catalog-badge"
                   style={{
                     backgroundColor: "var(--glass-bg)",
                     border: "1px solid var(--glass-border)",
@@ -171,7 +171,7 @@ function KontenHalamanLapangan() {
                 </div>
 
                 <h1
-                  className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight sportify-catalog-title"
                   style={{ color: "var(--text-main)" }}
                 >
                   {t.title}
@@ -180,7 +180,7 @@ function KontenHalamanLapangan() {
                 </h1>
 
                 <p
-                  className="mt-5 max-w-xl leading-relaxed text-sm sm:text-base"
+                  className="mt-5 max-w-xl leading-relaxed text-sm sm:text-base sportify-catalog-description"
                   style={{ color: "var(--text-secondary)" }}
                 >
                   {t.description}
@@ -188,7 +188,7 @@ function KontenHalamanLapangan() {
 
                 <div className="flex flex-wrap items-center gap-3 mt-7">
                   <div
-                    className="px-4 py-2 rounded-xl backdrop-blur-md"
+                    className="px-4 py-2 rounded-xl backdrop-blur-md sportify-stat-card"
                     style={{
                       backgroundColor: "var(--glass-bg)",
                       border: "1px solid var(--glass-border)",
@@ -207,7 +207,7 @@ function KontenHalamanLapangan() {
                   </div>
 
                   <div
-                    className="px-4 py-2 rounded-xl backdrop-blur-md"
+                    className="px-4 py-2 rounded-xl backdrop-blur-md sportify-stat-card"
                     style={{
                       backgroundColor: "var(--glass-bg)",
                       border: "1px solid var(--glass-border)",
@@ -227,7 +227,7 @@ function KontenHalamanLapangan() {
                 </div>
               </div>
 
-              <div className="absolute -right-10 -bottom-16 text-[180px] sm:text-[230px] opacity-[0.06] rotate-12 select-none pointer-events-none">
+              <div className="absolute -right-10 -bottom-16 text-[180px] sm:text-[230px] opacity-[0.06] rotate-12 select-none pointer-events-none sportify-catalog-ball">
                 ⚽
               </div>
             </div>
@@ -235,7 +235,7 @@ function KontenHalamanLapangan() {
         </section>
 
         {/* PENCARIAN */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-2">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-2 sportify-catalog-search">
           <div className="liquid-search-container flex items-center gap-3 transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/20">
             <span className="text-2xl text-primary shrink-0">⌕</span>
 
@@ -266,7 +266,7 @@ function KontenHalamanLapangan() {
         </section>
 
         {/* KATEGORI OLAHRAGA */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sportify-catalog-category">
           <div className="mb-6">
             <p className="text-primary font-semibold text-xs sm:text-sm mb-2 tracking-wider">
               {t.explore}
@@ -288,12 +288,13 @@ function KontenHalamanLapangan() {
           </div>
 
           <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide">
-            {kategoriOlahraga.map((kategori) => (
+            {kategoriOlahraga.map((kategori, index) => (
               <button
                 key={kategori}
                 type="button"
                 onClick={() => setKategoriPilihan(kategori)}
-                className={`liquid-filter-button shrink-0 transition-all duration-300 ${kategoriAktif === kategori ? "active" : ""
+                style={{ animationDelay: `${index * 70}ms` }}
+                className={`liquid-filter-button shrink-0 transition-all duration-300 sportify-category-button ${kategoriAktif === kategori ? "active" : ""
                   }`}
               >
                 {t.categories[kategori]}
@@ -315,10 +316,10 @@ function KontenHalamanLapangan() {
         </section>
 
         {/* DAFTAR LAPANGAN */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 md:pb-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 md:pb-20 sportify-catalog-results">
           {/* FILTER DAN PENGURUTAN */}
           <div
-            className="backdrop-blur-xl p-4 sm:p-5 rounded-2xl shadow-sm mb-8"
+            className="backdrop-blur-xl p-4 sm:p-5 rounded-2xl shadow-sm mb-8 sportify-filter-panel"
             style={{
               backgroundColor: "var(--bg-card)",
               border: "1px solid var(--glass-border)",
@@ -335,24 +336,25 @@ function KontenHalamanLapangan() {
                 </p>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {pilihanHarga.map((item) => (
+                  {pilihanHarga.map((item, index) => (
                     <button
                       key={item.value}
                       type="button"
                       onClick={() => setFilterHarga(item.value)}
-                      className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${filterHarga === item.value
+                      className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 sportify-price-button ${filterHarga === item.value
                           ? "bg-primary text-white shadow-md shadow-primary/20"
                           : "border hover:border-primary hover:text-primary"
                         }`}
-                      style={
-                        filterHarga !== item.value
+                      style={{
+                        ...(filterHarga !== item.value
                           ? {
                             backgroundColor: "var(--bg-soft)",
                             color: "var(--text-secondary)",
                             borderColor: "var(--border-main)",
                           }
-                          : {}
-                      }
+                          : {}),
+                        animationDelay: `${index * 60}ms`,
+                      }}
                     >
                       {isEnglish ? item.labelEn : item.label}
                     </button>
@@ -401,7 +403,7 @@ function KontenHalamanLapangan() {
           </div>
 
           {/* JUDUL HASIL */}
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-7">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-7 sportify-results-heading">
             <div>
               <p className="text-primary font-semibold text-xs sm:text-sm mb-2 tracking-wider">
                 {t.searchResult}
@@ -439,12 +441,20 @@ function KontenHalamanLapangan() {
           {/* HASIL LAPANGAN */}
           {hasilFilter.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
-              {hasilFilter.map((lapangan) => (
-                <CardLapangan key={lapangan.id} {...lapangan} />
+              {hasilFilter.map((lapangan, index) => (
+                <div
+                  key={lapangan.id}
+                  className="sportify-catalog-card"
+                  style={{
+                    animationDelay: `${Math.min(index * 90, 900)}ms`,
+                  }}
+                >
+                  <CardLapangan {...lapangan} />
+                </div>
               ))}
             </div>
           ) : (
-            <div className="liquid-empty-state text-center py-14 sm:py-16 px-5">
+            <div className="liquid-empty-state text-center py-14 sm:py-16 px-5 sportify-empty-animation">
               <div
                 className="w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center text-4xl"
                 style={{ backgroundColor: "var(--bg-soft)" }}
@@ -479,6 +489,125 @@ function KontenHalamanLapangan() {
       </main>
 
       <Footer />
+
+      {/* ANIMASI KATALOG */}
+      <style jsx global>{`
+        @keyframes sportifyCatalogEnter {
+          from {
+            opacity: 0;
+            transform: translateY(24px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes sportifyCatalogZoom {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(16px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        @keyframes sportifyCatalogFloat {
+          0%,
+          100% {
+            transform: translateY(0) rotate(12deg);
+          }
+          50% {
+            transform: translateY(-12px) rotate(15deg);
+          }
+        }
+
+        .sportify-catalog-hero {
+          animation: sportifyCatalogZoom 0.8s ease-out both;
+        }
+
+        .sportify-catalog-badge {
+          animation: sportifyCatalogEnter 0.6s 0.15s ease-out both;
+        }
+
+        .sportify-catalog-title {
+          animation: sportifyCatalogEnter 0.7s 0.25s ease-out both;
+        }
+
+        .sportify-catalog-description {
+          animation: sportifyCatalogEnter 0.7s 0.38s ease-out both;
+        }
+
+        .sportify-stat-card {
+          animation: sportifyCatalogEnter 0.65s 0.5s ease-out both;
+          transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+        }
+
+        .sportify-stat-card:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--shadow-card);
+        }
+
+        .sportify-catalog-ball {
+          animation: sportifyCatalogFloat 5s ease-in-out infinite;
+        }
+
+        .sportify-catalog-search {
+          animation: sportifyCatalogEnter 0.7s 0.2s ease-out both;
+        }
+
+        .sportify-catalog-category {
+          animation: sportifyCatalogEnter 0.7s 0.3s ease-out both;
+        }
+
+        .sportify-category-button {
+          animation: sportifyCatalogEnter 0.5s ease-out both;
+        }
+
+        .sportify-filter-panel {
+          animation: sportifyCatalogEnter 0.7s 0.2s ease-out both;
+        }
+
+        .sportify-price-button {
+          animation: sportifyCatalogEnter 0.5s ease-out both;
+        }
+
+        .sportify-results-heading {
+          animation: sportifyCatalogEnter 0.6s 0.3s ease-out both;
+        }
+
+        .sportify-catalog-card {
+          min-width: 0;
+          animation: sportifyCatalogZoom 0.65s ease-out both;
+          transition:
+            transform 0.35s ease,
+            filter 0.35s ease;
+        }
+
+        .sportify-catalog-card:hover {
+          transform: translateY(-7px);
+          filter: drop-shadow(0 12px 14px rgba(20, 107, 69, 0.1));
+        }
+
+        .sportify-empty-animation {
+          animation: sportifyCatalogZoom 0.5s ease-out both;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .sportify-catalog-page *,
+          .sportify-catalog-page *::before,
+          .sportify-catalog-page *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+      `}</style>
     </>
   );
 }

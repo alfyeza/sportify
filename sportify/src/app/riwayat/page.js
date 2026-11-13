@@ -81,10 +81,14 @@ const formatTanggal = (tanggal, isEnglish) => {
 };
 
 const statusBookingStyle = {
-  Pending: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
-  Confirmed: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
-  Completed: "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
-  Cancelled: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
+  Pending:
+    "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
+  Confirmed:
+    "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+  Completed:
+    "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
+  Cancelled:
+    "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
 };
 
 const statusPembayaranStyle = {
@@ -414,7 +418,7 @@ export default function RiwayatPage() {
       <Navbar />
 
       <main
-        className="min-h-screen"
+        className="riwayat-page min-h-screen"
         style={{
           backgroundColor: "var(--bg-main)",
           color: "var(--text-main)",
@@ -423,8 +427,8 @@ export default function RiwayatPage() {
         <section className="mx-auto min-h-screen max-w-7xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14 md:px-8">
 
           {/* HEADER */}
-          <div className="mb-8 sm:mb-9">
-            <span className="mb-3 inline-block rounded-full bg-soft-mint px-4 py-2 text-xs font-bold tracking-wider text-primary">
+          <div className="riwayat-header mb-8 sm:mb-9">
+            <span className="riwayat-label mb-3 inline-block rounded-full bg-soft-mint px-4 py-2 text-xs font-bold tracking-wider text-primary">
               SPORTIFY
             </span>
 
@@ -441,25 +445,26 @@ export default function RiwayatPage() {
           </div>
 
           {/* FILTER */}
-          <div className="mb-7 flex flex-wrap gap-2">
-            {filters.map((item) => (
+          <div className="riwayat-filters mb-7 flex flex-wrap gap-2">
+            {filters.map((item, index) => (
               <button
                 key={item.value}
                 type="button"
                 onClick={() => setFilter(item.value)}
-                className={`rounded-full border px-4 py-2 text-xs font-medium transition-all duration-300 sm:px-5 sm:py-2.5 sm:text-sm ${filter === item.value
-                    ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
-                    : "hover:border-primary hover:text-primary"
-                  }`}
-                style={
-                  filter === item.value
+                style={{
+                  animationDelay: `${index * 0.07}s`,
+                  ...(filter === item.value
                     ? {}
                     : {
                       backgroundColor: "var(--bg-card)",
                       borderColor: "var(--border-main)",
                       color: "var(--text-secondary)",
-                    }
-                }
+                    }),
+                }}
+                className={`riwayat-filter rounded-full border px-4 py-2 text-xs font-medium transition-all duration-300 sm:px-5 sm:py-2.5 sm:text-sm ${filter === item.value
+                    ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
+                    : "hover:border-primary hover:text-primary"
+                  }`}
               >
                 {item.label}
               </button>
@@ -478,14 +483,15 @@ export default function RiwayatPage() {
           ) : (
             <div className="space-y-5">
               {filteredBookings.length > 0 ? (
-                filteredBookings.map((booking) => (
+                filteredBookings.map((booking, index) => (
                   <div
                     key={booking.id}
-                    className="overflow-hidden rounded-3xl border shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-lg"
                     style={{
                       ...surfaceStyle,
                       boxShadow: "var(--shadow-card)",
+                      animationDelay: `${index * 0.1}s`,
                     }}
+                    className="riwayat-card overflow-hidden rounded-3xl border shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-lg"
                   >
                     {/* BOOKING HEADER */}
                     <div
@@ -503,7 +509,7 @@ export default function RiwayatPage() {
                       </div>
 
                       <span
-                        className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${statusBookingStyle[booking.statusBooking] ||
+                        className={`riwayat-status rounded-full border px-4 py-1.5 text-xs font-semibold ${statusBookingStyle[booking.statusBooking] ||
                           "border-gray-500/20 bg-gray-500/10 text-gray-600"
                           }`}
                       >
@@ -574,7 +580,7 @@ export default function RiwayatPage() {
                           <button
                             type="button"
                             onClick={() => setSelectedBooking(booking)}
-                            className="w-full rounded-xl border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white lg:w-auto"
+                            className="riwayat-action-button w-full rounded-xl border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white lg:w-auto"
                           >
                             {translations.detail} &gt;
                           </button>
@@ -583,7 +589,7 @@ export default function RiwayatPage() {
                             <button
                               type="button"
                               onClick={() => setCancelTarget(booking)}
-                              className="w-full rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-500/20 dark:text-red-400 lg:w-auto"
+                              className="riwayat-action-button w-full rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-500/20 dark:text-red-400 lg:w-auto"
                             >
                               {translations.cancel}
                             </button>
@@ -600,12 +606,14 @@ export default function RiwayatPage() {
                   </div>
                 ))
               ) : (
-                <EmptyState
-                  title={translations.empty}
-                  description={translations.emptyDescription}
-                  buttonText={isEnglish ? "Find a Court" : "Cari Lapangan"}
-                  onButtonClick={() => router.push("/lapangan")}
-                />
+                <div className="riwayat-empty">
+                  <EmptyState
+                    title={translations.empty}
+                    description={translations.emptyDescription}
+                    buttonText={isEnglish ? "Find a Court" : "Cari Lapangan"}
+                    onButtonClick={() => router.push("/lapangan")}
+                  />
+                </div>
               )}
             </div>
           )}
@@ -614,11 +622,11 @@ export default function RiwayatPage() {
         {/* DETAIL BOOKING MODAL */}
         {selectedBooking && (
           <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 py-8 backdrop-blur-sm"
+            className="riwayat-modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 py-8 backdrop-blur-sm"
             onClick={() => setSelectedBooking(null)}
           >
             <div
-              className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border p-6 shadow-2xl backdrop-blur-2xl sm:p-7"
+              className="riwayat-modal-panel max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border p-6 shadow-2xl backdrop-blur-2xl sm:p-7"
               style={{
                 backgroundColor: "var(--bg-card-solid)",
                 borderColor: "var(--border-main)",
@@ -684,11 +692,11 @@ export default function RiwayatPage() {
                     translations.paymentStatus,
                     getPaymentStatus(selectedBooking.statusPembayaran),
                   ],
-                ].map(([label, value]) => (
+                ].map(([label, value], index) => (
                   <div
                     key={label}
-                    className="flex items-start justify-between gap-4 border-b pb-3"
-                    style={{ borderColor: "var(--border-soft)" }}
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                    className="riwayat-detail-row flex items-start justify-between gap-4 border-b pb-3"
                   >
                     <span className="text-sm" style={textSecondaryStyle}>
                       {label}
@@ -714,7 +722,11 @@ export default function RiwayatPage() {
                   {getBookingTimeline(
                     selectedBooking.statusBooking
                   ).map((step, index, steps) => (
-                    <div key={index} className="relative flex gap-4">
+                    <div
+                      key={index}
+                      style={{ animationDelay: `${index * 0.15}s` }}
+                      className="riwayat-timeline-step relative flex gap-4"
+                    >
                       {index !== steps.length - 1 && (
                         <div
                           className={`absolute left-[13px] top-7 h-full w-0.5 ${step.completed
@@ -768,7 +780,7 @@ export default function RiwayatPage() {
                 <button
                   type="button"
                   onClick={() => setCancelTarget(selectedBooking)}
-                  className="mt-6 w-full rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-500/20 dark:text-red-400"
+                  className="riwayat-modal-button mt-6 w-full rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-500/20 dark:text-red-400"
                 >
                   {translations.cancel}
                 </button>
@@ -784,7 +796,7 @@ export default function RiwayatPage() {
               <button
                 type="button"
                 onClick={() => setSelectedBooking(null)}
-                className="liquid-booking-button mt-3 w-full justify-center"
+                className="liquid-booking-button riwayat-modal-button mt-3 w-full justify-center"
               >
                 {translations.close}
               </button>
@@ -795,11 +807,11 @@ export default function RiwayatPage() {
         {/* CANCEL CONFIRMATION MODAL */}
         {cancelTarget && (
           <div
-            className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 px-4 py-8 backdrop-blur-sm"
+            className="riwayat-modal-overlay fixed inset-0 z-[110] flex items-center justify-center bg-black/50 px-4 py-8 backdrop-blur-sm"
             onClick={() => setCancelTarget(null)}
           >
             <div
-              className="w-full max-w-md overflow-hidden rounded-3xl border p-6 shadow-2xl sm:p-7"
+              className="riwayat-modal-panel w-full max-w-md overflow-hidden rounded-3xl border p-6 shadow-2xl sm:p-7"
               style={{
                 backgroundColor: "var(--bg-card-solid)",
                 borderColor: "var(--border-main)",
@@ -808,7 +820,7 @@ export default function RiwayatPage() {
               onClick={(e) => e.stopPropagation()}
             >
               {/* ICON */}
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-3xl font-bold text-red-600 dark:text-red-400">
+              <div className="riwayat-warning-icon mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-3xl font-bold text-red-600 dark:text-red-400">
                 !
               </div>
 
@@ -882,7 +894,7 @@ export default function RiwayatPage() {
                 <button
                   type="button"
                   onClick={() => setCancelTarget(null)}
-                  className="flex-1 rounded-xl border px-5 py-3 text-sm font-semibold transition hover:bg-gray-500/10"
+                  className="riwayat-modal-button flex-1 rounded-xl border px-5 py-3 text-sm font-semibold transition hover:bg-gray-500/10"
                   style={{
                     borderColor: "var(--border-main)",
                     color: "var(--text-secondary)",
@@ -894,7 +906,7 @@ export default function RiwayatPage() {
                 <button
                   type="button"
                   onClick={handleCancelBooking}
-                  className="flex-1 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700"
+                  className="riwayat-modal-button flex-1 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700"
                 >
                   {translations.confirmCancel}
                 </button>
@@ -902,6 +914,160 @@ export default function RiwayatPage() {
             </div>
           </div>
         )}
+
+        {/* ANIMATION STYLES */}
+        <style jsx global>{`
+          @keyframes riwayatFadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes riwayatSlideUp {
+            from {
+              opacity: 0;
+              transform: translateY(25px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes riwayatPop {
+            0% {
+              opacity: 0;
+              transform: scale(0.94) translateY(15px);
+            }
+            100% {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
+          }
+
+          @keyframes riwayatIcon {
+            0% {
+              opacity: 0;
+              transform: scale(0.5) rotate(-15deg);
+            }
+            70% {
+              transform: scale(1.12) rotate(5deg);
+            }
+            100% {
+              opacity: 1;
+              transform: scale(1) rotate(0);
+            }
+          }
+
+          .riwayat-page {
+            animation: riwayatFadeIn 0.55s ease both;
+          }
+
+          .riwayat-header {
+            animation: riwayatSlideUp 0.65s ease both;
+          }
+
+          .riwayat-label {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+
+          .riwayat-label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(20, 107, 69, 0.12);
+          }
+
+          .riwayat-filters .riwayat-filter {
+            animation: riwayatSlideUp 0.5s ease both;
+          }
+
+          .riwayat-filter:hover {
+            transform: translateY(-3px);
+          }
+
+          .riwayat-card {
+            animation: riwayatSlideUp 0.65s ease both;
+            transition:
+              transform 0.3s ease,
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+          }
+
+          .riwayat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(39, 163, 107, 0.35);
+          }
+
+          .riwayat-status {
+            transition: transform 0.25s ease;
+          }
+
+          .riwayat-card:hover .riwayat-status {
+            transform: scale(1.04);
+          }
+
+          .riwayat-action-button {
+            transition:
+              transform 0.25s ease,
+              background-color 0.25s ease,
+              color 0.25s ease,
+              box-shadow 0.25s ease;
+          }
+
+          .riwayat-action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 16px rgba(20, 107, 69, 0.12);
+          }
+
+          .riwayat-empty {
+            animation: riwayatSlideUp 0.6s ease both;
+          }
+
+          .riwayat-modal-overlay {
+            animation: riwayatFadeIn 0.25s ease both;
+          }
+
+          .riwayat-modal-panel {
+            animation: riwayatPop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+          }
+
+          .riwayat-detail-row {
+            animation: riwayatSlideUp 0.4s ease both;
+          }
+
+          .riwayat-timeline-step {
+            animation: riwayatSlideUp 0.45s ease both;
+          }
+
+          .riwayat-warning-icon {
+            animation: riwayatIcon 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+          }
+
+          .riwayat-modal-button {
+            transition:
+              transform 0.25s ease,
+              box-shadow 0.25s ease,
+              background-color 0.25s ease;
+          }
+
+          .riwayat-modal-button:hover {
+            transform: translateY(-2px);
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .riwayat-page *,
+            .riwayat-page *::before,
+            .riwayat-page *::after,
+            .riwayat-modal-overlay,
+            .riwayat-modal-overlay * {
+              animation-duration: 0.01ms !important;
+              animation-iteration-count: 1 !important;
+              transition-duration: 0.01ms !important;
+            }
+          }
+        `}</style>
       </main>
 
       <Footer />

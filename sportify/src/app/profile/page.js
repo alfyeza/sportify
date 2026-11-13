@@ -91,7 +91,6 @@ export default function ProfilePage() {
       const response = await apiRequest("/cerita-pengguna");
 
       const semuaCerita = response?.data || [];
-
       const emailLogin = localStorage.getItem("sportify_user");
 
       let user = {};
@@ -294,16 +293,15 @@ export default function ProfilePage() {
       <Navbar />
 
       <main
-        className="min-h-screen px-4 py-10 sm:py-14"
+        className="profile-page min-h-screen px-4 py-10 sm:py-14"
         style={{
           backgroundColor: "var(--bg-main)",
           color: "var(--text-main)",
         }}
       >
         <div className="mx-auto max-w-3xl">
-
           {/* HEADER */}
-          <div className="mb-8 text-center">
+          <div className="profile-header mb-8 text-center">
             <span className="inline-block rounded-full bg-soft-mint px-4 py-2 text-xs font-bold tracking-wider text-primary">
               {isEnglish ? "MY ACCOUNT" : "AKUN SAYA"}
             </span>
@@ -323,8 +321,7 @@ export default function ProfilePage() {
           </div>
 
           {/* PROFILE CARD */}
-          <div className="liquid-auth-card p-5 sm:p-8">
-
+          <div className="profile-card liquid-auth-card p-5 sm:p-8">
             {loading ? (
               <LoadingState
                 message={
@@ -364,7 +361,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 {/* FOTO PROFIL */}
-                <div className="mb-8 flex flex-col items-center text-center">
+                <div className="profile-avatar mb-8 flex flex-col items-center text-center">
                   <div
                     className="flex h-24 w-24 items-center justify-center rounded-full border-4 shadow-md"
                     style={{
@@ -395,16 +392,15 @@ export default function ProfilePage() {
 
                 {/* PESAN */}
                 {message && (
-                  <div className="mb-5 rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
+                  <div className="profile-message mb-5 rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
                     {message}
                   </div>
                 )}
 
                 {!isEditing ? (
                   <div className="space-y-5">
-
                     {/* NAMA */}
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Full Name" : "Nama Lengkap"}
                       </label>
@@ -415,7 +411,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* EMAIL */}
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         Email
                       </label>
@@ -426,7 +422,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* NOMOR HP */}
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Phone Number" : "Nomor HP"}
                       </label>
@@ -458,8 +454,7 @@ export default function ProfilePage() {
                 ) : (
                   /* FORM EDIT PROFIL */
                   <form onSubmit={handleSave} className="space-y-5">
-
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Full Name" : "Nama Lengkap"}
                       </label>
@@ -483,7 +478,7 @@ export default function ProfilePage() {
                       />
                     </div>
 
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         Email
                       </label>
@@ -505,7 +500,7 @@ export default function ProfilePage() {
                       />
                     </div>
 
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Phone Number" : "Nomor HP"}
                       </label>
@@ -569,7 +564,7 @@ export default function ProfilePage() {
           {/* CERITA SAYA */}
           {!loading && !error && (
             <section
-              className="mt-8 overflow-hidden rounded-3xl border p-5 shadow-sm sm:p-8"
+              className="profile-stories mt-8 overflow-hidden rounded-3xl border p-5 shadow-sm sm:p-8"
               style={{
                 borderColor: "var(--border-main)",
                 backgroundColor: "var(--bg-card)",
@@ -615,7 +610,7 @@ export default function ProfilePage() {
                   />
                 ) : ceritaSaya.length === 0 ? (
                   <div
-                    className="rounded-2xl border border-dashed px-5 py-10 text-center"
+                    className="profile-empty rounded-2xl border border-dashed px-5 py-10 text-center"
                     style={{ borderColor: "var(--border-main)" }}
                   >
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 text-2xl text-primary dark:text-green-400">
@@ -654,7 +649,7 @@ export default function ProfilePage() {
                       return (
                         <article
                           key={item.id}
-                          className="rounded-2xl border p-5"
+                          className="profile-story-item rounded-2xl border p-5"
                           style={{
                             borderColor: "var(--border-main)",
                             backgroundColor: "var(--bg-main)",
@@ -715,7 +710,7 @@ export default function ProfilePage() {
           )}
 
           {/* KEMBALI KE BERANDA */}
-          <div className="mt-7 text-center">
+          <div className="profile-back mt-7 text-center">
             <Link
               href="/"
               className="text-sm transition hover:text-primary"
@@ -724,8 +719,150 @@ export default function ProfilePage() {
               ← {isEnglish ? "Back to Home" : "Kembali ke Beranda"}
             </Link>
           </div>
-
         </div>
+
+        {/* ANIMATION STYLES */}
+        <style jsx global>{`
+          .profile-page {
+            animation: profilePageEnter 0.7s ease both;
+          }
+
+          .profile-header {
+            animation: profileFadeUp 0.7s ease both;
+          }
+
+          .profile-card {
+            animation: profileFadeUp 0.8s ease 0.1s both;
+            transition:
+              transform 0.35s ease,
+              box-shadow 0.35s ease;
+          }
+
+          .profile-card:hover {
+            transform: translateY(-3px);
+          }
+
+          .profile-avatar {
+            animation: profileFadeUp 0.8s ease 0.2s both;
+          }
+
+          .profile-avatar > div {
+            animation: profileAvatarFloat 3s ease-in-out infinite;
+            transition: box-shadow 0.3s ease;
+          }
+
+          .profile-avatar > div:hover {
+            box-shadow: 0 0 25px rgba(39, 163, 107, 0.25);
+          }
+
+          .profile-stories {
+            animation: profileFadeUp 0.8s ease 0.25s both;
+            transition:
+              transform 0.35s ease,
+              box-shadow 0.35s ease;
+          }
+
+          .profile-story-item {
+            animation: profileFadeUp 0.6s ease both;
+            transition:
+              transform 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+          }
+
+          .profile-story-item:hover {
+            transform: translateY(-4px);
+            border-color: rgba(39, 163, 107, 0.5) !important;
+            box-shadow: 0 10px 25px rgba(20, 107, 69, 0.08);
+          }
+
+          .profile-story-item:nth-child(2) {
+            animation-delay: 0.1s;
+          }
+
+          .profile-story-item:nth-child(3) {
+            animation-delay: 0.2s;
+          }
+
+          .profile-story-item:nth-child(4) {
+            animation-delay: 0.3s;
+          }
+
+          .profile-empty {
+            animation: profileFadeUp 0.6s ease both;
+          }
+
+          .profile-page button,
+          .profile-page a {
+            transition:
+              transform 0.25s ease,
+              box-shadow 0.25s ease,
+              background-color 0.25s ease;
+          }
+
+          .profile-page button:not(:disabled):active,
+          .profile-page a:active {
+            transform: scale(0.97);
+          }
+
+          .profile-page input {
+            transition:
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
+          }
+
+          .profile-page input:focus {
+            box-shadow: 0 0 0 3px rgba(39, 163, 107, 0.12);
+          }
+
+          .profile-message {
+            animation: profileFadeUp 0.4s ease both;
+          }
+
+          .profile-back {
+            animation: profileFadeUp 0.8s ease 0.35s both;
+          }
+
+          @keyframes profilePageEnter {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes profileFadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(22px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes profileAvatarFloat {
+            0%,
+            100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-6px);
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .profile-page *,
+            .profile-page *::before,
+            .profile-page *::after {
+              animation-duration: 0.01ms !important;
+              animation-iteration-count: 1 !important;
+              transition-duration: 0.01ms !important;
+            }
+          }
+        `}</style>
       </main>
 
       <Footer />

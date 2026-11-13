@@ -1349,3 +1349,169 @@ html.dark .liquid-empty-state {
   color: #EDF5EF;
   border-color: rgba(255, 255, 255, 0.10);
 }
+
+/* ========================================
+   GLOBAL ANIMATION - ALL PAGES
+======================================== */
+
+/* Animasi saat halaman dibuka */
+@keyframes sportifyPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: sportifyPageEnter 0.65s ease-out both;
+}
+
+/* Animasi judul dan teks */
+@keyframes sportifyTextEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main h1,
+main h2 {
+  animation: sportifyTextEnter 0.7s ease-out both;
+}
+
+/* Efek hover card */
+.liquid-card,
+.liquid-info-card,
+.liquid-auth-card,
+.liquid-about-card,
+.liquid-booking-card,
+.liquid-booking-page-card,
+.liquid-empty-state,
+.liquid-review-item,
+.liquid-unit-card {
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    background-color 0.3s ease;
+}
+
+/* Efek hover gambar */
+.liquid-card img,
+.liquid-photo {
+  transition: transform 0.5s ease;
+}
+
+.liquid-card:hover img {
+  transform: scale(1.035);
+}
+
+/* Efek tombol */
+button,
+.liquid-primary-button,
+.liquid-outline-button,
+.liquid-booking-button,
+.liquid-detail-button,
+.liquid-filter-button {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Efek hover link */
+main a {
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease;
+}
+
+/* Animasi dropdown */
+.liquid-mobile-menu {
+  transform-origin: top;
+  animation: sportifyDropdown 0.25s ease-out both;
+}
+
+@keyframes sportifyDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animasi elemen mengambang */
+@keyframes sportifyFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.sportify-float {
+  animation: sportifyFloat 4s ease-in-out infinite;
+}
+
+/* Efek cahaya */
+@keyframes sportifyGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(39, 163, 107, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 24px rgba(39, 163, 107, 0.16);
+  }
+}
+
+.sportify-glow {
+  animation: sportifyGlow 3s ease-in-out infinite;
+}
+
+/* Tampilan mobile */
+@media (max-width: 640px) {
+  main {
+    animation-duration: 0.45s;
+  }
+
+  .liquid-card:hover {
+    transform: none;
+  }
+}
+
+/* Menghormati pengaturan reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  main,
+  main h1,
+  main h2,
+  .sportify-float,
+  .sportify-glow,
+  .liquid-mobile-menu {
+    animation: none !important;
+  }
+}

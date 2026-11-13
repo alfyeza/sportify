@@ -43,6 +43,34 @@ export default function Home() {
   const t = translations[language].home;
   const isEnglish = language === "en";
 
+  // ANIMASI SCROLL REVEAL
+  useEffect(() => {
+    const elements = document.querySelectorAll("main > section");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("sportify-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.12,
+        rootMargin: "0px 0px -40px 0px",
+      }
+    );
+
+    elements.forEach((element, index) => {
+      element.classList.add("sportify-reveal");
+      element.style.transitionDelay = `${Math.min(index * 70, 280)}ms`;
+      observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   // CERITA PENGGUNA DARI API
   const [testimoniPengguna, setTestimoniPengguna] = useState([]);
   const [loadingCerita, setLoadingCerita] = useState(true);
@@ -177,48 +205,50 @@ export default function Home() {
       <main className="overflow-hidden bg-[var(--bg-main)]">
         {/* HERO SECTION */}
         <section className="relative bg-[var(--bg-soft)] px-5 pb-16 pt-10 md:px-10 md:pb-24 md:pt-16">
-          <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-green-200/40 blur-3xl" />
-          <div className="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-lime-200/30 blur-3xl" />
+          <div className="absolute -left-32 top-10 h-72 w-72 animate-[sportifyGlow_7s_ease-in-out_infinite] rounded-full bg-green-200/40 blur-3xl" />
+          <div className="absolute -right-20 bottom-0 h-80 w-80 animate-[sportifyGlow_9s_ease-in-out_infinite] rounded-full bg-lime-200/30 blur-3xl" />
 
           <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-            <div>
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-green-200 dark:border-white/10 bg-white/80 dark:bg-white/10 px-4 py-2 text-sm font-semibold text-primary dark:text-green-300 shadow-sm">
-                <span className="h-2 w-2 rounded-full bg-secondary" />
+            <div className="hero-content">
+              <div className="hero-item mb-6 inline-flex items-center gap-2 rounded-full border border-green-200 bg-white/80 px-4 py-2 text-sm font-semibold text-primary shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-green-300">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-secondary" />
                 {isEnglish
                   ? "Your Sports Booking Platform"
                   : "Platform Penyewaan Lapangan Olahraga"}
               </div>
 
-              <h1 className="max-w-2xl text-4xl font-extrabold leading-tight tracking-tight text-dark-text dark:text-white md:text-5xl lg:text-6xl">
+              <h1 className="hero-item max-w-2xl text-4xl font-extrabold leading-tight tracking-tight text-dark-text dark:text-white md:text-5xl lg:text-6xl">
                 {t.heroTitle}{" "}
                 <span className="text-primary dark:text-green-400">
                   {t.heroHighlight}
                 </span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-base leading-8 text-gray-600 dark:text-gray-300 md:text-lg">
+              <p className="hero-item mt-6 max-w-xl text-base leading-8 text-gray-600 dark:text-gray-300 md:text-lg">
                 {t.heroDescription}
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="hero-item mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/lapangan"
-                  className="inline-flex items-center gap-3 rounded-full bg-primary px-7 py-4 font-semibold text-white shadow-lg shadow-green-900/15 transition hover:-translate-y-1 hover:bg-green-800"
+                  className="inline-flex items-center gap-3 rounded-full bg-primary px-7 py-4 font-semibold text-white shadow-lg shadow-green-900/15 transition duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl"
                 >
                   {t.findCourt}
-                  <span className="text-lg">&gt;</span>
+                  <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
+                    &gt;
+                  </span>
                 </Link>
 
                 <Link
                   href="/artikel"
-                  className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-7 py-4 font-semibold text-primary transition hover:bg-soft-mint dark:border-white/10 dark:bg-[#1B2B22] dark:text-green-300 dark:hover:bg-green-900/40"
+                  className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-7 py-4 font-semibold text-primary transition duration-300 hover:-translate-y-1 hover:bg-soft-mint dark:border-white/10 dark:bg-[#1B2B22] dark:text-green-300 dark:hover:bg-green-900/40"
                 >
                   {isEnglish ? "Read Articles" : "Jelajahi Artikel"}
                 </Link>
               </div>
 
-              <div className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-green-200 pt-7 dark:border-white/10">
-                <div>
+              <div className="hero-item mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-green-200 pt-7 dark:border-white/10">
+                <div className="transition duration-300 hover:-translate-y-1">
                   <p className="text-2xl font-extrabold text-primary dark:text-green-400 md:text-3xl">
                     4+
                   </p>
@@ -227,7 +257,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div>
+                <div className="transition duration-300 hover:-translate-y-1">
                   <p className="text-2xl font-extrabold text-primary dark:text-green-400 md:text-3xl">
                     {daftarLapangan.length}+
                   </p>
@@ -236,7 +266,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div>
+                <div className="transition duration-300 hover:-translate-y-1">
                   <p className="text-2xl font-extrabold text-primary dark:text-green-400 md:text-3xl">
                     24/7
                   </p>
@@ -248,15 +278,15 @@ export default function Home() {
             </div>
 
             {/* HERO IMAGE */}
-            <div className="relative mx-auto w-full max-w-xl">
-              <div className="absolute -right-5 -top-5 h-32 w-32 rounded-full bg-lime-300/50 blur-2xl" />
+            <div className="hero-image relative mx-auto w-full max-w-xl">
+              <div className="absolute -right-5 -top-5 h-32 w-32 animate-[sportifyGlow_6s_ease-in-out_infinite] rounded-full bg-lime-300/50 blur-2xl" />
 
               <div className="relative h-[390px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-primary to-emerald-900 shadow-2xl md:h-[480px]">
                 {heroImage ? (
                   <img
                     src={heroImage}
                     alt="Sports venue"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="hero-photo absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-8xl">
@@ -299,7 +329,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="absolute -bottom-5 -left-4 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1B2B22]/95 md:-left-8">
+              <div className="hero-floating absolute -bottom-5 -left-4 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1B2B22]/95 md:-left-8">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-soft-mint text-xl dark:bg-green-900/50">
                     ⭐
@@ -343,29 +373,34 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-              {kategoriOlahraga.map((kategori) => {
+              {kategoriOlahraga.map((kategori, index) => {
                 const gambar = getImageForCategory(kategori.nama);
 
                 return (
                   <Link
                     key={kategori.nama}
                     href={`/lapangan?kategori=${encodeURIComponent(kategori.nama)}`}
-                    className="group relative h-56 overflow-hidden rounded-3xl bg-gray-100 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl md:h-72"
+                    style={{ animationDelay: `${index * 120}ms` }}
+                    className="sportify-card group relative h-56 overflow-hidden rounded-3xl bg-gray-100 shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-xl md:h-72"
                   >
                     {gambar ? (
                       <img
                         src={gambar}
                         alt={kategori.nama}
-                        className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                        className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
                       />
                     ) : (
-                      <div className={`absolute inset-0 bg-gradient-to-br ${kategori.warna}`} />
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-br ${kategori.warna}`}
+                      />
                     )}
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent transition duration-300 group-hover:from-black/90" />
 
                     <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-6">
-                      <span className="text-3xl">{kategori.icon}</span>
+                      <span className="inline-block text-3xl transition duration-500 group-hover:-translate-y-2 group-hover:scale-110">
+                        {kategori.icon}
+                      </span>
                       <h3 className="mt-3 text-xl font-bold md:text-2xl">
                         {kategori.nama}
                       </h3>
@@ -374,7 +409,9 @@ export default function Home() {
                       </p>
                       <div className="mt-4 flex items-center gap-2 text-sm font-semibold">
                         {isEnglish ? "Explore" : "Jelajahi"}
-                        <span className="transition group-hover:translate-x-1">&gt;</span>
+                        <span className="transition duration-300 group-hover:translate-x-2">
+                          &gt;
+                        </span>
                       </div>
                     </div>
                   </Link>
@@ -386,12 +423,12 @@ export default function Home() {
 
         {/* PROMO BANNER */}
         <section className="px-5 pb-20 md:px-10">
-          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-primary">
+          <div className="promo-banner relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-primary">
             {daftarLapangan[0]?.gambar && (
               <img
                 src={daftarLapangan[0].gambar}
                 alt="Sportify promotion"
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105"
               />
             )}
 
@@ -417,14 +454,14 @@ export default function Home() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/lapangan"
-                  className="rounded-full bg-lime-300 px-7 py-3.5 font-bold text-green-950 transition hover:bg-lime-200"
+                  className="rounded-full bg-lime-300 px-7 py-3.5 font-bold text-green-950 transition duration-300 hover:-translate-y-1 hover:bg-lime-200"
                 >
                   {isEnglish ? "Book a Court" : "Cari Lapangan"} &gt;
                 </Link>
 
                 <Link
                   href="/artikel"
-                  className="rounded-full border border-white/40 bg-white/10 px-7 py-3.5 font-semibold text-white backdrop-blur-md transition hover:bg-white/20"
+                  className="rounded-full border border-white/40 bg-white/10 px-7 py-3.5 font-semibold text-white backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:bg-white/20"
                 >
                   {isEnglish ? "Read More" : "Baca Artikel"}
                 </Link>
@@ -465,7 +502,8 @@ export default function Home() {
               {lapanganUnggulan.map((lapangan, index) => (
                 <div
                   key={lapangan.id}
-                  className="relative w-[280px] shrink-0 snap-start overflow-hidden rounded-3xl bg-white text-dark-text shadow-xl md:w-[320px]"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="sportify-card relative w-[280px] shrink-0 snap-start overflow-hidden rounded-3xl bg-white text-dark-text shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl md:w-[320px]"
                 >
                   <div className="absolute left-4 top-4 z-10 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-bold text-green-950 shadow">
                     {index < 3
@@ -509,15 +547,18 @@ export default function Home() {
               <div className="py-12 text-center">
                 <div className="mx-auto h-9 w-9 animate-spin rounded-full border-4 border-green-200 border-t-primary" />
                 <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                  {isEnglish ? "Loading user stories..." : "Memuat cerita pengguna..."}
+                  {isEnglish
+                    ? "Loading user stories..."
+                    : "Memuat cerita pengguna..."}
                 </p>
               </div>
             ) : testimoniPengguna.length > 0 ? (
               <div className="-mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-5 md:-mx-10 md:px-10">
-                {testimoniPengguna.map((cerita) => (
+                {testimoniPengguna.map((cerita, index) => (
                   <div
                     key={cerita.id}
-                    className="flex w-[290px] shrink-0 snap-start flex-col rounded-3xl border border-green-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-[#1B2B22] md:w-[340px]"
+                    style={{ animationDelay: `${index * 120}ms` }}
+                    className="sportify-card flex w-[290px] shrink-0 snap-start flex-col rounded-3xl border border-green-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-lg dark:border-white/10 dark:bg-[#1B2B22] md:w-[340px]"
                   >
                     <div className="mb-4 flex gap-1 text-lg text-yellow-400">
                       {Array.from({ length: 5 }).map((_, i) => (
@@ -533,7 +574,8 @@ export default function Home() {
 
                     <div className="mt-6 border-t border-gray-100 pt-5 dark:border-white/10">
                       <p className="font-bold text-[#202B25] dark:text-white">
-                        {cerita.nama || (isEnglish ? "Sportify User" : "Pengguna Sportify")}
+                        {cerita.nama ||
+                          (isEnglish ? "Sportify User" : "Pengguna Sportify")}
                       </p>
 
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -579,7 +621,7 @@ export default function Home() {
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               <Link
                 href="/cerita-pengguna"
-                className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-6 py-3 font-semibold text-primary transition hover:bg-soft-mint dark:border-white/10 dark:bg-[#1B2B22] dark:text-green-300 dark:hover:bg-green-900/40"
+                className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-6 py-3 font-semibold text-primary transition hover:-translate-y-1 hover:bg-soft-mint dark:border-white/10 dark:bg-[#1B2B22] dark:text-green-300 dark:hover:bg-green-900/40"
               >
                 {isEnglish ? "See All Stories" : "Lihat Semua Cerita"}
                 <span>&gt;</span>
@@ -587,7 +629,7 @@ export default function Home() {
 
               <Link
                 href="/cerita-pengguna/tulis"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-white transition hover:bg-green-800"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-white transition hover:-translate-y-1 hover:bg-green-800"
               >
                 {isEnglish ? "Share Your Story" : "Tulis Ceritamu"}
                 <span>&gt;</span>
@@ -621,9 +663,10 @@ export default function Home() {
               {keunggulan.map((item, index) => (
                 <div
                   key={index}
-                  className="rounded-3xl border border-green-100 bg-[#F8FBF8] p-8 transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#1B2B22] dark:hover:border-green-700"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                  className="sportify-card rounded-3xl border border-green-100 bg-[#F8FBF8] p-8 transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#1B2B22] dark:hover:border-green-700"
                 >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-soft-mint text-3xl dark:bg-green-900/50">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-soft-mint text-3xl transition duration-300 hover:rotate-6 hover:scale-110 dark:bg-green-900/50">
                     {item.icon}
                   </div>
 
@@ -674,9 +717,10 @@ export default function Home() {
               {aktivitas.map((item, index) => (
                 <div
                   key={index}
-                  className="group overflow-hidden rounded-3xl border border-green-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#1B2B22] dark:hover:border-green-700"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                  className="sportify-card group overflow-hidden rounded-3xl border border-green-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#1B2B22] dark:hover:border-green-700"
                 >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-soft-mint text-3xl transition group-hover:scale-110 dark:bg-green-900/50">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-soft-mint text-3xl transition duration-300 group-hover:rotate-6 group-hover:scale-110 dark:bg-green-900/50">
                     {item.icon}
                   </div>
 
@@ -693,7 +737,9 @@ export default function Home() {
                     className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-secondary dark:text-green-300"
                   >
                     {isEnglish ? "Find a Venue" : "Cari Lapangan"}
-                    <span className="transition group-hover:translate-x-1">&gt;</span>
+                    <span className="transition group-hover:translate-x-1">
+                      &gt;
+                    </span>
                   </Link>
                 </div>
               ))}
@@ -724,8 +770,12 @@ export default function Home() {
 
             <div className="relative grid gap-10 md:grid-cols-3 md:gap-6">
               {caraBooking.map((item, index) => (
-                <div key={index} className="relative text-center">
-                  <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-full border-4 border-green-100 bg-soft-mint text-4xl dark:border-white/10 dark:bg-green-900/40">
+                <div
+                  key={index}
+                  style={{ animationDelay: `${index * 180}ms` }}
+                  className="sportify-card relative text-center"
+                >
+                  <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-full border-4 border-green-100 bg-soft-mint text-4xl transition duration-500 hover:scale-110 hover:rotate-6 dark:border-white/10 dark:bg-green-900/40">
                     {item.icon}
 
                     <span className="absolute -right-2 -top-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
@@ -747,7 +797,7 @@ export default function Home() {
             <div className="mt-12 text-center">
               <Link
                 href="/lapangan"
-                className="inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:bg-green-800"
+                className="inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-semibold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl"
               >
                 {isEnglish ? "Start Booking" : "Mulai Booking"}
                 <span>&gt;</span>
@@ -781,7 +831,7 @@ export default function Home() {
 
                 <Link
                   href="/artikel"
-                  className="font-semibold text-primary hover:text-secondary dark:text-green-400"
+                  className="font-semibold text-primary transition hover:text-secondary dark:text-green-400"
                 >
                   {isEnglish ? "View All Articles" : "Lihat Semua Artikel"} &gt;
                 </Link>
@@ -792,7 +842,8 @@ export default function Home() {
                   <Link
                     key={artikel.id || artikel.slug || index}
                     href={`/artikel/${artikel.slug}`}
-                    className={`group overflow-hidden rounded-3xl bg-white shadow-sm transition hover:-translate-y-2 hover:shadow-xl dark:bg-[#1B2B22] ${index === 0 ? "md:col-span-2" : ""
+                    style={{ animationDelay: `${index * 150}ms` }}
+                    className={`sportify-card group overflow-hidden rounded-3xl bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-xl dark:bg-[#1B2B22] ${index === 0 ? "md:col-span-2" : ""
                       }`}
                   >
                     <div
@@ -803,7 +854,7 @@ export default function Home() {
                         <img
                           src={artikel.gambar}
                           alt={isEnglish ? artikel.judulEn : artikel.judul}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                          className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                         />
                       )}
 
@@ -848,11 +899,13 @@ export default function Home() {
         {/* FINAL CTA */}
         <section className="px-5 py-20 md:px-10 md:py-24">
           <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-primary to-[#073C29] px-7 py-16 text-center text-white md:px-16 md:py-20">
-            <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-lime-300/10 blur-3xl" />
-            <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-emerald-300/20 blur-3xl" />
+            <div className="absolute -left-20 -top-20 h-64 w-64 animate-[sportifyGlow_8s_ease-in-out_infinite] rounded-full bg-lime-300/10 blur-3xl" />
+            <div className="absolute -bottom-20 -right-20 h-64 w-64 animate-[sportifyGlow_10s_ease-in-out_infinite] rounded-full bg-emerald-300/20 blur-3xl" />
 
             <div className="relative">
-              <span className="text-4xl">🏸</span>
+              <span className="inline-block animate-[sportifyFloat_4s_ease-in-out_infinite] text-4xl">
+                🏸
+              </span>
 
               <h2 className="mx-auto mt-6 max-w-3xl text-3xl font-extrabold leading-tight md:text-5xl">
                 {t.ctaTitle}
@@ -864,7 +917,7 @@ export default function Home() {
 
               <Link
                 href="/lapangan"
-                className="mt-9 inline-flex items-center gap-3 rounded-full bg-lime-300 px-8 py-4 font-bold text-green-950 shadow-lg transition hover:-translate-y-1 hover:bg-lime-200"
+                className="mt-9 inline-flex items-center gap-3 rounded-full bg-lime-300 px-8 py-4 font-bold text-green-950 shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-lime-200 hover:shadow-xl"
               >
                 {t.bookNow}
                 <span>&gt;</span>
@@ -872,6 +925,124 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* ANIMATION STYLES */}
+        <style jsx global>{`
+          .sportify-reveal {
+            opacity: 0;
+            transform: translateY(35px);
+            transition:
+              opacity 800ms ease,
+              transform 800ms cubic-bezier(0.2, 0.65, 0.3, 1);
+          }
+
+          .sportify-reveal.sportify-visible {
+            opacity: 1;
+            transform: translateY(0);
+          }
+
+          .hero-item {
+            opacity: 0;
+            animation: sportifyHeroEnter 800ms ease forwards;
+          }
+
+          .hero-item:nth-child(1) {
+            animation-delay: 150ms;
+          }
+
+          .hero-item:nth-child(2) {
+            animation-delay: 300ms;
+          }
+
+          .hero-item:nth-child(3) {
+            animation-delay: 450ms;
+          }
+
+          .hero-item:nth-child(4) {
+            animation-delay: 600ms;
+          }
+
+          .hero-image {
+            animation: sportifyHeroEnter 1000ms ease 250ms both;
+          }
+
+          .hero-photo {
+            animation: sportifyFloat 7s ease-in-out infinite;
+          }
+
+          .hero-floating {
+            animation: sportifyFloat 4s ease-in-out infinite;
+          }
+
+          .sportify-card {
+            animation: sportifyCardEnter 700ms ease both;
+          }
+
+          @keyframes sportifyHeroEnter {
+            from {
+              opacity: 0;
+              transform: translateY(28px);
+            }
+
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes sportifyCardEnter {
+            from {
+              opacity: 0;
+              transform: translateY(25px);
+            }
+
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes sportifyFloat {
+            0%,
+            100% {
+              transform: translateY(0);
+            }
+
+            50% {
+              transform: translateY(-12px);
+            }
+          }
+
+          @keyframes sportifyGlow {
+            0%,
+            100% {
+              opacity: 0.35;
+              transform: scale(1);
+            }
+
+            50% {
+              opacity: 0.65;
+              transform: scale(1.12);
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .sportify-reveal {
+              opacity: 1;
+              transform: none;
+              transition: none;
+            }
+
+            .hero-item,
+            .hero-image,
+            .hero-photo,
+            .hero-floating,
+            .sportify-card {
+              animation: none !important;
+              opacity: 1;
+            }
+          }
+        `}</style>
       </main>
 
       <Footer />
