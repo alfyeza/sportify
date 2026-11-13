@@ -58,9 +58,24 @@ export default function BookingLapanganPage() {
     setIsCheckingAuth(false);
   }, [params.id, router]);
 
-  const lapangan = daftarLapangan.find(
-    (item) => String(item.id) === String(params.id)
+  const [lapangan, setLapangan] = useState(
+    daftarLapangan.find((item) => String(item.id) === String(params.id)) || null
   );
+
+  useEffect(() => {
+    const fetchVenue = async () => {
+      try {
+        const res = await fetch(`/api/lapangan/${params.id}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          setLapangan(json.data);
+        }
+      } catch {
+        // Fallback
+      }
+    };
+    fetchVenue();
+  }, [params.id]);
 
   const formatRupiah = (nominal) => {
     return `Rp ${Number(nominal || 0).toLocaleString("id-ID")}`;

@@ -12,6 +12,7 @@ export default function Navbar() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [theme, setTheme] = useState("light");
 
   // TERJEMAHAN
@@ -90,6 +91,9 @@ export default function Navbar() {
     const checkAuth = () => {
       const token = localStorage.getItem("token");
       const savedUser = localStorage.getItem("sportify_user");
+      const adminToken = localStorage.getItem("sportify_admin_token");
+
+      setIsAdmin(Boolean(adminToken));
 
       if (token) {
         if (savedUser) {
@@ -280,6 +284,17 @@ export default function Navbar() {
               {t.cari}
             </Link>
 
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition shrink-0"
+                title="Buka Dashboard Admin"
+              >
+                <span>🛡️</span>
+                <span>Admin</span>
+              </Link>
+            )}
+
             {/* TOMBOL DARK / LIGHT MODE */}
             <button
               type="button"
@@ -468,6 +483,15 @@ export default function Navbar() {
                   className="liquid-primary-button justify-center"
                 >
                   {t.cari}
+                </Link>
+
+                <Link
+                  href="/admin"
+                  onClick={closeMenu}
+                  className="liquid-outline-button text-center flex items-center justify-center gap-1.5 text-xs text-primary font-bold"
+                >
+                  <span>🛡️</span>
+                  <span>Portal Admin</span>
                 </Link>
 
               </div>

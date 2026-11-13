@@ -46,6 +46,22 @@ export default function Home() {
   // CERITA PENGGUNA DARI API
   const [testimoniPengguna, setTestimoniPengguna] = useState([]);
   const [loadingCerita, setLoadingCerita] = useState(true);
+  const [semuaLapangan, setSemuaLapangan] = useState(daftarLapangan);
+
+  useEffect(() => {
+    const fetchVenues = async () => {
+      try {
+        const res = await fetch("/api/lapangan");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setSemuaLapangan(json.data);
+        }
+      } catch {
+        // Fallback ke data statis
+      }
+    };
+    fetchVenues();
+  }, []);
 
   useEffect(() => {
     const fetchCeritaPengguna = async () => {
@@ -154,7 +170,7 @@ export default function Home() {
   const artikelTerbaru = daftarArtikel.slice(0, 3);
 
   const getImageForCategory = (nama) => {
-    const match = daftarLapangan.find((lapangan) => {
+    const match = semuaLapangan.find((lapangan) => {
       const kategori = Array.isArray(lapangan.kategori)
         ? lapangan.kategori
         : [lapangan.kategori];
@@ -167,8 +183,8 @@ export default function Home() {
     return match?.gambar || null;
   };
 
-  const lapanganUnggulan = daftarLapangan.slice(0, 8);
-  const heroImage = daftarLapangan[0]?.gambar;
+  const lapanganUnggulan = semuaLapangan.slice(0, 8);
+  const heroImage = semuaLapangan[0]?.gambar;
 
   return (
     <>
@@ -229,7 +245,7 @@ export default function Home() {
 
                 <div>
                   <p className="text-2xl font-extrabold text-primary dark:text-green-400 md:text-3xl">
-                    {daftarLapangan.length}+
+                    {semuaLapangan.length}+
                   </p>
                   <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 md:text-sm">
                     {isEnglish ? "Sports Venues" : "Pilihan Lapangan"}
@@ -291,7 +307,7 @@ export default function Home() {
                     {isEnglish ? "Explore" : "Jelajahi"}
                   </p>
                   <p className="mt-1 text-lg font-bold">
-                    {daftarLapangan.length}+{" "}
+                    {semuaLapangan.length}+{" "}
                     <span className="text-sm font-normal">
                       {isEnglish ? "Venues" : "Lapangan"}
                     </span>
@@ -387,9 +403,9 @@ export default function Home() {
         {/* PROMO BANNER */}
         <section className="px-5 pb-20 md:px-10">
           <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-primary">
-            {daftarLapangan[0]?.gambar && (
+            {semuaLapangan[0]?.gambar && (
               <img
-                src={daftarLapangan[0].gambar}
+                src={semuaLapangan[0].gambar}
                 alt="Sportify promotion"
                 className="absolute inset-0 h-full w-full object-cover"
               />

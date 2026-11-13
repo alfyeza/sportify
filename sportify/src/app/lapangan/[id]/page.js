@@ -46,6 +46,47 @@ export default function DetailLapangan() {
     router.push(bookingPath);
   };
 
+  const initialLapangan = daftarLapangan.find(
+    (item) => String(item.id) === String(id)
+  ) || null;
+
+  const [lapangan, setLapangan] = useState(initialLapangan);
+  const [semuaLapangan, setSemuaLapangan] = useState(daftarLapangan);
+  const [loadingVenue, setLoadingVenue] = useState(!initialLapangan);
+
+  useEffect(() => {
+    // Ambil data detail lapangan dari database via API
+    const fetchVenueDetail = async () => {
+      try {
+        const res = await fetch(`/api/lapangan/${id}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          setLapangan(json.data);
+        }
+      } catch (err) {
+        console.error("Gagal mengambil detail lapangan dari API:", err);
+      } finally {
+        setLoadingVenue(false);
+      }
+    };
+
+    // Ambil seluruh lapangan untuk bagian rekomendasi
+    const fetchAllVenues = async () => {
+      try {
+        const res = await fetch("/api/lapangan");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          setSemuaLapangan(json.data);
+        }
+      } catch {
+        // Abaikan
+      }
+    };
+
+    fetchVenueDetail();
+    fetchAllVenues();
+  }, [id]);
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem(`sportify_reviews_${id}`);
@@ -71,10 +112,6 @@ export default function DetailLapangan() {
       // Abaikan jika data localStorage tidak valid
     }
   }, [id]);
-
-  const lapangan = daftarLapangan.find(
-    (item) => String(item.id) === String(id)
-  );
 
   const handleShareWA = () => {
     if (!lapangan || typeof window === "undefined") return;
@@ -141,6 +178,29 @@ export default function DetailLapangan() {
     setShowReviewForm(false);
   };
 
+  if (loadingVenue && !lapangan) {
+    return (
+      <>
+        <Navbar />
+        <main
+          className="min-h-screen flex items-center justify-center px-4"
+          style={{ background: "var(--bg-main)" }}
+        >
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <p
+              className="text-sm font-semibold"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              {isEnglish ? "Loading venue details..." : "Memuat data lapangan..."}
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   if (!lapangan) {
     return (
       <>
@@ -191,7 +251,7 @@ export default function DetailLapangan() {
       ? [lapangan.kategori]
       : [];
 
-  const rekomendasi = daftarLapangan.filter((item) => {
+  const rekomendasi = semuaLapangan.filter((item) => {
     const kategoriItem = Array.isArray(item.kategori)
       ? item.kategori
       : item.kategori
@@ -307,13 +367,31 @@ export default function DetailLapangan() {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {lapangan.kontak && (
+                    <a
+                      href={`https://wa.me/${String(lapangan.kontak).replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                        isEnglish
+                          ? `Hello Admin ${lapangan.nama}, I would like to inquire about court booking on Sportify.`
+                          : `Halo Admin ${lapangan.nama}, saya ingin bertanya mengenai booking lapangan via Sportify.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition"
+                    >
+                      <span>💬</span>
+                      <span>{isEnglish ? "Chat Venue" : "Hubungi Venue"}</span>
+                    </a>
+                  )}
+
                   <button
                     type="button"
                     onClick={handleShareWA}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-sm transition"
+                    title={isEnglish ? "Share to WhatsApp" : "Bagikan ke WhatsApp"}
                   >
-                    WhatsApp
+                    <span>📤</span>
+                    <span>{isEnglish ? "Share" : "Bagikan"}</span>
                   </button>
 
                   <button
@@ -586,9 +664,15 @@ export default function DetailLapangan() {
                       style={{ border: "1px solid var(--border-main)" }}
                     >
                       <iframe
-                        src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                          lapangan.alamat
-                        )}&output=embed`}
+                        src={
+                          lapangan.mapsUrl &&
+                          (lapangan.mapsUrl.includes("maps/embed") ||
+                            lapangan.mapsUrl.includes("output=embed"))
+                            ? lapangan.mapsUrl
+                            : `https://maps.google.com/maps?q=${encodeURIComponent(
+                                lapangan.alamat || lapangan.lokasi
+                              )}&output=embed`
+                        }
                         width="100%"
                         height="350"
                         loading="lazy"
@@ -698,6 +782,27 @@ export default function DetailLapangan() {
                       {lapangan.lokasi}
                     </p>
                   </div>
+
+                  {lapangan.kontak && (
+                    <div>
+                      <p
+                        className="font-semibold"
+                        style={{ color: "var(--text-main)" }}
+                      >
+                        {isEnglish ? "WhatsApp Contact" : "Kontak WhatsApp"}
+                      </p>
+
+                      <a
+                        href={`https://wa.me/${String(lapangan.kontak).replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1.5 text-primary hover:text-secondary font-semibold text-xs"
+                      >
+                        <span>💬</span>
+                        <span>{lapangan.kontak}</span>
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 <button

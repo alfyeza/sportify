@@ -31,9 +31,25 @@ function BookingContent() {
   const jam = searchParams.get("jam");
   const durasi = Number(searchParams.get("durasi")) || 1;
 
-  const lapangan = daftarLapangan.find(
-    (item) => String(item.id) === String(lapanganId)
+  const [lapangan, setLapangan] = useState(
+    daftarLapangan.find((item) => String(item.id) === String(lapanganId)) || null
   );
+
+  useEffect(() => {
+    if (!lapanganId) return;
+    const fetchVenue = async () => {
+      try {
+        const res = await fetch(`/api/lapangan/${lapanganId}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          setLapangan(json.data);
+        }
+      } catch {
+        // Fallback
+      }
+    };
+    fetchVenue();
+  }, [lapanganId]);
 
   // FORM DATA PEMESAN
   const [namaPemesan, setNamaPemesan] = useState("");

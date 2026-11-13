@@ -146,6 +146,11 @@ export default function Footer() {
                 {isEnglish ? "Terms & Conditions" : "Syarat & Ketentuan"}
               </Link>
 
+              <Link href="/admin" className="hover:text-white hover:translate-x-1 transition w-fit text-lime-300 font-semibold flex items-center gap-1.5 mt-1">
+                <span>🛡️</span>
+                <span>{isEnglish ? "Admin Portal" : "Portal Admin"}</span>
+              </Link>
+
             </div>
 
           </div>

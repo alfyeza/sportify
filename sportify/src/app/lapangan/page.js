@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -29,6 +29,8 @@ const pilihanHarga = [
 ];
 
 function KontenHalamanLapangan() {
+  const [lapanganList, setLapanganList] = useState(daftarLapangan);
+  const [loadingDb, setLoadingDb] = useState(false);
   const [pencarian, setPencarian] = useState("");
   const [kategoriPilihan, setKategoriPilihan] = useState(null);
   const [urutan, setUrutan] = useState("rekomendasi");
@@ -38,12 +40,45 @@ function KontenHalamanLapangan() {
   const t = translations[language]?.lapangan || translations.id.lapangan;
   const isEnglish = language === "en";
 
+  // Ambil data lapangan secara dinamis dari database
+  useEffect(() => {
+    const fetchVenuesFromDb = async () => {
+      try {
+        setLoadingDb(true);
+        const res = await fetch("/api/lapangan");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setLapanganList(json.data);
+        }
+      } catch (err) {
+        console.error("Gagal mengambil data lapangan dari database:", err);
+      } finally {
+        setLoadingDb(false);
+      }
+    };
+
+    fetchVenuesFromDb();
+  }, []);
+
+  // Kategori dinamis (menggabungkan default dengan kategori baru dari database)
+  const kategoriDinamis = [
+    "Semua",
+    ...Array.from(
+      new Set([
+        ...kategoriOlahraga.filter((k) => k !== "Semua"),
+        ...lapanganList.flatMap((item) =>
+          Array.isArray(item.kategori) ? item.kategori : [item.kategori]
+        ).filter(Boolean),
+      ])
+    ),
+  ];
+
   const searchParams = useSearchParams();
   const kategoriURL = searchParams.get("kategori");
 
   const kategoriAktif =
     kategoriPilihan ??
-    (kategoriURL && kategoriOlahraga.includes(kategoriURL)
+    (kategoriURL && kategoriDinamis.includes(kategoriURL)
       ? kategoriURL
       : "Semua");
 
@@ -60,7 +95,7 @@ function KontenHalamanLapangan() {
     filterHarga !== "semua" ||
     urutan !== "rekomendasi";
 
-  const hasilFilter = daftarLapangan
+  const hasilFilter = lapanganList
     .filter((lapangan) => {
       const kategoriLapangan = Array.isArray(lapangan.kategori)
         ? lapangan.kategori
@@ -118,10 +153,10 @@ function KontenHalamanLapangan() {
 
   const jumlahKategori = (kategori) => {
     if (kategori === "Semua") {
-      return daftarLapangan.length;
+      return lapanganList.length;
     }
 
-    return daftarLapangan.filter((lapangan) => {
+    return lapanganList.filter((lapangan) => {
       const kategoriLapangan = Array.isArray(lapangan.kategori)
         ? lapangan.kategori
         : [lapangan.kategori];
@@ -202,7 +237,7 @@ function KontenHalamanLapangan() {
                     </p>
 
                     <p className="text-lg font-bold text-primary">
-                      {daftarLapangan.length}
+                      {lapanganList.length}
                     </p>
                   </div>
 
@@ -221,7 +256,7 @@ function KontenHalamanLapangan() {
                     </p>
 
                     <p className="text-lg font-bold text-primary">
-                      {kategoriOlahraga.length - 1}
+                      {kategoriDinamis.length - 1}
                     </p>
                   </div>
                 </div>
@@ -288,7 +323,7 @@ function KontenHalamanLapangan() {
           </div>
 
           <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide">
-            {kategoriOlahraga.map((kategori) => (
+            {kategoriDinamis.map((kategori) => (
               <button
                 key={kategori}
                 type="button"
@@ -296,7 +331,7 @@ function KontenHalamanLapangan() {
                 className={`liquid-filter-button shrink-0 transition-all duration-300 ${kategoriAktif === kategori ? "active" : ""
                   }`}
               >
-                {t.categories[kategori]}
+                {t.categories?.[kategori] || kategori}
 
                 <span
                   className={`ml-2 text-xs ${kategoriAktif === kategori ? "text-white/80" : ""
@@ -341,8 +376,8 @@ function KontenHalamanLapangan() {
                       type="button"
                       onClick={() => setFilterHarga(item.value)}
                       className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${filterHarga === item.value
-                          ? "bg-primary text-white shadow-md shadow-primary/20"
-                          : "border hover:border-primary hover:text-primary"
+                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                        : "border hover:border-primary hover:text-primary"
                         }`}
                       style={
                         filterHarga !== item.value
