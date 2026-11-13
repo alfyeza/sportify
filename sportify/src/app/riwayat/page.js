@@ -8,63 +8,12 @@ import LoadingState from "@/components/LoadingState";
 import EmptyState from "@/components/EmptyState";
 import { useLanguage } from "@/components/LanguageProvider";
 
-const initialRiwayat = [
-  {
-    id: "SPT-2026-001",
-    tempat: "Unity Sports Center",
-    lapangan: "Court A",
-    kategori: "Padel",
-    tanggal: "2026-11-05",
-    jam: "09:00 - 10:00",
-    durasi: "1 Jam",
-    total: 150000,
-    statusBooking: "Confirmed",
-    statusPembayaran: "Paid",
-  },
-  {
-    id: "SPT-2026-002",
-    tempat: "Sport Arena Demak",
-    lapangan: "Court B",
-    kategori: "Badminton",
-    tanggal: "2026-11-08",
-    jam: "13:00 - 15:00",
-    durasi: "2 Jam",
-    total: 100000,
-    statusBooking: "Pending",
-    statusPembayaran: "Pending",
-  },
-  {
-    id: "SPT-2026-003",
-    tempat: "Grand Tennis Center",
-    lapangan: "Court 1",
-    kategori: "Tennis",
-    tanggal: "2026-10-28",
-    jam: "15:00 - 16:00",
-    durasi: "1 Jam",
-    total: 200000,
-    statusBooking: "Completed",
-    statusPembayaran: "Paid",
-  },
-  {
-    id: "SPT-2026-004",
-    tempat: "Unity Sports Center",
-    lapangan: "Court C",
-    kategori: "Padel",
-    tanggal: "2026-10-20",
-    jam: "10:00 - 11:00",
-    durasi: "1 Jam",
-    total: 150000,
-    statusBooking: "Cancelled",
-    statusPembayaran: "Refunded",
-  },
-];
-
 const formatRupiah = (angka) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(angka || 0);
+  }).format(Number(angka) || 0);
 
 const formatTanggal = (tanggal, isEnglish) => {
   if (!tanggal) return "-";
@@ -120,7 +69,7 @@ export default function RiwayatPage() {
   const [filter, setFilter] = useState("All");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [cancelTarget, setCancelTarget] = useState(null);
-  const [bookings, setBookings] = useState(initialRiwayat);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const translations = {
@@ -229,7 +178,7 @@ export default function RiwayatPage() {
     { value: "Cancelled", label: translations.cancelled },
   ];
 
-  // MEMERIKSA LOGIN DAN MEMUAT DATA BOOKING
+  // MEMERIKSA LOGIN DAN MEMUAT RIWAYAT BOOKING
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -244,40 +193,17 @@ export default function RiwayatPage() {
       if (stored) {
         const parsed = JSON.parse(stored);
 
-        if (Array.isArray(parsed)) {
-          const combined = [...parsed, ...initialRiwayat];
-
-          const uniqueBookings = combined.filter(
-            (booking, index, self) =>
-              index === self.findIndex((item) => item.id === booking.id)
-          );
-
-          setBookings(uniqueBookings);
-          setLoading(false);
-          return;
-        }
+        setBookings(Array.isArray(parsed) ? parsed : []);
+      } else {
+        setBookings([]);
       }
     } catch (error) {
       console.error("Gagal membaca riwayat booking:", error);
+      setBookings([]);
+    } finally {
+      setLoading(false);
     }
-
-    setBookings(initialRiwayat);
-    setLoading(false);
   }, [router]);
-
-  // MENYIMPAN DATA BOOKING
-  const saveBookings = (updatedBookings) => {
-    setBookings(updatedBookings);
-
-    try {
-      localStorage.setItem(
-        "sportify_bookings",
-        JSON.stringify(updatedBookings)
-      );
-    } catch (error) {
-      console.error("Gagal menyimpan riwayat booking:", error);
-    }
-  };
 
   // MEMERIKSA APAKAH BOOKING BISA DIBATALKAN
   const canCancelBooking = (booking) => {
@@ -296,7 +222,7 @@ export default function RiwayatPage() {
       Cancelled: translations.cancelled,
     };
 
-    return labels[status] || status;
+    return labels[status] || status || "-";
   };
 
   // MENDAPATKAN LABEL STATUS PEMBAYARAN
@@ -308,7 +234,7 @@ export default function RiwayatPage() {
       Failed: isEnglish ? "Failed" : "Gagal",
     };
 
-    return labels[status] || status;
+    return labels[status] || status || "-";
   };
 
   // MEMBUAT TIMELINE BERDASARKAN STATUS
@@ -425,7 +351,6 @@ export default function RiwayatPage() {
         }}
       >
         <section className="mx-auto min-h-screen max-w-7xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14 md:px-8">
-
           {/* HEADER */}
           <div className="riwayat-header mb-8 sm:mb-9">
             <span className="riwayat-label mb-3 inline-block rounded-full bg-soft-mint px-4 py-2 text-xs font-bold tracking-wider text-primary">
@@ -703,7 +628,7 @@ export default function RiwayatPage() {
                     </span>
 
                     <span className="text-right text-sm font-semibold text-dark-text">
-                      {value}
+                      {value || "-"}
                     </span>
                   </div>
                 ))}

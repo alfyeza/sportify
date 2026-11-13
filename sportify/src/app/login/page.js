@@ -23,7 +23,11 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    if (!email.trim() || !password.trim()) {
+    // VALIDASI EMAIL DAN PASSWORD
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || !password) {
       setError(
         isEnglish
           ? "Email and password are required."
@@ -34,7 +38,7 @@ export default function LoginPage() {
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailPattern.test(email)) {
+    if (!emailPattern.test(normalizedEmail)) {
       setError(
         isEnglish
           ? "Please enter a valid email address."
@@ -55,33 +59,90 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
+      // REQUEST LOGIN
+
       const data = await apiRequest("/auth/login", {
         method: "POST",
         body: JSON.stringify({
-          email: email.trim(),
-          password: password,
+          email: normalizedEmail,
+          password,
         }),
       });
+
+      // AMBIL TOKEN
 
       const token =
         data?.token ||
         data?.accessToken ||
-        data?.access_token;
+        data?.access_token ||
+        data?.data?.token ||
+        data?.data?.accessToken;
 
-      if (token) {
-        localStorage.setItem("token", token);
-      }
-
-      if (data?.user) {
-        localStorage.setItem(
-          "sportify_user",
-          JSON.stringify(data.user)
+      if (!token) {
+        throw new Error(
+          isEnglish
+            ? "Login response does not contain a valid token."
+            : "Respons login tidak memiliki token yang valid."
         );
       }
+
+      // AMBIL DATA USER
+
+      const user =
+        data?.user ||
+        data?.data?.user;
+
+      if (!user) {
+        throw new Error(
+          isEnglish
+            ? "User data could not be retrieved."
+            : "Data pengguna tidak ditemukan."
+        );
+      }
+
+      // VALIDASI ROLE
+
+      const userRole = String(
+        user.role ||
+        user.user_role ||
+        data?.role ||
+        ""
+      ).toLowerCase();
+
+      const validRoles = [
+        "penyewa",
+        "mitra",
+        "admin",
+        "pemilik",
+        "owner",
+        "user",
+        "customer",
+      ];
+
+      if (!validRoles.includes(userRole)) {
+        throw new Error(
+          isEnglish
+            ? "Your account role is not recognized."
+            : "Role akun tidak dikenali."
+        );
+      }
+
+      // SIMPAN DATA LOGIN
+
+      localStorage.setItem("token", token);
+
+      localStorage.setItem(
+        "sportify_user",
+        JSON.stringify(user)
+      );
+
+      localStorage.setItem("sportify_role", userRole);
 
       window.dispatchEvent(
         new Event("sportify-auth-change")
       );
+
+      // CEK REDIRECT
 
       const params = new URLSearchParams(
         window.location.search
@@ -89,14 +150,48 @@ export default function LoginPage() {
 
       const redirectPath = params.get("redirect");
 
-      const safeRedirect =
-        redirectPath &&
-          redirectPath.startsWith("/") &&
-          !redirectPath.startsWith("//")
-          ? redirectPath
-          : "/profil";
+      let safeRedirect = null;
 
-      router.replace(safeRedirect);
+      if (
+        redirectPath &&
+        redirectPath.startsWith("/") &&
+        !redirectPath.startsWith("//")
+      ) {
+        try {
+          const redirectUrl = new URL(
+            redirectPath,
+            window.location.origin
+          );
+
+          if (
+            redirectUrl.origin === window.location.origin
+          ) {
+            safeRedirect =
+              redirectUrl.pathname +
+              redirectUrl.search +
+              redirectUrl.hash;
+          }
+        } catch {
+          safeRedirect = null;
+        }
+      }
+
+      // TENTUKAN HALAMAN BERDASARKAN ROLE
+
+      let destination = "/profile";
+
+      if (
+        ["mitra", "pemilik", "owner"].includes(userRole)
+      ) {
+        destination = "/mitra/dashboard";
+      } else if (userRole === "admin") {
+        destination = "/admin/dashboard";
+      }
+
+      // REDIRECT
+
+      router.replace(safeRedirect || destination);
+      router.refresh();
 
     } catch (err) {
       setError(
@@ -222,7 +317,10 @@ export default function LoginPage() {
 
             {/* PESAN ERROR */}
             {error && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-4 py-3 text-sm text-red-600 dark:text-red-400">
+              <div
+                role="alert"
+                className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-4 py-3 text-sm text-red-600 dark:text-red-400"
+              >
                 {error}
               </div>
             )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -59,9 +59,13 @@ export default function Navbar() {
     return pathname.startsWith(path);
   };
 
+  // TUTUP MENU
+  const closeMenu = () => setMenuOpen(false);
+
   // AMBIL TEMA YANG TERSIMPAN
   useEffect(() => {
-    const savedTheme = localStorage.getItem("sportify-theme") || "light";
+    const savedTheme =
+      localStorage.getItem("sportify-theme") || "light";
 
     setTheme(savedTheme);
 
@@ -86,26 +90,40 @@ export default function Navbar() {
   };
 
   // CEK STATUS AUTENTIKASI
+  const checkAuth = useCallback(() => {
+    const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("sportify_user");
+
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      const parsedUser = savedUser
+        ? JSON.parse(savedUser)
+        : null;
+
+      const role =
+        parsedUser?.role ||
+        localStorage.getItem("sportify_role") ||
+        "";
+
+      setUser({
+        ...parsedUser,
+        role,
+        fullName:
+          parsedUser?.fullName ||
+          parsedUser?.nama ||
+          parsedUser?.name ||
+          "Member",
+      });
+    } catch {
+      setUser(null);
+    }
+  }, []);
+
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem("token");
-      const savedUser = localStorage.getItem("sportify_user");
-
-      if (token) {
-        if (savedUser) {
-          try {
-            setUser(JSON.parse(savedUser));
-          } catch {
-            setUser({ fullName: "Member" });
-          }
-        } else {
-          setUser({ fullName: "Member" });
-        }
-      } else {
-        setUser(null);
-      }
-    };
-
     checkAuth();
 
     window.addEventListener("storage", checkAuth);
@@ -113,11 +131,12 @@ export default function Navbar() {
 
     return () => {
       window.removeEventListener("storage", checkAuth);
-      window.removeEventListener("sportify-auth-change", checkAuth);
+      window.removeEventListener(
+        "sportify-auth-change",
+        checkAuth
+      );
     };
-  }, []);
-
-  const closeMenu = () => setMenuOpen(false);
+  }, [checkAuth, pathname]);
 
   // GANTI BAHASA
   const handleLanguageChange = (e) => {
@@ -129,14 +148,32 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("sportify_user");
+    localStorage.removeItem("sportify_role");
 
     setUser(null);
     closeMenu();
 
-    window.dispatchEvent(new Event("sportify-auth-change"));
+    window.dispatchEvent(
+      new Event("sportify-auth-change")
+    );
 
-    router.push("/");
+    router.replace("/");
+    router.refresh();
   };
+
+  // ROLE PENGGUNA
+  const role = (user?.role || "").toLowerCase();
+
+  const isMitra = [
+    "mitra",
+    "pemilik",
+    "owner",
+  ].includes(role);
+
+  const isAdmin = role === "admin";
+
+  const isPenyewa =
+    user && !isMitra && !isAdmin;
 
   // LINK NAVBAR
   const navLinkClass = (path) =>
@@ -213,7 +250,7 @@ export default function Navbar() {
               {t.contact}
             </Link>
 
-            {user && (
+            {isPenyewa && (
               <Link
                 href="/riwayat"
                 className={navLinkClass("/riwayat")}
@@ -235,9 +272,7 @@ export default function Navbar() {
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-soft-mint text-primary text-sm font-semibold hover:bg-green-100 transition"
                 >
                   <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs shrink-0">
-                    {user.fullName
-                      ? user.fullName[0].toUpperCase()
-                      : "U"}
+                    {user.fullName?.[0]?.toUpperCase() || "U"}
                   </span>
 
                   <span className="max-w-[90px] truncate">
@@ -280,7 +315,7 @@ export default function Navbar() {
               {t.cari}
             </Link>
 
-            {/* TOMBOL DARK / LIGHT MODE */}
+            {/* DARK / LIGHT MODE */}
             <button
               type="button"
               onClick={handleThemeChange}
@@ -313,7 +348,7 @@ export default function Navbar() {
           {/* AKSI MOBILE DAN TABLET */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3">
 
-            {/* TOMBOL DARK / LIGHT MODE */}
+            {/* DARK / LIGHT MODE */}
             <button
               type="button"
               onClick={handleThemeChange}
@@ -411,24 +446,24 @@ export default function Navbar() {
                 {t.contact}
               </Link>
 
-              {user && (
-                <>
-                  <Link
-                    href="/riwayat"
-                    onClick={closeMenu}
-                    className={mobileLinkClass("/riwayat")}
-                  >
-                    {t.riwayat}
-                  </Link>
+              {isPenyewa && (
+                <Link
+                  href="/riwayat"
+                  onClick={closeMenu}
+                  className={mobileLinkClass("/riwayat")}
+                >
+                  {t.riwayat}
+                </Link>
+              )}
 
-                  <Link
-                    href="/profile"
-                    onClick={closeMenu}
-                    className={mobileLinkClass("/profile")}
-                  >
-                    {t.profil} ({user.fullName || "User"})
-                  </Link>
-                </>
+              {user && (
+                <Link
+                  href="/profile"
+                  onClick={closeMenu}
+                  className={mobileLinkClass("/profile")}
+                >
+                  {t.profil} ({user.fullName || "User"})
+                </Link>
               )}
 
               {/* LOGIN DAN LOGOUT */}

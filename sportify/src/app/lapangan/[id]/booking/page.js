@@ -186,22 +186,83 @@ export default function BookingLapanganPage() {
     return kategoriUnit.includes(filterCabor);
   });
 
-  // Simulasi jadwal yang sudah dipesan.
-  // Nantinya dapat diganti dengan data backend.
+  // SIMULASI JADWAL
+  // Nantinya diganti dengan data ketersediaan dari backend.
   const jamSudahDipesan = (indexUnit, indexJam) => {
     return (indexUnit + indexJam) % 5 === 1;
+  };
+
+  // Memastikan seluruh slot selama durasi yang dipilih tersedia.
+  const cekKetersediaanDurasi = (
+    namaUnit,
+    jamMulai,
+    durasiPilihan
+  ) => {
+    const indexUnit = daftarUnit.findIndex((item) => {
+      const nama = item.nama || item.namaUnit || item.unit;
+      return nama === namaUnit;
+    });
+
+    const indexJamMulai = daftarJam.indexOf(jamMulai);
+
+    if (indexUnit === -1 || indexJamMulai === -1) {
+      return false;
+    }
+
+    const jumlahJam = Number(durasiPilihan);
+
+    if (
+      !Number.isInteger(jumlahJam) ||
+      jumlahJam < 1 ||
+      indexJamMulai + jumlahJam > daftarJam.length
+    ) {
+      return false;
+    }
+
+    for (let i = 0; i < jumlahJam; i++) {
+      if (jamSudahDipesan(indexUnit, indexJamMulai + i)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Mengecek ketersediaan slot berdasarkan durasi yang dipilih.
+  const jamTersediaUntukDurasi = (indexUnit, indexJam) => {
+    const jumlahJam = Number(durasi);
+
+    if (indexJam + jumlahJam > daftarJam.length) {
+      return false;
+    }
+
+    for (let i = 0; i < jumlahJam; i++) {
+      if (jamSudahDipesan(indexUnit, indexJam + i)) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const formatJamSelesai = (jamMulai) => {
     if (!jamMulai) return "-";
 
-    const jamAngka = Number(jamMulai.split(":")[0]);
-    const jamSelesai = jamAngka + Number(durasi);
+    const [jamAngka, menit] = jamMulai.split(":").map(Number);
 
-    return `${String(jamSelesai).padStart(2, "0")}:00`;
+    const totalMenit =
+      jamAngka * 60 + menit + Number(durasi) * 60;
+
+    const jamSelesai = Math.floor(totalMenit / 60);
+    const menitSelesai = totalMenit % 60;
+
+    return `${String(jamSelesai).padStart(2, "0")}:${String(
+      menitSelesai
+    ).padStart(2, "0")}`;
   };
 
-  const totalHarga = Number(lapangan.harga || 0) * Number(durasi);
+  // Harga lapangan dihitung per sesi, bukan dikalikan durasi.
+  const totalHarga = Number(lapangan.harga || 0);
 
   const lanjutBooking = () => {
     if (!unit || !tanggal || !jam || !durasi) {
@@ -209,6 +270,24 @@ export default function BookingLapanganPage() {
         isEnglish
           ? "Please complete all booking details."
           : "Lengkapi pilihan lapangan, tanggal, jam, dan durasi terlebih dahulu."
+      );
+      return;
+    }
+
+    if (tanggal < getTanggalHariIni()) {
+      alert(
+        isEnglish
+          ? "Please select a valid booking date."
+          : "Tanggal booking tidak boleh sebelum hari ini."
+      );
+      return;
+    }
+
+    if (!cekKetersediaanDurasi(unit, jam, durasi)) {
+      alert(
+        isEnglish
+          ? "The selected time slot is unavailable for this duration. Please choose another time."
+          : "Jadwal tidak tersedia untuk durasi yang dipilih. Silakan pilih jam lain."
       );
       return;
     }
@@ -305,7 +384,7 @@ export default function BookingLapanganPage() {
                     {formatRupiah(lapangan.harga)}
                     <span className="text-xs font-medium text-gray-400">
                       {" "}
-                      / {isEnglish ? "hour" : "jam"}
+                      / {isEnglish ? "session" : "sesi"}
                     </span>
                   </p>
                 </div>
@@ -352,8 +431,8 @@ export default function BookingLapanganPage() {
                           setJam("");
                         }}
                         className={`booking-date-button rounded-2xl border px-2 py-4 text-center transition-all ${aktif
-                          ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
-                          : "border-gray-100 bg-background text-dark-text hover:border-secondary hover:bg-soft-mint"
+                            ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
+                            : "border-gray-100 bg-background text-dark-text hover:border-secondary hover:bg-soft-mint"
                           }`}
                       >
                         <span
@@ -511,8 +590,8 @@ export default function BookingLapanganPage() {
                           key={namaUnit}
                           style={{ animationDelay: `${index * 100}ms` }}
                           className={`booking-unit-card overflow-hidden rounded-3xl border transition-all ${isSelected
-                            ? "border-primary bg-soft-mint/50 shadow-md shadow-primary/5"
-                            : "border-gray-100 bg-white hover:border-secondary/50"
+                              ? "border-primary bg-soft-mint/50 shadow-md shadow-primary/5"
+                              : "border-gray-100 bg-white hover:border-secondary/50"
                             }`}
                         >
                           <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
@@ -549,7 +628,7 @@ export default function BookingLapanganPage() {
                                     {formatRupiah(lapangan.harga)}
                                     <span className="font-normal text-gray-400">
                                       {" "}
-                                      / {isEnglish ? "hour" : "jam"}
+                                      / {isEnglish ? "session" : "sesi"}
                                     </span>
                                   </p>
                                 </div>
@@ -558,8 +637,8 @@ export default function BookingLapanganPage() {
                                   type="button"
                                   onClick={() => pilihUnit(namaUnit)}
                                   className={`booking-select-button rounded-full px-5 py-2.5 text-sm font-semibold transition ${isSelected
-                                    ? "bg-primary text-white"
-                                    : "border border-primary text-primary hover:bg-soft-mint"
+                                      ? "bg-primary text-white"
+                                      : "border border-primary text-primary hover:bg-soft-mint"
                                     }`}
                                 >
                                   {isSelected
@@ -606,8 +685,8 @@ export default function BookingLapanganPage() {
                                         const indexJam =
                                           daftarJam.indexOf(waktu);
 
-                                        const sudahDipesan =
-                                          jamSudahDipesan(
+                                        const tersedia =
+                                          jamTersediaUntukDurasi(
                                             indexUnit,
                                             indexJam
                                           );
@@ -619,16 +698,16 @@ export default function BookingLapanganPage() {
                                           <button
                                             key={waktu}
                                             type="button"
-                                            disabled={sudahDipesan}
+                                            disabled={!tersedia}
                                             onClick={() => {
                                               setUnit(namaUnit);
                                               setJam(waktu);
                                             }}
-                                            className={`booking-time-button rounded-xl border px-2 py-3 text-xs font-semibold transition ${sudahDipesan
-                                              ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
-                                              : isJamSelected
-                                                ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
-                                                : "border-secondary/20 bg-soft-mint/60 text-primary hover:border-secondary hover:bg-soft-mint"
+                                            className={`booking-time-button rounded-xl border px-2 py-3 text-xs font-semibold transition ${!tersedia
+                                                ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
+                                                : isJamSelected
+                                                  ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
+                                                  : "border-secondary/20 bg-soft-mint/60 text-primary hover:border-secondary hover:bg-soft-mint"
                                               }`}
                                           >
                                             {waktu}
@@ -727,7 +806,23 @@ export default function BookingLapanganPage() {
                       <select
                         id="durasi"
                         value={durasi}
-                        onChange={(e) => setDurasi(e.target.value)}
+                        onChange={(e) => {
+                          const durasiBaru = e.target.value;
+
+                          setDurasi(durasiBaru);
+
+                          if (
+                            unit &&
+                            jam &&
+                            !cekKetersediaanDurasi(
+                              unit,
+                              jam,
+                              durasiBaru
+                            )
+                          ) {
+                            setJam("");
+                          }
+                        }}
                         className="liquid-booking-input mt-2 w-full"
                       >
                         {[1, 2, 3, 4].map((angka) => (
@@ -742,7 +837,9 @@ export default function BookingLapanganPage() {
                   <div className="booking-price-box mt-6 rounded-2xl bg-soft-mint p-4">
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <span>
-                        {isEnglish ? "Price per hour" : "Harga per jam"}
+                        {isEnglish
+                          ? "Price per session"
+                          : "Harga per sesi"}
                       </span>
 
                       <span>{formatRupiah(lapangan.harga)}</span>
@@ -809,7 +906,8 @@ export default function BookingLapanganPage() {
           }
 
           @keyframes bookingFloat {
-            0%, 100% {
+            0%,
+            100% {
               transform: translateY(0);
             }
             50% {
@@ -818,7 +916,8 @@ export default function BookingLapanganPage() {
           }
 
           @keyframes bookingPulse {
-            0%, 100% {
+            0%,
+            100% {
               opacity: 1;
               transform: scale(1);
             }
@@ -965,6 +1064,285 @@ export default function BookingLapanganPage() {
             transform: scale(0.98);
           }
 
+          /* ========================================
+             DARK MODE - SPORTIFY BOOKING PAGE
+          ======================================== */
+
+          .dark .booking-animate {
+            background-color: #101a15 !important;
+            color: #edf5ef;
+          }
+
+          /* HEADER */
+          .dark .booking-header {
+            background: linear-gradient(
+              135deg,
+              #1c3529 0%,
+              #14251b 55%,
+              #101a15 100%
+            ) !important;
+          }
+
+          .dark .booking-header h1,
+          .dark .booking-header h2,
+          .dark .booking-header .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-header .text-gray-600,
+          .dark .booking-header .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-header .bg-white\/80 {
+            background-color: rgba(27, 43, 34, 0.85) !important;
+            border-color: rgba(125, 219, 168, 0.18) !important;
+            color: #7ddbA8 !important;
+          }
+
+          /* KARTU LAPANGAN PILIHAN */
+          .dark .booking-selected-card {
+            background: rgba(27, 43, 34, 0.82) !important;
+            border-color: rgba(125, 219, 168, 0.15) !important;
+            backdrop-filter: blur(18px);
+          }
+
+          .dark .booking-selected-card h2 {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-selected-card p {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-selected-card .text-primary {
+            color: #7ddbA8 !important;
+          }
+
+          .dark .booking-chip {
+            background-color: #233d2d !important;
+            color: #7ddbA8 !important;
+          }
+
+          /* KARTU UTAMA */
+          .dark .liquid-booking-page-card {
+            background: rgba(27, 43, 34, 0.82) !important;
+            border: 1px solid rgba(125, 219, 168, 0.14) !important;
+            color: #edf5ef;
+            backdrop-filter: blur(18px);
+          }
+
+          .dark .liquid-booking-page-card h2,
+          .dark .liquid-booking-page-card h3,
+          .dark .liquid-booking-page-card .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .liquid-booking-page-card .text-gray-500,
+          .dark .liquid-booking-page-card .text-gray-600 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .liquid-booking-page-card .text-gray-400 {
+            color: #91a398 !important;
+          }
+
+          /* TANGGAL */
+          .dark .booking-date-button:not(.bg-primary) {
+            background-color: #14221a !important;
+            border-color: rgba(125, 219, 168, 0.18) !important;
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-date-button:not(.bg-primary) span {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-date-button:not(.bg-primary):hover {
+            background-color: #233d2d !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-date-button.bg-primary {
+            background-color: #146b45 !important;
+            border-color: #27a36b !important;
+            color: #ffffff !important;
+          }
+
+          /* INPUT DAN SELECT */
+          .dark .liquid-booking-input {
+            background-color: #14221a !important;
+            color: #edf5ef !important;
+            border: 1px solid rgba(125, 219, 168, 0.2) !important;
+          }
+
+          .dark .liquid-booking-input:focus {
+            border-color: #27a36b !important;
+            outline-color: #27a36b;
+          }
+
+          .dark .liquid-booking-input option {
+            background-color: #1b2b22;
+            color: #edf5ef;
+          }
+
+          /* LABEL DAN FILTER */
+          .dark .booking-animate label {
+            color: #b2c1b7;
+          }
+
+          .dark .booking-animate .bg-soft-mint {
+            background-color: #233d2d !important;
+          }
+
+          .dark .booking-animate .text-primary {
+            color: #7ddbA8;
+          }
+
+          /* LEGENDA */
+          .dark .booking-animate .bg-gray-200 {
+            background-color: #52645a !important;
+          }
+
+          .dark .booking-animate .border-secondary\/20 {
+            border-color: rgba(125, 219, 168, 0.2) !important;
+          }
+
+          /* KARTU UNIT LAPANGAN */
+          .dark .booking-unit-card {
+            background-color: #1b2b22 !important;
+            border-color: rgba(125, 219, 168, 0.15) !important;
+          }
+
+          .dark .booking-unit-card.border-primary {
+            background-color: #233d2d !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-unit-card h3,
+          .dark .booking-unit-card .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-unit-card .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-unit-card .text-gray-400 {
+            color: #91a398 !important;
+          }
+
+          .dark .booking-unit-card .border-primary\/10 {
+            border-color: rgba(125, 219, 168, 0.15) !important;
+          }
+
+          /* TOMBOL PILIH LAPANGAN */
+          .dark .booking-select-button:not(.bg-primary) {
+            background-color: #14221a !important;
+            color: #7ddbA8 !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-select-button:not(.bg-primary):hover {
+            background-color: #233d2d !important;
+          }
+
+          .dark .booking-select-button.bg-primary {
+            background-color: #146b45 !important;
+            color: #ffffff !important;
+          }
+
+          /* JADWAL JAM */
+          .dark .booking-time-button:not(.bg-primary) {
+            background-color: #233d2d !important;
+            border-color: rgba(125, 219, 168, 0.25) !important;
+            color: #7ddbA8 !important;
+          }
+
+          .dark .booking-time-button:not(.bg-primary):hover:not(:disabled) {
+            background-color: #1b2b22 !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-time-button.bg-primary {
+            background-color: #146b45 !important;
+            border-color: #27a36b !important;
+            color: #ffffff !important;
+          }
+
+          .dark .booking-time-button:disabled {
+            background-color: #26332b !important;
+            border-color: #34443a !important;
+            color: #718078 !important;
+          }
+
+          /* RINGKASAN BOOKING */
+          .dark .liquid-booking-summary {
+            background-color: rgba(27, 43, 34, 0.9) !important;
+            border: 1px solid rgba(125, 219, 168, 0.15) !important;
+            color: #edf5ef;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(18px);
+          }
+
+          .dark .liquid-booking-summary .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .liquid-booking-summary .text-gray-400 {
+            color: #91a398 !important;
+          }
+
+          .dark .liquid-booking-summary .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .liquid-booking-summary .border-gray-100 {
+            border-color: rgba(125, 219, 168, 0.15) !important;
+          }
+
+          /* KOTAK TOTAL HARGA */
+          .dark .booking-price-box {
+            background-color: #233d2d !important;
+            border: 1px solid rgba(125, 219, 168, 0.2);
+          }
+
+          .dark .booking-price-box .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-price-box .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-price-box .text-primary {
+            color: #7ddbA8 !important;
+          }
+
+          /* TOMBOL LANJUTKAN */
+          .dark .booking-continue-button {
+            background-color: #146b45;
+            color: #ffffff;
+          }
+
+          .dark .booking-continue-button:hover {
+            background-color: #27a36b;
+          }
+
+          /* LOADING DAN NOT FOUND */
+          .dark main.min-h-screen.bg-background {
+            background-color: #101a15 !important;
+          }
+
+          .dark main.min-h-screen .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark main.min-h-screen .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          /* ANIMASI */
           @media (prefers-reduced-motion: reduce) {
             .booking-animate *,
             .booking-animate *::before,

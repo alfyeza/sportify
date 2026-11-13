@@ -83,7 +83,7 @@ function BookingContent() {
           <div className="text-center booking-loading">
             <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
 
-            <p className="mt-4 text-sm font-medium text-gray-500">
+            <p className="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
               {isEnglish
                 ? "Checking account access..."
                 : "Memeriksa akses akun..."}
@@ -119,14 +119,14 @@ function BookingContent() {
         <Navbar />
 
         <main className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-          <div className="liquid-info-card booking-empty-state text-center max-w-md w-full p-6 sm:p-8">
+          <div className="liquid-info-card booking-empty-state text-center max-w-md w-full p-6 sm:p-8 dark:bg-[#17231e] dark:border-white/10">
             <div className="text-4xl mb-4">!</div>
 
-            <h1 className="text-xl sm:text-2xl font-bold text-dark-text">
+            <h1 className="text-xl sm:text-2xl font-bold text-dark-text dark:text-gray-100">
               {isEnglish ? "No Booking Found" : "Belum Ada Pemesanan"}
             </h1>
 
-            <p className="text-gray-500 mt-3 leading-relaxed text-sm sm:text-base">
+            <p className="text-gray-500 dark:text-gray-400 mt-3 leading-relaxed text-sm sm:text-base">
               {isEnglish
                 ? "Please choose a sports venue before continuing with your booking."
                 : "Silakan pilih tempat olahraga terlebih dahulu sebelum melanjutkan booking."}
@@ -163,7 +163,8 @@ function BookingContent() {
     );
   }
 
-  const totalHarga = lapangan.harga * durasi;
+  // Harga lapangan dihitung per sesi, tidak dikalikan durasi.
+  const totalHarga = Number(lapangan.harga || 0);
 
   const hitungJamSelesai = (jamMulai, totalDurasi) => {
     if (!jamMulai) return "-";
@@ -235,8 +236,8 @@ function BookingContent() {
         jam: `${jam} - ${jamSelesai}`,
         durasi: `${durasi} Jam`,
         total: totalHarga,
-        statusBooking: "Confirmed",
-        statusPembayaran: metodePembayaran === "cod" ? "Pending" : "Paid",
+        statusBooking: "Pending",
+        statusPembayaran: "Pending",
         metodePembayaran,
         customer: {
           name: namaPemesan.trim(),
@@ -271,7 +272,7 @@ function BookingContent() {
     <>
       <Navbar />
 
-      <main className="booking-confirmation-page min-h-screen bg-background px-4 sm:px-6 py-8 sm:py-12 md:py-14">
+      <main className="booking-confirmation-page min-h-screen bg-background dark:bg-[#101a15] px-4 sm:px-6 py-8 sm:py-12 md:py-14">
         <div className="booking-content max-w-3xl mx-auto min-w-0">
           {/* TOMBOL KEMBALI */}
           <Link
@@ -283,23 +284,23 @@ function BookingContent() {
 
           {/* HEADER */}
           <div className="booking-page-header mt-6 sm:mt-7 mb-7 sm:mb-8">
-            <span className="booking-label inline-block px-4 py-2 rounded-full bg-soft-mint text-primary text-xs font-bold tracking-wider">
+            <span className="booking-label inline-block px-4 py-2 rounded-full bg-soft-mint dark:bg-[#22382c] text-primary text-xs font-bold tracking-wider">
               SPORTIFY BOOKING
             </span>
 
-            <h1 className="text-2xl sm:text-4xl font-bold text-dark-text mt-4">
+            <h1 className="text-2xl sm:text-4xl font-bold text-dark-text dark:text-gray-100 mt-4">
               {isEnglish ? "Booking & Payment Summary" : "Ringkasan & Pembayaran"}
             </h1>
 
-            <p className="text-gray-500 mt-3 text-sm sm:text-base leading-relaxed">
+            <p className="text-gray-500 dark:text-gray-400 mt-3 text-sm sm:text-base leading-relaxed">
               {isEnglish
-                ? "Review your booking details and complete payment to confirm your court."
-                : "Periksa kembali detail pemesanan dan selesaikan pembayaran untuk mengonfirmasi lapangan."}
+                ? "Review your booking details and submit your booking request."
+                : "Periksa kembali detail pemesanan sebelum mengirim permintaan booking."}
             </p>
           </div>
 
           {/* KARTU RINGKASAN */}
-          <div className="liquid-booking-page-card booking-main-card w-full min-w-0">
+          <div className="liquid-booking-page-card booking-main-card w-full min-w-0 !bg-white dark:!bg-[#1b2922] !border-gray-200 dark:!border-white/10">
             {/* INFORMASI TEMPAT */}
             <div className="booking-venue-info flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="min-w-0">
@@ -307,11 +308,11 @@ function BookingContent() {
                   {isEnglish ? "Booking Details" : "Detail Pemesanan"}
                 </p>
 
-                <h2 className="text-xl sm:text-2xl font-bold text-dark-text mt-2 break-words">
+                <h2 className="text-xl sm:text-2xl font-bold text-dark-text dark:text-gray-100 mt-2 break-words">
                   {lapangan.nama}
                 </h2>
 
-                <p className="text-sm text-gray-500 mt-2 flex items-start gap-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 flex items-start gap-2">
                   <span className="shrink-0">📍</span>
                   <span className="min-w-0 break-words">
                     {lapangan.lokasi}
@@ -319,53 +320,53 @@ function BookingContent() {
                 </p>
               </div>
 
-              <div className="booking-venue-badge bg-soft-mint text-primary px-4 py-2 rounded-full text-sm font-semibold w-fit shrink-0">
+              <div className="booking-venue-badge bg-soft-mint dark:bg-[#22382c] text-primary px-4 py-2 rounded-full text-sm font-semibold w-fit shrink-0">
                 Sportify Booking
               </div>
             </div>
 
-            <div className="liquid-booking-divider" />
+            <div className="liquid-booking-divider dark:border-white/10" />
 
             {/* INFORMASI BOOKING */}
             <div className="booking-details space-y-4 sm:space-y-5 w-full min-w-0">
-              <div className="liquid-summary-row">
+              <div className="liquid-summary-row dark:text-gray-300">
                 <span>{isEnglish ? "Sports Venue" : "Tempat Olahraga"}</span>
-                <strong>{lapangan.nama}</strong>
+                <strong className="dark:text-gray-100">{lapangan.nama}</strong>
               </div>
 
-              <div className="liquid-summary-row">
+              <div className="liquid-summary-row dark:text-gray-300">
                 <span>{isEnglish ? "Court Unit" : "Unit Lapangan"}</span>
-                <strong>{unit || "-"}</strong>
+                <strong className="dark:text-gray-100">{unit || "-"}</strong>
               </div>
 
-              <div className="liquid-summary-row">
+              <div className="liquid-summary-row dark:text-gray-300">
                 <span>{isEnglish ? "Playing Date" : "Tanggal Bermain"}</span>
-                <strong>{tanggal || "-"}</strong>
+                <strong className="dark:text-gray-100">{tanggal || "-"}</strong>
               </div>
 
-              <div className="liquid-summary-row">
+              <div className="liquid-summary-row dark:text-gray-300">
                 <span>{isEnglish ? "Playing Time" : "Waktu Bermain"}</span>
-                <strong>{jam ? `${jam} - ${jamSelesai}` : "-"}</strong>
+                <strong className="dark:text-gray-100">{jam ? `${jam} - ${jamSelesai}` : "-"}</strong>
               </div>
 
-              <div className="liquid-summary-row">
+              <div className="liquid-summary-row dark:text-gray-300">
                 <span>{isEnglish ? "Playing Duration" : "Durasi Bermain"}</span>
-                <strong>
+                <strong className="dark:text-gray-100">
                   {durasi} {isEnglish ? "hour(s)" : "Jam"}
                 </strong>
               </div>
             </div>
 
-            <div className="liquid-booking-divider" />
+            <div className="liquid-booking-divider dark:border-white/10" />
 
             {/* FORM DATA PEMESAN */}
             <div className="booking-form-section space-y-4 min-w-0">
-              <h3 className="font-bold text-dark-text text-base sm:text-lg">
+              <h3 className="font-bold text-dark-text dark:text-gray-100 text-base sm:text-lg">
                 {isEnglish ? "Customer Information" : "Data Pemesan"}
               </h3>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5">
                   {isEnglish ? "Full Name" : "Nama Lengkap"}{" "}
                   <span className="text-red-500">*</span>
                 </label>
@@ -375,13 +376,13 @@ function BookingContent() {
                   value={namaPemesan}
                   onChange={(e) => setNamaPemesan(e.target.value)}
                   placeholder={isEnglish ? "Enter full name" : "Masukkan nama lengkap"}
-                  className="liquid-auth-input booking-input w-full text-sm"
+                  className="liquid-auth-input booking-input w-full text-sm dark:bg-[#22382c] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5">
                     {isEnglish ? "WhatsApp / Phone" : "No. WhatsApp / HP"}{" "}
                     <span className="text-red-500">*</span>
                   </label>
@@ -391,12 +392,12 @@ function BookingContent() {
                     value={teleponPemesan}
                     onChange={(e) => setTeleponPemesan(e.target.value)}
                     placeholder="Contoh: 08123456789"
-                    className="liquid-auth-input booking-input w-full text-sm"
+                    className="liquid-auth-input booking-input w-full text-sm dark:bg-[#22382c] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
                   />
                 </div>
 
                 <div className="min-w-0">
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5">
                     Email ({isEnglish ? "Optional" : "Opsional"})
                   </label>
 
@@ -405,17 +406,17 @@ function BookingContent() {
                     value={emailPemesan}
                     onChange={(e) => setEmailPemesan(e.target.value)}
                     placeholder="email@example.com"
-                    className="liquid-auth-input booking-input w-full text-sm"
+                    className="liquid-auth-input booking-input w-full text-sm dark:bg-[#22382c] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="liquid-booking-divider" />
+            <div className="liquid-booking-divider dark:border-white/10" />
 
             {/* PILIH METODE PEMBAYARAN */}
             <div className="booking-payment-section space-y-3 min-w-0">
-              <h3 className="font-bold text-dark-text text-base sm:text-lg">
+              <h3 className="font-bold text-dark-text dark:text-gray-100 text-base sm:text-lg">
                 {isEnglish ? "Payment Method" : "Metode Pembayaran"}
               </h3>
 
@@ -425,8 +426,8 @@ function BookingContent() {
                   type="button"
                   onClick={() => setMetodePembayaran("qris")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "qris"
-                    ? "border-primary bg-soft-mint text-primary ring-1 ring-primary"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    ? "border-primary bg-soft-mint dark:bg-[#22382c] text-primary ring-1 ring-primary"
+                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1b2922] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -437,7 +438,7 @@ function BookingContent() {
                     </span>
                   </div>
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Gopay, OVO, Dana, BCA
                   </p>
                 </button>
@@ -447,15 +448,15 @@ function BookingContent() {
                   type="button"
                   onClick={() => setMetodePembayaran("transfer")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "transfer"
-                    ? "border-primary bg-soft-mint text-primary ring-1 ring-primary"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    ? "border-primary bg-soft-mint dark:bg-[#22382c] text-primary ring-1 ring-primary"
+                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1b2922] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
                   <div className="font-bold text-sm">
                     Transfer Bank
                   </div>
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Virtual Account BCA, BNI
                   </p>
                 </button>
@@ -465,53 +466,53 @@ function BookingContent() {
                   type="button"
                   onClick={() => setMetodePembayaran("cod")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "cod"
-                    ? "border-primary bg-soft-mint text-primary ring-1 ring-primary"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    ? "border-primary bg-soft-mint dark:bg-[#22382c] text-primary ring-1 ring-primary"
+                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1b2922] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
                   <div className="font-bold text-sm">
                     Bayar di Tempat
                   </div>
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Bayar langsung di kasir
                   </p>
                 </button>
               </div>
             </div>
 
-            <div className="liquid-booking-divider" />
+            <div className="liquid-booking-divider dark:border-white/10" />
 
             {/* RINCIAN HARGA */}
-            <div className="booking-payment-details bg-soft-mint/70 rounded-2xl p-4 sm:p-6 w-full min-w-0">
-              <p className="text-sm text-gray-500 font-medium">
+            <div className="booking-payment-details bg-soft-mint/70 dark:bg-[#22382c] rounded-2xl p-4 sm:p-6 w-full min-w-0">
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                 {isEnglish ? "Payment Details" : "Rincian Pembayaran"}
               </p>
 
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mt-5">
-                <span className="text-gray-600 text-sm min-w-0">
-                  {isEnglish ? "Price per hour" : "Tarif per jam"}
+                <span className="text-gray-600 dark:text-gray-300 text-sm min-w-0">
+                  {isEnglish ? "Price per session" : "Harga per sesi"}
                 </span>
 
-                <span className="font-semibold text-dark-text text-sm sm:text-base whitespace-nowrap tabular-nums">
-                  Rp {lapangan.harga.toLocaleString("id-ID")}
+                <span className="font-semibold text-dark-text dark:text-gray-100 text-sm sm:text-base whitespace-nowrap tabular-nums">
+                  Rp {totalHarga.toLocaleString("id-ID")}
                 </span>
               </div>
 
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mt-4">
-                <span className="text-gray-600 text-sm min-w-0">
-                  {isEnglish ? "Duration" : "Durasi"}
+                <span className="text-gray-600 dark:text-gray-300 text-sm min-w-0">
+                  {isEnglish ? "Playing Duration" : "Durasi Bermain"}
                 </span>
 
-                <span className="font-semibold text-dark-text text-sm sm:text-base whitespace-nowrap">
+                <span className="font-semibold text-dark-text dark:text-gray-100 text-sm sm:text-base whitespace-nowrap">
                   {durasi} {isEnglish ? "hour(s)" : "Jam"}
                 </span>
               </div>
 
-              <div className="border-t border-primary/10 my-5" />
+              <div className="border-t border-primary/10 dark:border-white/10 my-5" />
 
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-                <span className="font-bold text-dark-text text-sm sm:text-base min-w-0">
+                <span className="font-bold text-dark-text dark:text-gray-100 text-sm sm:text-base min-w-0">
                   {isEnglish ? "Total Payment" : "Total Pembayaran"}
                 </span>
 
@@ -523,7 +524,7 @@ function BookingContent() {
 
             {/* PESAN ERROR */}
             {errorMessage && (
-              <div className="booking-error mt-4 p-3 rounded-xl bg-red-50 text-red-600 text-sm border border-red-200">
+              <div className="booking-error mt-4 p-3 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-300 text-sm border border-red-200 dark:border-red-500/20">
                 {errorMessage}
               </div>
             )}
@@ -540,16 +541,16 @@ function BookingContent() {
                   ? "Processing..."
                   : "Memproses..."
                 : isEnglish
-                  ? "Confirm & Pay Now"
-                  : "Konfirmasi & Bayar Sekarang"}
+                  ? "Submit Booking Request"
+                  : "Kirim Permintaan Booking"}
 
               <span>→</span>
             </button>
 
-            <p className="text-center text-xs text-gray-400 mt-4 leading-relaxed">
+            <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4 leading-relaxed">
               {isEnglish
-                ? "By confirming, you agree to the venue's rules and booking policy."
-                : "Dengan mengonfirmasi, Anda menyetujui ketentuan venue dan kebijakan booking."}
+                ? "Your booking will be pending until the venue confirms it. Payment must also be verified."
+                : "Booking akan menunggu konfirmasi mitra. Pembayaran juga perlu diverifikasi."}
             </p>
           </div>
         </div>
@@ -557,93 +558,132 @@ function BookingContent() {
         {/* MODAL SUKSES PEMESANAN */}
         {bookingSuccess && (
           <div className="booking-success-overlay fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm">
-            <div className="booking-success-modal max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/70 bg-white/95 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl text-center">
-              <div className="booking-success-icon w-16 h-16 rounded-full bg-soft-mint text-primary flex items-center justify-center text-3xl font-bold mx-auto mb-4">
+            <div className="booking-success-modal max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/70 bg-white/95 dark:border-white/10 dark:bg-[#17231e] p-6 sm:p-8 shadow-2xl backdrop-blur-2xl text-center">
+              <div className="booking-success-icon w-16 h-16 rounded-full bg-soft-mint dark:bg-[#22382c] text-primary flex items-center justify-center text-3xl font-bold mx-auto mb-4">
                 ✓
               </div>
 
-              <span className="inline-block px-4 py-1.5 rounded-full bg-soft-mint text-primary text-xs font-bold tracking-wider mb-2">
-                {isEnglish ? "BOOKING CONFIRMED" : "BOOKING BERHASIL"}
+              <span className="inline-block px-4 py-1.5 rounded-full bg-soft-mint dark:bg-[#22382c] text-primary text-xs font-bold tracking-wider mb-2">
+                {isEnglish ? "BOOKING REQUEST SENT" : "PERMINTAAN BOOKING TERKIRIM"}
               </span>
 
-              <h2 className="text-2xl font-bold text-dark-text">
-                {isEnglish ? "Thank You for Booking!" : "Pemesanan Berhasil!"}
+              <h2 className="text-2xl font-bold text-dark-text dark:text-gray-100">
+                {isEnglish
+                  ? "Booking Request Submitted!"
+                  : "Permintaan Booking Berhasil Dikirim!"}
               </h2>
 
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                 {isEnglish
-                  ? "Your booking has been recorded. Here are your booking details:"
-                  : "Pemesanan kamu telah dicatat. Berikut adalah rincian pemesanan:"}
+                  ? "Your booking request has been recorded and is waiting for venue confirmation."
+                  : "Permintaan booking kamu sudah tercatat dan sedang menunggu konfirmasi dari mitra."}
               </p>
 
-              <div className="bg-soft-mint/70 rounded-2xl p-4 my-6 text-left space-y-3 text-sm">
+              <div className="bg-soft-mint/70 dark:bg-[#22382c] rounded-2xl p-4 my-6 text-left space-y-3 text-sm">
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
-                  <span className="text-gray-500">ID Booking:</span>
+                  <span className="text-gray-500 dark:text-gray-400">ID Booking:</span>
                   <span className="font-bold text-primary text-right break-words">
                     {bookingSuccess.id}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
-                  <span className="text-gray-500">Venue:</span>
-                  <span className="font-semibold text-dark-text text-right break-words">
+                  <span className="text-gray-500 dark:text-gray-400">Venue:</span>
+                  <span className="font-semibold text-dark-text dark:text-gray-100 text-right break-words">
                     {bookingSuccess.tempat}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
-                  <span className="text-gray-500">Unit:</span>
-                  <span className="font-semibold text-dark-text text-right break-words">
+                  <span className="text-gray-500 dark:text-gray-400">Unit:</span>
+                  <span className="font-semibold text-dark-text dark:text-gray-100 text-right break-words">
                     {bookingSuccess.lapangan}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
-                  <span className="text-gray-500">Jadwal:</span>
-                  <span className="font-semibold text-dark-text text-right break-words">
+                  <span className="text-gray-500 dark:text-gray-400">Jadwal:</span>
+                  <span className="font-semibold text-dark-text dark:text-gray-100 text-right break-words">
                     {bookingSuccess.tanggal} • {bookingSuccess.jam}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
-                  <span className="text-gray-500">Pemesan:</span>
-                  <span className="font-semibold text-dark-text text-right break-words">
+                  <span className="text-gray-500 dark:text-gray-400">Pemesan:</span>
+                  <span className="font-semibold text-dark-text dark:text-gray-100 text-right break-words">
                     {bookingSuccess.customer.name}
                   </span>
                 </div>
 
-                <div className="border-t border-primary/10 pt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
-                  <span className="font-bold text-dark-text">
-                    Total Bayar:
+                <div className="border-t border-primary/10 dark:border-white/10 pt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
+                  <span className="font-bold text-dark-text dark:text-gray-100">
+                    Total Pembayaran:
                   </span>
 
                   <span className="font-bold text-primary text-base whitespace-nowrap tabular-nums">
                     Rp {bookingSuccess.total.toLocaleString("id-ID")}
                   </span>
                 </div>
+
+                <div className="border-t border-primary/10 dark:border-white/10 pt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {isEnglish ? "Booking Status:" : "Status Booking:"}
+                  </span>
+
+                  <span className="font-bold text-yellow-700 dark:text-yellow-400">
+                    {isEnglish ? "Pending" : "Menunggu Konfirmasi"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {isEnglish ? "Payment Status:" : "Status Pembayaran:"}
+                  </span>
+
+                  <span className="font-bold text-yellow-700 dark:text-yellow-400">
+                    {isEnglish ? "Pending" : "Menunggu Pembayaran"}
+                  </span>
+                </div>
               </div>
 
               {metodePembayaran === "qris" && (
-                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 mb-6 text-xs text-gray-600">
-                  <p className="font-bold text-gray-800 mb-1">
-                    Pembayaran QRIS Terverifikasi
+                <div className="p-4 bg-gray-50 dark:bg-[#22382c] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
+                  <p className="font-bold text-gray-800 dark:text-gray-100 mb-1">
+                    {isEnglish ? "QRIS Payment" : "Pembayaran QRIS"}
                   </p>
 
                   <p>
-                    Status pemesanan kamu telah{" "}
-                    <strong>Dikonfirmasi (Lunas)</strong>.
+                    {isEnglish
+                      ? "Your selected payment method is QRIS. Payment instructions and verification will follow the venue's confirmation."
+                      : "Kamu memilih metode QRIS. Instruksi dan verifikasi pembayaran akan mengikuti konfirmasi dari mitra."}
+                  </p>
+                </div>
+              )}
+
+              {metodePembayaran === "transfer" && (
+                <div className="p-4 bg-gray-50 dark:bg-[#22382c] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
+                  <p className="font-bold text-gray-800 dark:text-gray-100 mb-1">
+                    {isEnglish ? "Bank Transfer" : "Transfer Bank"}
+                  </p>
+
+                  <p>
+                    {isEnglish
+                      ? "Your selected payment method is bank transfer. Please wait for payment instructions from the venue."
+                      : "Kamu memilih metode transfer bank. Silakan tunggu instruksi pembayaran dari mitra."}
                   </p>
                 </div>
               )}
 
               {metodePembayaran === "cod" && (
-                <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-200 mb-6 text-xs text-yellow-800">
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-500/10 rounded-2xl border border-yellow-200 dark:border-yellow-500/20 mb-6 text-xs text-yellow-800 dark:text-yellow-300">
                   <p className="font-bold mb-1">
-                    Bayar di Tempat (Kasir)
+                    {isEnglish ? "Pay at Venue" : "Bayar di Tempat"}
                   </p>
 
                   <p>
-                    Tunjukkan ID Booking ini ke petugas kasir saat tiba di lokasi sebelum bermain.
+                    {isEnglish
+                      ? "If your booking is confirmed, show this booking ID to the cashier when you arrive."
+                      : "Jika booking sudah dikonfirmasi, tunjukkan ID Booking ini kepada petugas kasir saat tiba di lokasi."}
                   </p>
                 </div>
               )}
@@ -660,7 +700,7 @@ function BookingContent() {
                 <button
                   type="button"
                   onClick={() => router.push("/")}
-                  className="booking-home-button rounded-full border border-gray-300 py-3 px-5 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition flex-1"
+                  className="booking-home-button rounded-full border border-gray-300 dark:border-white/15 py-3 px-5 text-sm font-semibold text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition flex-1"
                 >
                   {isEnglish ? "Back to Home" : "Kembali ke Beranda"}
                 </button>
@@ -857,9 +897,6 @@ function BookingContent() {
 
           .booking-success-icon {
             animation: bookingSuccessPop 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-          }
-
-          .booking-success-icon {
             position: relative;
           }
 
@@ -910,7 +947,7 @@ export default function BookingPage() {
           <Navbar />
 
           <div className="min-h-screen flex items-center justify-center bg-background px-4">
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               <LoadingText
                 indonesian={isIndonesianLoading}
                 english={isEnglishLoading}
