@@ -178,14 +178,24 @@ export default function LoginPage() {
 
       // TENTUKAN HALAMAN BERDASARKAN ROLE
 
-      let destination = "/profile";
+      let destination = "";
 
       if (
         ["mitra", "pemilik", "owner"].includes(userRole)
       ) {
         destination = "/mitra/dashboard";
+      } else if (
+        ["penyewa", "user", "customer"].includes(userRole)
+      ) {
+        destination = "/dashboard";
       } else if (userRole === "admin") {
         destination = "/admin/dashboard";
+      } else {
+        throw new Error(
+          isEnglish
+            ? "Your account role is not recognized."
+            : "Role akun tidak dikenali."
+        );
       }
 
       // REDIRECT
@@ -213,6 +223,7 @@ export default function LoginPage() {
         <div className="liquid-auth-card w-full max-w-md">
 
           {/* HEADER LOGIN */}
+
           <div className="text-center mb-7 sm:mb-8">
             <Link
               href="/"
@@ -243,12 +254,14 @@ export default function LoginPage() {
           </div>
 
           {/* FORM LOGIN */}
+
           <form
             onSubmit={handleLogin}
             className="space-y-4 sm:space-y-5"
           >
 
             {/* EMAIL */}
+
             <div>
               <label className="block text-sm font-semibold text-[var(--text-main)] mb-2">
                 Email
@@ -273,6 +286,7 @@ export default function LoginPage() {
             </div>
 
             {/* PASSWORD */}
+
             <div>
               <label className="block text-sm font-semibold text-[var(--text-main)] mb-2">
                 {isEnglish ? "Password" : "Kata Sandi"}
@@ -316,6 +330,7 @@ export default function LoginPage() {
             </div>
 
             {/* PESAN ERROR */}
+
             {error && (
               <div
                 role="alert"
@@ -326,6 +341,7 @@ export default function LoginPage() {
             )}
 
             {/* BUTTON LOGIN */}
+
             <button
               type="submit"
               disabled={loading}
@@ -345,6 +361,7 @@ export default function LoginPage() {
           </form>
 
           {/* LINK REGISTER */}
+
           <div className="text-center text-sm text-[var(--text-secondary)] mt-6 sm:mt-7 leading-relaxed">
             {isEnglish
               ? "Don't have an account?"
@@ -361,6 +378,7 @@ export default function LoginPage() {
           </div>
 
           {/* KEMBALI KE BERANDA */}
+
           <div className="text-center mt-6 sm:mt-7 pt-5 sm:pt-6 border-t border-[var(--border-main)]">
             <Link
               href="/"

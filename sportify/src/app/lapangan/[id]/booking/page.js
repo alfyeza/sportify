@@ -32,14 +32,23 @@ export default function BookingLapanganPage() {
   const [filterCabor, setFilterCabor] = useState("Semua");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+  // ==========================================
+  // TANGGAL HARI INI
+  // ==========================================
+
   const getTanggalHariIni = () => {
     const sekarang = new Date();
+
     const tahun = sekarang.getFullYear();
     const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
     const tanggal = String(sekarang.getDate()).padStart(2, "0");
 
     return `${tahun}-${bulan}-${tanggal}`;
   };
+
+  // ==========================================
+  // CEK AUTENTIKASI
+  // ==========================================
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,42 +67,74 @@ export default function BookingLapanganPage() {
     setIsCheckingAuth(false);
   }, [params.id, router]);
 
+  // ==========================================
+  // AMBIL DATA LAPANGAN DARI BACKEND
+  // ==========================================
+
   useEffect(() => {
     async function fetchLapangans() {
       try {
         const res = await apiRequest("/lapangan");
-        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+
+        if (
+          res.success &&
+          Array.isArray(res.data) &&
+          res.data.length > 0
+        ) {
           setSumberLapangan(res.data);
         }
       } catch (err) {
-        console.warn("Fallback pilih jadwal lapangan:", err.message);
+        console.warn(
+          "Fallback pilih jadwal lapangan:",
+          err.message
+        );
       } finally {
         setIsLoadingLapangan(false);
       }
     }
+
     fetchLapangans();
   }, []);
+
+  // ==========================================
+  // DATA LAPANGAN
+  // ==========================================
 
   const lapangan = sumberLapangan.find(
     (item) => String(item.id) === String(params.id)
   );
 
+  // ==========================================
+  // FORMAT RUPIAH
+  // ==========================================
+
   const formatRupiah = (nominal) => {
     return `Rp ${Number(nominal || 0).toLocaleString("id-ID")}`;
   };
+
+  // ==========================================
+  // FORMAT TANGGAL
+  // ==========================================
 
   const formatTanggal = (value) => {
     if (!value) return "-";
 
     const date = new Date(`${value}T00:00:00`);
 
-    return date.toLocaleDateString(isEnglish ? "en-US" : "id-ID", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+    return date.toLocaleDateString(
+      isEnglish ? "en-US" : "id-ID",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }
+    );
   };
+
+  // ==========================================
+  // LOADING
+  // ==========================================
 
   if (isCheckingAuth || (isLoadingLapangan && !lapangan)) {
     return (
@@ -117,6 +158,10 @@ export default function BookingLapanganPage() {
     );
   }
 
+  // ==========================================
+  // LAPANGAN TIDAK DITEMUKAN
+  // ==========================================
+
   if (!lapangan) {
     return (
       <>
@@ -125,7 +170,9 @@ export default function BookingLapanganPage() {
         <main className="min-h-screen bg-background flex items-center justify-center px-5">
           <div className="text-center booking-fade-up">
             <h1 className="text-2xl font-bold text-dark-text">
-              {isEnglish ? "Court not found" : "Lapangan tidak ditemukan"}
+              {isEnglish
+                ? "Court not found"
+                : "Lapangan tidak ditemukan"}
             </h1>
 
             <p className="mt-2 text-gray-500">
@@ -138,7 +185,9 @@ export default function BookingLapanganPage() {
               href="/lapangan"
               className="inline-flex mt-6 rounded-full bg-primary px-6 py-3 text-white font-semibold hover:bg-secondary transition"
             >
-              {isEnglish ? "Back to courts" : "Kembali ke lapangan"}
+              {isEnglish
+                ? "Back to courts"
+                : "Kembali ke lapangan"}
             </Link>
           </div>
         </main>
@@ -148,13 +197,34 @@ export default function BookingLapanganPage() {
     );
   }
 
-  const kategoriLapangan = Array.isArray(lapangan.kategori)
-    ? lapangan.kategori
-    : lapangan.kategori
-      ? [lapangan.kategori]
-      : [];
+  // ==========================================
+  // KATEGORI LAPANGAN
+  // ==========================================
 
-  const rawUnits = lapangan.unitLapangan || lapangan.unit_lapangan;
+  const ambilKategori = (value) => {
+    if (Array.isArray(value)) {
+      return value
+        .filter(Boolean)
+        .map((item) => String(item).trim())
+        .filter(Boolean);
+    }
+
+    if (typeof value === "string" && value.trim()) {
+      return [value.trim()];
+    }
+
+    return [];
+  };
+
+  const kategoriLapangan = ambilKategori(lapangan.kategori);
+
+  // ==========================================
+  // DAFTAR UNIT LAPANGAN
+  // ==========================================
+
+  const rawUnits =
+    lapangan.unitLapangan || lapangan.unit_lapangan;
+
   const daftarUnit =
     Array.isArray(rawUnits) && rawUnits.length > 0
       ? rawUnits
@@ -166,69 +236,151 @@ export default function BookingLapanganPage() {
         },
       ];
 
-  const daftarJam = Array.from({ length: 15 }, (_, index) => {
-    return `${String(index + 8).padStart(2, "0")}:00`;
-  });
+  // ==========================================
+  // KATEGORI FILTER
+  // Mengambil kategori venue dan kategori unit.
+  // ==========================================
 
-  const daftarTanggal = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date();
-    date.setDate(date.getDate() + index);
-
-    const tahun = date.getFullYear();
-    const bulan = String(date.getMonth() + 1).padStart(2, "0");
-    const hari = String(date.getDate()).padStart(2, "0");
-
-    return {
-      value: `${tahun}-${bulan}-${hari}`,
-      namaHari: date.toLocaleDateString(
-        isEnglish ? "en-US" : "id-ID",
-        { weekday: "short" }
+  const semuaKategori = [
+    ...new Set([
+      ...kategoriLapangan,
+      ...daftarUnit.flatMap((item) =>
+        ambilKategori(item.kategori)
       ),
-      tanggal: date.getDate(),
-      bulan: date.toLocaleDateString(
-        isEnglish ? "en-US" : "id-ID",
-        { month: "short" }
-      ),
-    };
-  });
+    ]),
+  ];
+
+  const normalisasiKategori = (value) => {
+    return String(value || "")
+      .trim()
+      .toLowerCase();
+  };
+
+  // ==========================================
+  // DAFTAR JAM
+  // ==========================================
+
+  const daftarJam = Array.from(
+    { length: 15 },
+    (_, index) => {
+      return `${String(index + 8).padStart(2, "0")}:00`;
+    }
+  );
+
+  // ==========================================
+  // DAFTAR TANGGAL
+  // ==========================================
+
+  const daftarTanggal = Array.from(
+    { length: 7 },
+    (_, index) => {
+      const date = new Date();
+
+      date.setDate(date.getDate() + index);
+
+      const tahun = date.getFullYear();
+      const bulan = String(date.getMonth() + 1).padStart(2, "0");
+      const hari = String(date.getDate()).padStart(2, "0");
+
+      return {
+        value: `${tahun}-${bulan}-${hari}`,
+
+        namaHari: date.toLocaleDateString(
+          isEnglish ? "en-US" : "id-ID",
+          { weekday: "short" }
+        ),
+
+        tanggal: date.getDate(),
+
+        bulan: date.toLocaleDateString(
+          isEnglish ? "en-US" : "id-ID",
+          { month: "short" }
+        ),
+      };
+    }
+  );
+
+  // ==========================================
+  // FILTER WAKTU
+  // ==========================================
 
   const daftarJamFilter = daftarJam.filter((waktu) => {
     const jamAngka = Number(waktu.split(":")[0]);
 
-    if (filterWaktu === "Pagi") return jamAngka >= 6 && jamAngka < 12;
-    if (filterWaktu === "Siang") return jamAngka >= 12 && jamAngka < 18;
-    if (filterWaktu === "Malam") return jamAngka >= 18;
+    if (filterWaktu === "Pagi") {
+      return jamAngka >= 6 && jamAngka < 12;
+    }
+
+    if (filterWaktu === "Siang") {
+      return jamAngka >= 12 && jamAngka < 18;
+    }
+
+    if (filterWaktu === "Malam") {
+      return jamAngka >= 18;
+    }
 
     return true;
   });
 
+  // ==========================================
+  // FILTER KATEGORI OLAHRAGA
+  // ==========================================
+
   const daftarUnitFilter = daftarUnit.filter((item) => {
-    if (filterCabor === "Semua") return true;
+    if (filterCabor === "Semua") {
+      return true;
+    }
 
-    const kategoriUnit = Array.isArray(item.kategori)
-      ? item.kategori
-      : item.kategori
-        ? [item.kategori]
-        : [];
+    const kategoriUnit = ambilKategori(item.kategori);
 
-    if (kategoriUnit.length === 0) return true;
+    // Jika unit tidak memiliki kategori sendiri,
+    // gunakan kategori dari venue.
+    const kategoriEfektif =
+      kategoriUnit.length > 0
+        ? kategoriUnit
+        : kategoriLapangan;
 
-    return kategoriUnit.includes(filterCabor);
+    return kategoriEfektif.some(
+      (kategori) =>
+        normalisasiKategori(kategori) ===
+        normalisasiKategori(filterCabor)
+    );
   });
+
+  // ==========================================
+  // NAMA UNIT
+  // ==========================================
+
+  const getNamaUnit = (item) => {
+    return (
+      item.nama ||
+      item.namaUnit ||
+      item.nama_unit ||
+      item.unit ||
+      "Unit Lapangan"
+    );
+  };
+
+  // ==========================================
+  // SIMULASI JADWAL SUDAH DIPESAN
+  // ==========================================
 
   const jamSudahDipesan = (indexUnit, indexJam) => {
     return (indexUnit + indexJam) % 5 === 1;
   };
+
+  // ==========================================
+  // CEK KETERSEDIAAN DURASI
+  // ==========================================
 
   const cekKetersediaanDurasi = (
     namaUnit,
     jamMulai,
     durasiPilihan
   ) => {
-    const indexUnit = daftarUnit.findIndex((item) => {
-      const nama = item.nama || item.namaUnit || item.unit;
-      return nama === namaUnit;
-    });
+    const indexUnit = daftarUnit.findIndex(
+      (item) => getNamaUnit(item) === namaUnit
+    );
 
     const indexJamMulai = daftarJam.indexOf(jamMulai);
 
@@ -247,7 +399,12 @@ export default function BookingLapanganPage() {
     }
 
     for (let i = 0; i < jumlahJam; i++) {
-      if (jamSudahDipesan(indexUnit, indexJamMulai + i)) {
+      if (
+        jamSudahDipesan(
+          indexUnit,
+          indexJamMulai + i
+        )
+      ) {
         return false;
       }
     }
@@ -255,7 +412,14 @@ export default function BookingLapanganPage() {
     return true;
   };
 
-  const jamTersediaUntukDurasi = (indexUnit, indexJam) => {
+  // ==========================================
+  // CEK KETERSEDIAAN JAM BERDASARKAN DURASI
+  // ==========================================
+
+  const jamTersediaUntukDurasi = (
+    indexUnit,
+    indexJam
+  ) => {
     const jumlahJam = Number(durasi);
 
     if (indexJam + jumlahJam > daftarJam.length) {
@@ -263,7 +427,12 @@ export default function BookingLapanganPage() {
     }
 
     for (let i = 0; i < jumlahJam; i++) {
-      if (jamSudahDipesan(indexUnit, indexJam + i)) {
+      if (
+        jamSudahDipesan(
+          indexUnit,
+          indexJam + i
+        )
+      ) {
         return false;
       }
     }
@@ -271,13 +440,21 @@ export default function BookingLapanganPage() {
     return true;
   };
 
+  // ==========================================
+  // FORMAT JAM SELESAI
+  // ==========================================
+
   const formatJamSelesai = (jamMulai) => {
     if (!jamMulai) return "-";
 
-    const [jamAngka, menit] = jamMulai.split(":").map(Number);
+    const [jamAngka, menit] = jamMulai
+      .split(":")
+      .map(Number);
 
     const totalMenit =
-      jamAngka * 60 + menit + Number(durasi) * 60;
+      jamAngka * 60 +
+      menit +
+      Number(durasi) * 60;
 
     const jamSelesai = Math.floor(totalMenit / 60);
     const menitSelesai = totalMenit % 60;
@@ -287,7 +464,32 @@ export default function BookingLapanganPage() {
     ).padStart(2, "0")}`;
   };
 
-  const totalHarga = Number(lapangan.harga || 0);
+  // ==========================================
+  // PERHITUNGAN HARGA
+  // ==========================================
+
+  const hargaPerJam = Number(
+    lapangan.harga_per_jam ??
+    lapangan.hargaPerJam ??
+    lapangan.harga ??
+    0
+  );
+
+  const totalHarga =
+    hargaPerJam * Number(durasi || 1);
+
+  // ==========================================
+  // PILIH UNIT
+  // ==========================================
+
+  const pilihUnit = (namaUnit) => {
+    setUnit(namaUnit);
+    setJam("");
+  };
+
+  // ==========================================
+  // LANJUTKAN BOOKING
+  // ==========================================
 
   const lanjutBooking = () => {
     if (!unit || !tanggal || !jam || !durasi) {
@@ -296,6 +498,7 @@ export default function BookingLapanganPage() {
           ? "Please complete all booking details."
           : "Lengkapi pilihan lapangan, tanggal, jam, dan durasi terlebih dahulu."
       );
+
       return;
     }
 
@@ -305,6 +508,7 @@ export default function BookingLapanganPage() {
           ? "Please select a valid booking date."
           : "Tanggal booking tidak boleh sebelum hari ini."
       );
+
       return;
     }
 
@@ -314,6 +518,7 @@ export default function BookingLapanganPage() {
           ? "The selected time slot is unavailable for this duration. Please choose another time."
           : "Jadwal tidak tersedia untuk durasi yang dipilih. Silakan pilih jam lain."
       );
+
       return;
     }
 
@@ -328,17 +533,32 @@ export default function BookingLapanganPage() {
     router.push(`/booking?${query.toString()}`);
   };
 
+  // ==========================================
+  // FILTER WAKTU OPTIONS
+  // ==========================================
+
   const filterWaktuOptions = [
-    { value: "Semua Waktu", label: t.allTimes },
-    { value: "Pagi", label: t.morning },
-    { value: "Siang", label: t.afternoon },
-    { value: "Malam", label: t.evening },
+    {
+      value: "Semua Waktu",
+      label: t.allTimes,
+    },
+    {
+      value: "Pagi",
+      label: t.morning,
+    },
+    {
+      value: "Siang",
+      label: t.afternoon,
+    },
+    {
+      value: "Malam",
+      label: t.evening,
+    },
   ];
 
-  const pilihUnit = (namaUnit) => {
-    setUnit(namaUnit);
-    setJam("");
-  };
+  // ==========================================
+  // TAMPILAN
+  // ==========================================
 
   return (
     <>
@@ -346,8 +566,10 @@ export default function BookingLapanganPage() {
 
       <main className="booking-animate min-h-screen bg-background pb-20">
         {/* HEADER */}
+
         <section className="booking-header relative overflow-hidden bg-gradient-to-br from-soft-mint via-background to-white">
           <div className="booking-glow absolute -top-20 -right-20 w-72 h-72 rounded-full bg-secondary/10 blur-3xl" />
+
           <div className="booking-glow booking-glow-delay absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-primary/10 blur-3xl" />
 
           <div className="relative max-w-7xl mx-auto px-5 lg:px-8 pt-8 pb-10">
@@ -363,6 +585,7 @@ export default function BookingLapanganPage() {
               <div className="booking-fade-up">
                 <div className="inline-flex items-center gap-2 rounded-full bg-white/80 border border-primary/10 px-4 py-2 text-xs font-semibold text-primary shadow-sm backdrop-blur-lg">
                   <span className="w-2 h-2 rounded-full bg-secondary booking-pulse" />
+
                   {t.headerLabel}
                 </div>
 
@@ -378,7 +601,9 @@ export default function BookingLapanganPage() {
                   {kategoriLapangan.map((kategori, index) => (
                     <span
                       key={kategori}
-                      style={{ animationDelay: `${index * 100}ms` }}
+                      style={{
+                        animationDelay: `${index * 100}ms`,
+                      }}
                       className="booking-chip rounded-full bg-soft-mint px-4 py-2 text-xs font-semibold text-primary"
                     >
                       {kategori}
@@ -389,7 +614,9 @@ export default function BookingLapanganPage() {
 
               <div className="booking-selected-card rounded-3xl border border-white/80 bg-white/70 backdrop-blur-xl p-5 shadow-lg shadow-primary/5 md:min-w-[260px]">
                 <p className="text-xs font-medium text-gray-500">
-                  {isEnglish ? "Selected court" : "Lapangan pilihan"}
+                  {isEnglish
+                    ? "Selected court"
+                    : "Lapangan pilihan"}
                 </p>
 
                 <h2 className="mt-2 text-xl font-bold text-dark-text">
@@ -402,15 +629,13 @@ export default function BookingLapanganPage() {
 
                 <div className="mt-4 border-t border-primary/10 pt-4">
                   <p className="text-xs text-gray-500">
-                    {isEnglish ? "Starting from" : "Mulai dari"}
+                    {isEnglish
+                      ? "Price per hour"
+                      : "Harga per jam"}
                   </p>
 
                   <p className="mt-1 text-xl font-bold text-primary">
-                    {formatRupiah(lapangan.harga)}
-                    <span className="text-xs font-medium text-gray-400">
-                      {" "}
-                      / {isEnglish ? "session" : "sesi"}
-                    </span>
+                    {formatRupiah(hargaPerJam)}
                   </p>
                 </div>
               </div>
@@ -419,10 +644,12 @@ export default function BookingLapanganPage() {
         </section>
 
         <div className="max-w-7xl mx-auto px-5 lg:px-8 mt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-7 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_350px] gap-7 items-start">
             {/* BAGIAN KIRI */}
-            <div className="space-y-7">
+
+            <div className="min-w-0 space-y-7">
               {/* PILIH TANGGAL */}
+
               <section className="liquid-booking-page-card booking-card-enter p-5 md:p-7">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-soft-mint text-xl booking-icon">
@@ -431,7 +658,9 @@ export default function BookingLapanganPage() {
 
                   <div>
                     <h2 className="text-lg font-bold text-dark-text">
-                      {isEnglish ? "Choose a date" : "Pilih Tanggal"}
+                      {isEnglish
+                        ? "Choose a date"
+                        : "Pilih Tanggal"}
                     </h2>
 
                     <p className="text-xs text-gray-500 mt-1">
@@ -450,7 +679,9 @@ export default function BookingLapanganPage() {
                       <button
                         key={item.value}
                         type="button"
-                        style={{ animationDelay: `${index * 60}ms` }}
+                        style={{
+                          animationDelay: `${index * 60}ms`,
+                        }}
                         onClick={() => {
                           setTanggal(item.value);
                           setJam("");
@@ -461,7 +692,9 @@ export default function BookingLapanganPage() {
                           }`}
                       >
                         <span
-                          className={`block text-xs ${aktif ? "text-white/80" : "text-gray-400"
+                          className={`block text-xs ${aktif
+                              ? "text-white/80"
+                              : "text-gray-400"
                             }`}
                         >
                           {item.namaHari}
@@ -472,7 +705,9 @@ export default function BookingLapanganPage() {
                         </span>
 
                         <span
-                          className={`block text-xs ${aktif ? "text-white/80" : "text-gray-400"
+                          className={`block text-xs ${aktif
+                              ? "text-white/80"
+                              : "text-gray-400"
                             }`}
                         >
                           {item.bulan}
@@ -503,11 +738,14 @@ export default function BookingLapanganPage() {
               </section>
 
               {/* PILIH LAPANGAN */}
+
               <section className="liquid-booking-page-card booking-card-enter p-5 md:p-7">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <h2 className="text-lg font-bold text-dark-text">
-                      {isEnglish ? "Available courts" : "Pilih Lapangan"}
+                      {isEnglish
+                        ? "Available courts"
+                        : "Pilih Lapangan"}
                     </h2>
 
                     <p className="mt-1 text-xs text-gray-500">
@@ -523,6 +761,7 @@ export default function BookingLapanganPage() {
                 </div>
 
                 {/* FILTER */}
+
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 mb-2">
@@ -531,34 +770,48 @@ export default function BookingLapanganPage() {
 
                     <select
                       value={filterWaktu}
-                      onChange={(e) => setFilterWaktu(e.target.value)}
+                      onChange={(e) =>
+                        setFilterWaktu(e.target.value)
+                      }
                       className="liquid-booking-input w-full"
                     >
                       {filterWaktuOptions.map((item) => (
-                        <option key={item.value} value={item.value}>
+                        <option
+                          key={item.value}
+                          value={item.value}
+                        >
                           {item.label}
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  {kategoriLapangan.length > 1 && (
+                  {semuaKategori.length > 1 && (
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-2">
-                        {isEnglish ? "Sport category" : "Kategori Olahraga"}
+                        {isEnglish
+                          ? "Sport category"
+                          : "Kategori Olahraga"}
                       </label>
 
                       <select
                         value={filterCabor}
-                        onChange={(e) => setFilterCabor(e.target.value)}
+                        onChange={(e) =>
+                          setFilterCabor(e.target.value)
+                        }
                         className="liquid-booking-input w-full"
                       >
                         <option value="Semua">
-                          {isEnglish ? "All categories" : "Semua"}
+                          {isEnglish
+                            ? "All categories"
+                            : "Semua"}
                         </option>
 
-                        {kategoriLapangan.map((kategori) => (
-                          <option key={kategori} value={kategori}>
+                        {semuaKategori.map((kategori) => (
+                          <option
+                            key={kategori}
+                            value={kategori}
+                          >
                             {kategori}
                           </option>
                         ))}
@@ -568,6 +821,7 @@ export default function BookingLapanganPage() {
                 </div>
 
                 {/* LEGENDA */}
+
                 <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-gray-500">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded bg-primary" />
@@ -581,11 +835,14 @@ export default function BookingLapanganPage() {
 
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded bg-gray-200" />
-                    {isEnglish ? "Booked" : "Sudah dipesan"}
+                    {isEnglish
+                      ? "Booked"
+                      : "Sudah dipesan"}
                   </div>
                 </div>
 
                 {/* DAFTAR UNIT */}
+
                 <div className="mt-5 space-y-4">
                   {daftarUnitFilter.length === 0 ? (
                     <div className="rounded-2xl bg-background p-8 text-center">
@@ -603,17 +860,26 @@ export default function BookingLapanganPage() {
                     </div>
                   ) : (
                     daftarUnitFilter.map((item, index) => {
-                      const namaUnit =
-                        item.nama || item.namaUnit || item.unit;
+                      const namaUnit = getNamaUnit(item);
 
-                      const indexUnit = daftarUnit.indexOf(item);
-                      const isExpanded = expandedUnit === namaUnit;
-                      const isSelected = unit === namaUnit;
+                      const indexUnit =
+                        daftarUnit.indexOf(item);
+
+                      const isExpanded =
+                        expandedUnit === namaUnit;
+
+                      const isSelected =
+                        unit === namaUnit;
+
+                      const kategoriUnit =
+                        ambilKategori(item.kategori);
 
                       return (
                         <div
-                          key={namaUnit}
-                          style={{ animationDelay: `${index * 100}ms` }}
+                          key={`${namaUnit}-${index}`}
+                          style={{
+                            animationDelay: `${index * 100}ms`,
+                          }}
                           className={`booking-unit-card overflow-hidden rounded-3xl border transition-all ${isSelected
                               ? "border-primary bg-soft-mint/50 shadow-md shadow-primary/5"
                               : "border-gray-100 bg-white hover:border-secondary/50"
@@ -621,6 +887,7 @@ export default function BookingLapanganPage() {
                         >
                           <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
                             {/* FOTO UNIT */}
+
                             <div className="booking-unit-image relative h-48 sm:h-full min-h-[190px] bg-soft-mint">
                               <Image
                                 src={
@@ -635,17 +902,19 @@ export default function BookingLapanganPage() {
                               />
 
                               <div className="absolute left-3 top-3 rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
-                                {item.kategori ||
-                                  kategoriLapangan[0] ||
+                                {kategoriUnit.length > 0
+                                  ? kategoriUnit.join(", ")
+                                  : kategoriLapangan.join(", ") ||
                                   "Court"}
                               </div>
                             </div>
 
                             {/* INFO UNIT */}
-                            <div className="p-5">
+
+                            <div className="min-w-0 p-5">
                               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                                <div>
-                                  <h3 className="text-lg font-bold text-dark-text">
+                                <div className="min-w-0">
+                                  <h3 className="text-lg font-bold text-dark-text break-words">
                                     {namaUnit}
                                   </h3>
 
@@ -654,17 +923,23 @@ export default function BookingLapanganPage() {
                                   </p>
 
                                   <p className="mt-3 text-sm font-semibold text-primary">
-                                    {formatRupiah(lapangan.harga)}
+                                    {formatRupiah(hargaPerJam)}
+
                                     <span className="font-normal text-gray-400">
                                       {" "}
-                                      / {isEnglish ? "session" : "sesi"}
+                                      /{" "}
+                                      {isEnglish
+                                        ? "hour"
+                                        : "jam"}
                                     </span>
                                   </p>
                                 </div>
 
                                 <button
                                   type="button"
-                                  onClick={() => pilihUnit(namaUnit)}
+                                  onClick={() =>
+                                    pilihUnit(namaUnit)
+                                  }
                                   className={`booking-select-button rounded-full px-5 py-2.5 text-sm font-semibold transition ${isSelected
                                       ? "bg-primary text-white"
                                       : "border border-primary text-primary hover:bg-soft-mint"
@@ -685,7 +960,9 @@ export default function BookingLapanganPage() {
                                   type="button"
                                   onClick={() =>
                                     setExpandedUnit(
-                                      isExpanded ? null : namaUnit
+                                      isExpanded
+                                        ? null
+                                        : namaUnit
                                     )
                                   }
                                   className="flex w-full items-center justify-between text-sm font-semibold text-dark-text hover:text-primary transition"
@@ -710,39 +987,44 @@ export default function BookingLapanganPage() {
                                     </p>
 
                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                                      {daftarJamFilter.map((waktu) => {
-                                        const indexJam =
-                                          daftarJam.indexOf(waktu);
+                                      {daftarJamFilter.map(
+                                        (waktu) => {
+                                          const indexJam =
+                                            daftarJam.indexOf(
+                                              waktu
+                                            );
 
-                                        const tersedia =
-                                          jamTersediaUntukDurasi(
-                                            indexUnit,
-                                            indexJam
+                                          const tersedia =
+                                            jamTersediaUntukDurasi(
+                                              indexUnit,
+                                              indexJam
+                                            );
+
+                                          const isJamSelected =
+                                            isSelected &&
+                                            jam === waktu;
+
+                                          return (
+                                            <button
+                                              key={waktu}
+                                              type="button"
+                                              disabled={!tersedia}
+                                              onClick={() => {
+                                                setUnit(namaUnit);
+                                                setJam(waktu);
+                                              }}
+                                              className={`booking-time-button rounded-xl border px-2 py-3 text-xs font-semibold transition ${!tersedia
+                                                  ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
+                                                  : isJamSelected
+                                                    ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
+                                                    : "border-secondary/20 bg-soft-mint/60 text-primary hover:border-secondary hover:bg-soft-mint"
+                                                }`}
+                                            >
+                                              {waktu}
+                                            </button>
                                           );
-
-                                        const isJamSelected =
-                                          isSelected && jam === waktu;
-
-                                        return (
-                                          <button
-                                            key={waktu}
-                                            type="button"
-                                            disabled={!tersedia}
-                                            onClick={() => {
-                                              setUnit(namaUnit);
-                                              setJam(waktu);
-                                            }}
-                                            className={`booking-time-button rounded-xl border px-2 py-3 text-xs font-semibold transition ${!tersedia
-                                                ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
-                                                : isJamSelected
-                                                  ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
-                                                  : "border-secondary/20 bg-soft-mint/60 text-primary hover:border-secondary hover:bg-soft-mint"
-                                              }`}
-                                          >
-                                            {waktu}
-                                          </button>
-                                        );
-                                      })}
+                                        }
+                                      )}
                                     </div>
                                   </div>
                                 )}
@@ -757,19 +1039,28 @@ export default function BookingLapanganPage() {
               </section>
             </div>
 
+            {/* ================================= */}
             {/* RINGKASAN BOOKING */}
-            <aside className="booking-summary-enter lg:sticky lg:top-24 self-start min-w-0">
-              <div className="liquid-booking-summary w-full">
-                <div className="relative overflow-hidden bg-gradient-to-br from-primary to-secondary p-6 text-white">
+            {/* ================================= */}
+
+            <aside className="booking-summary-enter w-full min-w-0 lg:sticky lg:top-24 self-start">
+              <div className="liquid-booking-summary !block !w-full !min-w-0 overflow-hidden rounded-3xl">
+                {/* HEADER RINGKASAN */}
+
+                <div className="!block !w-full !min-w-0 relative overflow-hidden bg-gradient-to-br from-primary to-secondary p-6 text-white">
                   <div className="booking-summary-glow absolute -right-12 -top-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
 
-                  <div className="relative">
+                  <div className="relative !block !w-full">
                     <p className="text-sm text-white/80">
-                      {isEnglish ? "Your booking" : "Booking Kamu"}
+                      {isEnglish
+                        ? "Your booking"
+                        : "Booking Kamu"}
                     </p>
 
-                    <h2 className="mt-1 text-2xl font-bold">
-                      {isEnglish ? "Booking Summary" : "Ringkasan Booking"}
+                    <h2 className="mt-1 text-2xl font-bold leading-tight break-words">
+                      {isEnglish
+                        ? "Booking Summary"
+                        : "Ringkasan Booking"}
                     </h2>
 
                     <p className="mt-2 text-xs leading-relaxed text-white/80">
@@ -780,37 +1071,49 @@ export default function BookingLapanganPage() {
                   </div>
                 </div>
 
-                <div className="p-5">
+                {/* DETAIL RINGKASAN */}
+
+                <div className="!block !w-full min-w-0 p-5">
                   <div className="space-y-4">
+                    {/* LAPANGAN */}
+
                     <div>
                       <p className="text-xs text-gray-400">
                         {isEnglish ? "Court" : "Lapangan"}
                       </p>
 
-                      <p className="mt-1 font-semibold text-dark-text">
+                      <p className="mt-1 font-semibold text-dark-text break-words">
                         {lapangan.nama}
                       </p>
                     </div>
 
+                    {/* UNIT */}
+
                     <div className="border-t border-gray-100 pt-4">
                       <p className="text-xs text-gray-400">
-                        {isEnglish ? "Court unit" : "Unit Lapangan"}
+                        {isEnglish
+                          ? "Court unit"
+                          : "Unit Lapangan"}
                       </p>
 
-                      <p className="mt-1 font-semibold text-dark-text">
+                      <p className="mt-1 font-semibold text-dark-text break-words">
                         {unit || "-"}
                       </p>
                     </div>
+
+                    {/* TANGGAL */}
 
                     <div className="border-t border-gray-100 pt-4">
                       <p className="text-xs text-gray-400">
                         {isEnglish ? "Date" : "Tanggal"}
                       </p>
 
-                      <p className="mt-1 font-semibold text-dark-text">
+                      <p className="mt-1 font-semibold text-dark-text break-words">
                         {formatTanggal(tanggal)}
                       </p>
                     </div>
+
+                    {/* JAM */}
 
                     <div className="border-t border-gray-100 pt-4">
                       <p className="text-xs text-gray-400">
@@ -823,6 +1126,8 @@ export default function BookingLapanganPage() {
                           : "-"}
                       </p>
                     </div>
+
+                    {/* DURASI */}
 
                     <div className="border-t border-gray-100 pt-4">
                       <label
@@ -855,30 +1160,41 @@ export default function BookingLapanganPage() {
                         className="liquid-booking-input mt-2 w-full"
                       >
                         {[1, 2, 3, 4].map((angka) => (
-                          <option key={angka} value={String(angka)}>
-                            {angka} {isEnglish ? "hour(s)" : "jam"}
+                          <option
+                            key={angka}
+                            value={String(angka)}
+                          >
+                            {angka}{" "}
+                            {isEnglish ? "hour(s)" : "jam"}
                           </option>
                         ))}
                       </select>
                     </div>
                   </div>
 
+                  {/* RINCIAN HARGA */}
+
                   <div className="booking-price-box mt-6 rounded-2xl bg-soft-mint p-4">
-                    <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center justify-between gap-3 text-sm text-gray-500">
                       <span>
                         {isEnglish
-                          ? "Price per session"
-                          : "Harga per sesi"}
+                          ? "Price per hour"
+                          : "Harga per jam"}
                       </span>
 
-                      <span>{formatRupiah(lapangan.harga)}</span>
+                      <span className="font-medium text-right">
+                        {formatRupiah(hargaPerJam)}
+                      </span>
                     </div>
 
-                    <div className="flex items-center justify-between mt-2 text-sm text-gray-500">
-                      <span>{isEnglish ? "Duration" : "Durasi"}</span>
+                    <div className="flex items-center justify-between gap-3 mt-2 text-sm text-gray-500">
+                      <span>
+                        {isEnglish ? "Duration" : "Durasi"}
+                      </span>
 
                       <span>
-                        {durasi} {isEnglish ? "hour(s)" : "jam"}
+                        {durasi}{" "}
+                        {isEnglish ? "hour(s)" : "jam"}
                       </span>
                     </div>
 
@@ -886,21 +1202,28 @@ export default function BookingLapanganPage() {
 
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-sm font-semibold text-dark-text">
-                        {isEnglish ? "Total price" : "Total Harga"}
+                        {isEnglish
+                          ? "Total price"
+                          : "Total Harga"}
                       </span>
 
-                      <span className="text-xl font-bold text-primary">
+                      <span className="text-lg sm:text-xl font-bold text-primary text-right break-words">
                         {formatRupiah(totalHarga)}
                       </span>
                     </div>
                   </div>
+
+                  {/* LANJUT BOOKING */}
 
                   <button
                     type="button"
                     onClick={lanjutBooking}
                     className="liquid-booking-button booking-continue-button mt-5 flex w-full items-center justify-center gap-2"
                   >
-                    {isEnglish ? "Continue booking" : "Lanjutkan Booking"}
+                    {isEnglish
+                      ? "Continue booking"
+                      : "Lanjutkan Booking"}
+
                     <span className="text-lg">›</span>
                   </button>
 
@@ -913,12 +1236,17 @@ export default function BookingLapanganPage() {
           </div>
         </div>
 
+        {/* ================================= */}
+        {/* ANIMASI DAN DARK MODE */}
+        {/* ================================= */}
+
         <style jsx global>{`
           @keyframes bookingFadeUp {
             from {
               opacity: 0;
               transform: translateY(24px);
             }
+
             to {
               opacity: 1;
               transform: translateY(0);
@@ -929,6 +1257,7 @@ export default function BookingLapanganPage() {
             from {
               opacity: 0;
             }
+
             to {
               opacity: 1;
             }
@@ -939,6 +1268,7 @@ export default function BookingLapanganPage() {
             100% {
               transform: translateY(0);
             }
+
             50% {
               transform: translateY(-12px);
             }
@@ -950,6 +1280,7 @@ export default function BookingLapanganPage() {
               opacity: 1;
               transform: scale(1);
             }
+
             50% {
               opacity: 0.5;
               transform: scale(0.75);
@@ -966,7 +1297,9 @@ export default function BookingLapanganPage() {
 
           .booking-selected-card {
             animation: bookingFadeUp 0.8s ease 0.15s both;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition:
+              transform 0.3s ease,
+              box-shadow 0.3s ease;
           }
 
           .booking-selected-card:hover {
@@ -1076,7 +1409,9 @@ export default function BookingLapanganPage() {
           }
 
           .booking-price-box {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition:
+              transform 0.3s ease,
+              box-shadow 0.3s ease;
           }
 
           .booking-price-box:hover {
@@ -1092,6 +1427,8 @@ export default function BookingLapanganPage() {
           .booking-continue-button:active {
             transform: scale(0.98);
           }
+
+          /* DARK MODE */
 
           .dark .booking-animate {
             background-color: #101a15 !important;
@@ -1118,7 +1455,7 @@ export default function BookingLapanganPage() {
             color: #b2c1b7 !important;
           }
 
-          .dark .booking-header .bg-white\/80 {
+          .dark .booking-header .bg-white\\/80 {
             background-color: rgba(27, 43, 34, 0.85) !important;
             border-color: rgba(125, 219, 168, 0.18) !important;
             color: #7ddba8 !important;
@@ -1222,7 +1559,7 @@ export default function BookingLapanganPage() {
             background-color: #52645a !important;
           }
 
-          .dark .booking-animate .border-secondary\/20 {
+          .dark .booking-animate .border-secondary\\/20 {
             border-color: rgba(125, 219, 168, 0.2) !important;
           }
 
@@ -1249,7 +1586,7 @@ export default function BookingLapanganPage() {
             color: #91a398 !important;
           }
 
-          .dark .booking-unit-card .border-primary\/10 {
+          .dark .booking-unit-card .border-primary\\/10 {
             border-color: rgba(125, 219, 168, 0.15) !important;
           }
 
@@ -1289,6 +1626,28 @@ export default function BookingLapanganPage() {
             background-color: #26332b !important;
             border-color: #34443a !important;
             color: #718078 !important;
+          }
+
+          /* RINGKASAN BOOKING */
+
+          .liquid-booking-summary {
+            display: block !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            overflow: hidden !important;
+          }
+
+          .liquid-booking-summary > div {
+            display: block !important;
+            width: 100% !important;
+            min-width: 0 !important;
+          }
+
+          .liquid-booking-summary h2 {
+            display: block;
+            width: 100%;
+            white-space: normal;
+            overflow-wrap: break-word;
           }
 
           .dark .liquid-booking-summary {
@@ -1351,6 +1710,13 @@ export default function BookingLapanganPage() {
 
           .dark main.min-h-screen .text-gray-500 {
             color: #b2c1b7 !important;
+          }
+
+          @media (max-width: 1023px) {
+            .booking-summary-enter {
+              position: static;
+              width: 100%;
+            }
           }
 
           @media (prefers-reduced-motion: reduce) {
