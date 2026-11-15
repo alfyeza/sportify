@@ -177,14 +177,14 @@ export default function Navbar() {
 
   // LINK NAVBAR
   const navLinkClass = (path) =>
-    `liquid-nav-link transition-colors ${isActive(path)
-      ? "text-primary font-bold bg-soft-mint px-3 py-1.5 rounded-full"
+    `liquid-nav-link !text-gray-800 dark:!text-gray-100 hover:!text-primary dark:hover:!text-lime-300 transition-colors ${isActive(path)
+      ? "!text-primary dark:!text-lime-300 font-bold bg-soft-mint dark:bg-white/10 px-3 py-1.5 rounded-full"
       : ""
     }`;
 
   const mobileLinkClass = (path) =>
-    `liquid-nav-link py-2 px-3 rounded-xl ${isActive(path)
-      ? "bg-soft-mint text-primary font-bold"
+    `liquid-nav-link !text-gray-800 dark:!text-gray-100 hover:!text-primary dark:hover:!text-lime-300 py-2 px-3 rounded-xl transition-colors ${isActive(path)
+      ? "bg-soft-mint dark:bg-white/10 !text-primary dark:!text-lime-300 font-bold"
       : ""
     }`;
 
@@ -211,7 +211,10 @@ export default function Navbar() {
           {/* MENU DESKTOP */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-3 text-sm">
 
-            <Link href="/" className={navLinkClass("/")}>
+            <Link
+              href="/"
+              className={navLinkClass("/")}
+            >
               {t.home}
             </Link>
 
@@ -283,7 +286,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="text-gray-500 hover:text-red-600 text-sm font-medium px-2 py-1 transition"
+                  className="text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 text-sm font-medium px-2 py-1 transition"
                   title={t.logout}
                 >
                   {t.logout}
@@ -294,7 +297,7 @@ export default function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="text-dark-text dark:text-white font-semibold text-sm hover:text-primary transition"
+                  className="!text-gray-800 dark:!text-gray-100 font-semibold text-sm hover:!text-primary dark:hover:!text-lime-300 transition"
                 >
                   {t.login}
                 </Link>
@@ -482,7 +485,7 @@ export default function Navbar() {
                     <Link
                       href="/login"
                       onClick={closeMenu}
-                      className="liquid-nav-link py-2 px-3"
+                      className="liquid-nav-link !text-gray-800 dark:!text-gray-100 hover:!text-primary dark:hover:!text-lime-300 py-2 px-3 transition-colors"
                     >
                       {t.login}
                     </Link>
