@@ -11,6 +11,61 @@ import ErrorState from "@/components/ErrorState";
 import { useLanguage } from "@/components/LanguageProvider";
 import { apiRequest } from "@/lib/api";
 
+const getToken = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("token");
+};
+
+const clearSession = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("sportify_user");
+  localStorage.removeItem("sportify_role");
+
+  window.dispatchEvent(new Event("sportify-auth-change"));
+};
+
+const isUnauthorizedError = (error) => {
+  const status = error?.status || error?.statusCode;
+
+  if (status === 401 || status === 403) {
+    return true;
+  }
+
+  const message = String(error?.message || "").toLowerCase();
+
+  return (
+    message.includes("unauthorized") ||
+    message.includes("unauthenticated") ||
+    message.includes("token expired") ||
+    message.includes("invalid token") ||
+    message.includes("token tidak valid") ||
+    message.includes("token kedaluwarsa")
+  );
+};
+
+const getResponseUser = (response) => {
+  return (
+    response?.user ||
+    response?.data?.user ||
+    response?.data?.profile ||
+    response?.data ||
+    response?.profile ||
+    response ||
+    {}
+  );
+};
+
+const getResponseArray = (response) => {
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response?.items)) return response.items;
+  if (Array.isArray(response?.stories)) return response.stories;
+  if (Array.isArray(response?.data?.items)) return response.data.items;
+  if (Array.isArray(response?.data?.stories)) return response.data.stories;
+
+  return [];
+};
+
 export default function ProfilePage() {
   const { language } = useLanguage();
   const isEnglish = language === "en";
@@ -18,6 +73,7 @@ export default function ProfilePage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -26,9 +82,11 @@ export default function ProfilePage() {
   const [loadingCerita, setLoadingCerita] = useState(true);
 
   const [profile, setProfile] = useState({
+    id: "",
     fullName: "",
     email: "",
     phone: "",
+    role: "penyewa",
   });
 
   const [formData, setFormData] = useState({
@@ -37,41 +95,93 @@ export default function ProfilePage() {
     phone: "",
   });
 
+  // MENGARAHKAN PENGGUNA KEMBALI KE LOGIN
+  const redirectToLogin = useCallback(() => {
+    clearSession();
+    router.replace("/login?redirect=%2Fprofile");
+  }, [router]);
+
   // MENGAMBIL DATA PROFIL
   const fetchProfile = useCallback(async () => {
     setLoading(true);
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       if (!token) {
-        router.replace("/login?redirect=%2Fprofile");
+        redirectToLogin();
         return;
       }
 
-      const data = await apiRequest("/auth/me", {
+      const response = await apiRequest("/auth/me", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const user =
-        data?.user ||
-        data?.data?.user ||
-        data?.data ||
-        data;
+      const user = getResponseUser(response);
+
+      if (!user || (!user.email && !user.fullName && !user.name)) {
+        throw new Error(
+          isEnglish
+            ? "Profile data is incomplete."
+            : "Data profil yang diterima belum lengkap."
+        );
+      }
+
+      const userRole = String(
+        user.role ||
+        user.user_role ||
+        localStorage.getItem("sportify_role") ||
+        "penyewa"
+      ).toLowerCase();
+
+      // HALAMAN INI KHUSUS PENYEWA
+      if (["mitra", "pemilik", "owner"].includes(userRole)) {
+        router.replace("/mitra/dashboard");
+        return;
+      }
+
+      if (userRole === "admin") {
+        router.replace("/admin/dashboard");
+        return;
+      }
 
       const profileData = {
-        fullName: user?.fullName || user?.name || "",
-        email: user?.email || "",
-        phone: user?.phone || user?.phoneNumber || "",
+        id: user.id || user.user_id || "",
+        fullName: user.fullName || user.full_name || user.name || "",
+        email: user.email || "",
+        phone: user.phone || user.phoneNumber || user.phone_number || "",
+        role: userRole,
       };
 
       setProfile(profileData);
-      setFormData(profileData);
+
+      setFormData({
+        fullName: profileData.fullName,
+        email: profileData.email,
+        phone: profileData.phone,
+      });
+
+      localStorage.setItem(
+        "sportify_user",
+        JSON.stringify({
+          ...user,
+          ...profileData,
+        })
+      );
+
+      localStorage.setItem("sportify_role", userRole);
     } catch (err) {
+      console.error("Gagal mengambil profil:", err);
+
+      if (isUnauthorizedError(err)) {
+        redirectToLogin();
+        return;
+      }
+
       setError(
         err.message ||
         (isEnglish
@@ -81,61 +191,116 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  }, [isEnglish, router]);
+  }, [isEnglish, redirectToLogin, router]);
 
   // MENGAMBIL CERITA MILIK PENGGUNA
   const fetchCeritaSaya = useCallback(async () => {
     setLoadingCerita(true);
 
     try {
-      const response = await apiRequest("/cerita-pengguna");
+      const token = getToken();
 
-      const semuaCerita = response?.data || [];
+      if (!token) {
+        setCeritaSaya([]);
+        return;
+      }
 
-      const emailLogin = localStorage.getItem("sportify_user");
+      const response = await apiRequest("/cerita-pengguna", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const semuaCerita = getResponseArray(response);
+
+      const savedUser = localStorage.getItem("sportify_user");
 
       let user = {};
 
       try {
-        user = JSON.parse(emailLogin || "{}");
+        user = JSON.parse(savedUser || "{}");
       } catch {
         user = {};
       }
 
-      const emailPengguna = user.email?.toLowerCase();
-
-      const ceritaPengguna = semuaCerita.filter(
-        (item) => item.email?.toLowerCase() === emailPengguna
+      const userId = String(
+        user.id || user.user_id || profile.id || ""
       );
+
+      const emailPengguna = String(user.email || profile.email || "")
+        .trim()
+        .toLowerCase();
+
+      const ceritaPengguna = semuaCerita.filter((item) => {
+        const storyUserId = String(
+          item.user_id || item.userId || item.pengguna_id || ""
+        );
+
+        const storyEmail = String(item.email || "")
+          .trim()
+          .toLowerCase();
+
+        // Utamakan pencocokan ID pengguna.
+        if (userId && storyUserId) {
+          return storyUserId === userId;
+        }
+
+        // Gunakan email sebagai alternatif jika ID tidak tersedia.
+        if (emailPengguna && storyEmail) {
+          return storyEmail === emailPengguna;
+        }
+
+        return false;
+      });
 
       setCeritaSaya(ceritaPengguna);
     } catch (err) {
       console.error("Gagal mengambil cerita:", err);
+
+      if (isUnauthorizedError(err)) {
+        redirectToLogin();
+        return;
+      }
+
       setCeritaSaya([]);
     } finally {
       setLoadingCerita(false);
     }
-  }, []);
+  }, [profile.id, profile.email, redirectToLogin]);
 
   // JALANKAN SAAT HALAMAN DIBUKA
   useEffect(() => {
     fetchProfile();
-    fetchCeritaSaya();
-  }, [fetchProfile, fetchCeritaSaya]);
+  }, [fetchProfile]);
+
+  // AMBIL CERITA SETELAH PROFIL BERHASIL DIMUAT
+  useEffect(() => {
+    if (!loading && !error && profile.email) {
+      fetchCeritaSaya();
+    }
+
+    if (!loading && error) {
+      setLoadingCerita(false);
+      setCeritaSaya([]);
+    }
+  }, [loading, error, profile.email, fetchCeritaSaya]);
 
   // LOGOUT
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("sportify_user");
-
-    window.dispatchEvent(new Event("sportify-auth-change"));
-
+    clearSession();
     router.replace("/login");
+    router.refresh();
   };
 
   // MULAI EDIT PROFIL
   const handleEdit = () => {
-    setFormData(profile);
+    setFormData({
+      fullName: profile.fullName,
+      email: profile.email,
+      phone: profile.phone,
+    });
+
     setIsEditing(true);
     setMessage("");
     setError("");
@@ -143,7 +308,12 @@ export default function ProfilePage() {
 
   // MEMBATALKAN EDIT
   const handleCancel = () => {
-    setFormData(profile);
+    setFormData({
+      fullName: profile.fullName,
+      email: profile.email,
+      phone: profile.phone,
+    });
+
     setIsEditing(false);
     setMessage("");
     setError("");
@@ -156,22 +326,42 @@ export default function ProfilePage() {
     setMessage("");
     setError("");
 
-    if (
-      !formData.fullName.trim() ||
-      !formData.email.trim() ||
-      !formData.phone.trim()
-    ) {
+    const fullName = formData.fullName.trim();
+    const email = formData.email.trim().toLowerCase();
+    const phone = formData.phone.trim();
+
+    // VALIDASI NAMA
+    if (!fullName) {
+      setMessageType("error");
+      setMessage(
+        isEnglish ? "Full name is required." : "Nama lengkap wajib diisi."
+      );
+      return;
+    }
+
+    if (fullName.length < 3 || fullName.length > 100) {
+      setMessageType("error");
       setMessage(
         isEnglish
-          ? "All fields must be filled in."
-          : "Semua kolom wajib diisi."
+          ? "Name must contain 3–100 characters."
+          : "Nama harus terdiri dari 3–100 karakter."
+      );
+      return;
+    }
+
+    // VALIDASI EMAIL
+    if (!email) {
+      setMessageType("error");
+      setMessage(
+        isEnglish ? "Email is required." : "Email wajib diisi."
       );
       return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailPattern.test(formData.email.trim())) {
+    if (!emailPattern.test(email)) {
+      setMessageType("error");
       setMessage(
         isEnglish
           ? "Please enter a valid email."
@@ -180,15 +370,16 @@ export default function ProfilePage() {
       return;
     }
 
-    const phoneDigits = formData.phone
-      .replace(/[\s-]/g, "")
-      .replace(/\D/g, "");
+    // VALIDASI NOMOR HP
+    const phoneDigits = phone.replace(/\D/g, "");
 
     if (
-      !/^\+?[0-9\s-]+$/.test(formData.phone) ||
+      !phone ||
+      !/^\+?[0-9\s-]+$/.test(phone) ||
       phoneDigits.length < 10 ||
       phoneDigits.length > 15
     ) {
+      setMessageType("error");
       setMessage(
         isEnglish
           ? "Please enter a valid phone number (10–15 digits)."
@@ -200,61 +391,95 @@ export default function ProfilePage() {
     try {
       setSaving(true);
 
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       if (!token) {
-        router.replace("/login?redirect=%2Fprofile");
+        redirectToLogin();
         return;
       }
 
-      await apiRequest("/users/profile", {
+      const updatedData = {
+        fullName,
+        email,
+        phone,
+      };
+
+      const response = await apiRequest("/users/profile", {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          fullName: formData.fullName.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim(),
-        }),
+        body: JSON.stringify(updatedData),
       });
 
+      const updatedUser = getResponseUser(response);
+
       const updatedProfile = {
-        fullName: formData.fullName.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
+        ...profile,
+        ...updatedData,
+        id:
+          updatedUser.id ||
+          updatedUser.user_id ||
+          profile.id,
+        fullName:
+          updatedUser.fullName ||
+          updatedUser.full_name ||
+          updatedUser.name ||
+          updatedData.fullName,
+        email: updatedUser.email || updatedData.email,
+        phone:
+          updatedUser.phone ||
+          updatedUser.phoneNumber ||
+          updatedUser.phone_number ||
+          updatedData.phone,
       };
 
       setProfile(updatedProfile);
-      setFormData(updatedProfile);
+
+      setFormData({
+        fullName: updatedProfile.fullName,
+        email: updatedProfile.email,
+        phone: updatedProfile.phone,
+      });
+
       setIsEditing(false);
 
+      // PERBARUI DATA PENGGUNA DI LOCAL STORAGE
       const savedUser = localStorage.getItem("sportify_user");
 
-      if (savedUser) {
-        try {
-          const user = JSON.parse(savedUser);
+      let previousUser = {};
 
-          localStorage.setItem(
-            "sportify_user",
-            JSON.stringify({
-              ...user,
-              ...updatedProfile,
-            })
-          );
-        } catch {
-          // Abaikan jika data localStorage tidak valid.
-        }
+      try {
+        previousUser = JSON.parse(savedUser || "{}");
+      } catch {
+        previousUser = {};
       }
+
+      localStorage.setItem(
+        "sportify_user",
+        JSON.stringify({
+          ...previousUser,
+          ...updatedProfile,
+        })
+      );
 
       window.dispatchEvent(new Event("sportify-auth-change"));
 
+      setMessageType("success");
       setMessage(
         isEnglish
           ? "Profile updated successfully."
           : "Profil berhasil diperbarui."
       );
     } catch (err) {
+      console.error("Gagal memperbarui profil:", err);
+
+      if (isUnauthorizedError(err)) {
+        redirectToLogin();
+        return;
+      }
+
+      setMessageType("error");
       setMessage(
         err.message ||
         (isEnglish
@@ -268,6 +493,8 @@ export default function ProfilePage() {
 
   // LABEL STATUS CERITA
   const getStatus = (status) => {
+    const normalizedStatus = String(status || "pending").toLowerCase();
+
     const statuses = {
       pending: {
         label: isEnglish ? "Pending Review" : "Menunggu Persetujuan",
@@ -286,7 +513,7 @@ export default function ProfilePage() {
       },
     };
 
-    return statuses[status] || statuses.pending;
+    return statuses[normalizedStatus] || statuses.pending;
   };
 
   return (
@@ -294,16 +521,15 @@ export default function ProfilePage() {
       <Navbar />
 
       <main
-        className="min-h-screen px-4 py-10 sm:py-14"
+        className="profile-page min-h-screen px-4 py-10 sm:py-14"
         style={{
           backgroundColor: "var(--bg-main)",
           color: "var(--text-main)",
         }}
       >
         <div className="mx-auto max-w-3xl">
-
           {/* HEADER */}
-          <div className="mb-8 text-center">
+          <div className="profile-header mb-8 text-center">
             <span className="inline-block rounded-full bg-soft-mint px-4 py-2 text-xs font-bold tracking-wider text-primary">
               {isEnglish ? "MY ACCOUNT" : "AKUN SAYA"}
             </span>
@@ -323,8 +549,7 @@ export default function ProfilePage() {
           </div>
 
           {/* PROFILE CARD */}
-          <div className="liquid-auth-card p-5 sm:p-8">
-
+          <div className="profile-card liquid-auth-card p-5 sm:p-8">
             {loading ? (
               <LoadingState
                 message={
@@ -342,9 +567,7 @@ export default function ProfilePage() {
                 buttonText={isEnglish ? "Try Again" : "Coba Lagi"}
                 onRetry={fetchProfile}
               />
-            ) : !profile.fullName &&
-              !profile.email &&
-              !profile.phone ? (
+            ) : !profile.fullName && !profile.email && !profile.phone ? (
               <EmptyState
                 title={
                   isEnglish
@@ -364,7 +587,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 {/* FOTO PROFIL */}
-                <div className="mb-8 flex flex-col items-center text-center">
+                <div className="profile-avatar mb-8 flex flex-col items-center text-center">
                   <div
                     className="flex h-24 w-24 items-center justify-center rounded-full border-4 shadow-md"
                     style={{
@@ -391,20 +614,28 @@ export default function ProfilePage() {
                     {profile.email ||
                       (isEnglish ? "No email added" : "Belum ada email")}
                   </p>
+
+                  <span className="mt-3 inline-flex rounded-full bg-soft-mint px-4 py-1.5 text-xs font-bold text-primary">
+                    {isEnglish ? "Tenant Account" : "Akun Penyewa"}
+                  </span>
                 </div>
 
                 {/* PESAN */}
                 {message && (
-                  <div className="mb-5 rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
+                  <div
+                    className={`profile-message mb-5 rounded-xl border px-4 py-3 text-sm ${messageType === "success"
+                        ? "border-green-500/20 bg-green-500/10 text-green-700 dark:text-green-400"
+                        : "border-red-500/20 bg-red-500/10 text-red-700 dark:text-red-400"
+                      }`}
+                  >
                     {message}
                   </div>
                 )}
 
                 {!isEditing ? (
                   <div className="space-y-5">
-
                     {/* NAMA */}
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Full Name" : "Nama Lengkap"}
                       </label>
@@ -415,7 +646,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* EMAIL */}
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         Email
                       </label>
@@ -426,7 +657,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* NOMOR HP */}
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Phone Number" : "Nomor HP"}
                       </label>
@@ -443,7 +674,7 @@ export default function ProfilePage() {
                       className="liquid-booking-button mt-4 w-full"
                     >
                       {isEnglish ? "Edit Profile" : "Edit Profil"}
-                      <span>→</span>
+                      <span>&gt;</span>
                     </button>
 
                     {/* LOGOUT */}
@@ -458,8 +689,7 @@ export default function ProfilePage() {
                 ) : (
                   /* FORM EDIT PROFIL */
                   <form onSubmit={handleSave} className="space-y-5">
-
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Full Name" : "Nama Lengkap"}
                       </label>
@@ -479,11 +709,12 @@ export default function ProfilePage() {
                         }
                         className="liquid-auth-input w-full text-sm"
                         autoComplete="name"
+                        maxLength={100}
                         disabled={saving}
                       />
                     </div>
 
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         Email
                       </label>
@@ -498,14 +729,16 @@ export default function ProfilePage() {
                           });
                           setMessage("");
                         }}
-                        placeholder="Masukkan email"
+                        placeholder={
+                          isEnglish ? "Enter your email" : "Masukkan email"
+                        }
                         className="liquid-auth-input w-full text-sm"
                         autoComplete="email"
                         disabled={saving}
                       />
                     </div>
 
-                    <div>
+                    <div className="profile-field">
                       <label className="mb-2 block text-sm font-semibold text-dark-text">
                         {isEnglish ? "Phone Number" : "Nomor HP"}
                       </label>
@@ -567,9 +800,9 @@ export default function ProfilePage() {
           </div>
 
           {/* CERITA SAYA */}
-          {!loading && !error && (
+          {!loading && !error && profile.email && (
             <section
-              className="mt-8 overflow-hidden rounded-3xl border p-5 shadow-sm sm:p-8"
+              className="profile-stories mt-8 overflow-hidden rounded-3xl border p-5 shadow-sm sm:p-8"
               style={{
                 borderColor: "var(--border-main)",
                 backgroundColor: "var(--bg-card)",
@@ -615,7 +848,7 @@ export default function ProfilePage() {
                   />
                 ) : ceritaSaya.length === 0 ? (
                   <div
-                    className="rounded-2xl border border-dashed px-5 py-10 text-center"
+                    className="profile-empty rounded-2xl border border-dashed px-5 py-10 text-center"
                     style={{ borderColor: "var(--border-main)" }}
                   >
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 text-2xl text-primary dark:text-green-400">
@@ -650,11 +883,18 @@ export default function ProfilePage() {
                   <div className="space-y-4">
                     {ceritaSaya.map((item) => {
                       const status = getStatus(item.status);
+                      const tanggalCerita = item.tanggal
+                        ? new Date(item.tanggal)
+                        : null;
+
+                      const tanggalValid =
+                        tanggalCerita &&
+                        !Number.isNaN(tanggalCerita.getTime());
 
                       return (
                         <article
                           key={item.id}
-                          className="rounded-2xl border p-5"
+                          className="profile-story-item rounded-2xl border p-5"
                           style={{
                             borderColor: "var(--border-main)",
                             backgroundColor: "var(--bg-main)",
@@ -667,13 +907,13 @@ export default function ProfilePage() {
                               </span>
 
                               <div className="mt-2 flex gap-1 text-lg text-yellow-400">
-                                {Array.from({ length: 5 }).map(
-                                  (_, index) => (
-                                    <span key={index}>
-                                      {index < item.rating ? "★" : "☆"}
-                                    </span>
-                                  )
-                                )}
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                  <span key={index}>
+                                    {index < Number(item.rating || 0)
+                                      ? "★"
+                                      : "☆"}
+                                  </span>
+                                ))}
                               </div>
                             </div>
 
@@ -691,20 +931,22 @@ export default function ProfilePage() {
                             "{item.cerita}"
                           </p>
 
-                          <p
-                            className="mt-4 text-xs"
-                            style={{ color: "var(--text-muted)" }}
-                          >
-                            {isEnglish ? "Submitted on" : "Dikirim pada"}{" "}
-                            {new Date(item.tanggal).toLocaleDateString(
-                              isEnglish ? "en-US" : "id-ID",
-                              {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              }
-                            )}
-                          </p>
+                          {tanggalValid && (
+                            <p
+                              className="mt-4 text-xs"
+                              style={{ color: "var(--text-muted)" }}
+                            >
+                              {isEnglish ? "Submitted on" : "Dikirim pada"}{" "}
+                              {tanggalCerita.toLocaleDateString(
+                                isEnglish ? "en-US" : "id-ID",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                }
+                              )}
+                            </p>
+                          )}
                         </article>
                       );
                     })}
@@ -715,17 +957,159 @@ export default function ProfilePage() {
           )}
 
           {/* KEMBALI KE BERANDA */}
-          <div className="mt-7 text-center">
+          <div className="profile-back mt-7 text-center">
             <Link
               href="/"
               className="text-sm transition hover:text-primary"
               style={{ color: "var(--text-secondary)" }}
             >
-              ← {isEnglish ? "Back to Home" : "Kembali ke Beranda"}
+              &lt; {isEnglish ? "Back to Home" : "Kembali ke Beranda"}
             </Link>
           </div>
-
         </div>
+
+        {/* ANIMATION STYLES */}
+        <style jsx global>{`
+          .profile-page {
+            animation: profilePageEnter 0.7s ease both;
+          }
+
+          .profile-header {
+            animation: profileFadeUp 0.7s ease both;
+          }
+
+          .profile-card {
+            animation: profileFadeUp 0.8s ease 0.1s both;
+            transition:
+              transform 0.35s ease,
+              box-shadow 0.35s ease;
+          }
+
+          .profile-card:hover {
+            transform: translateY(-3px);
+          }
+
+          .profile-avatar {
+            animation: profileFadeUp 0.8s ease 0.2s both;
+          }
+
+          .profile-avatar > div {
+            animation: profileAvatarFloat 3s ease-in-out infinite;
+            transition: box-shadow 0.3s ease;
+          }
+
+          .profile-avatar > div:hover {
+            box-shadow: 0 0 25px rgba(39, 163, 107, 0.25);
+          }
+
+          .profile-stories {
+            animation: profileFadeUp 0.8s ease 0.25s both;
+            transition:
+              transform 0.35s ease,
+              box-shadow 0.35s ease;
+          }
+
+          .profile-story-item {
+            animation: profileFadeUp 0.6s ease both;
+            transition:
+              transform 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+          }
+
+          .profile-story-item:hover {
+            transform: translateY(-4px);
+            border-color: rgba(39, 163, 107, 0.5) !important;
+            box-shadow: 0 10px 25px rgba(20, 107, 69, 0.08);
+          }
+
+          .profile-story-item:nth-child(2) {
+            animation-delay: 0.1s;
+          }
+
+          .profile-story-item:nth-child(3) {
+            animation-delay: 0.2s;
+          }
+
+          .profile-story-item:nth-child(4) {
+            animation-delay: 0.3s;
+          }
+
+          .profile-empty {
+            animation: profileFadeUp 0.6s ease both;
+          }
+
+          .profile-page button,
+          .profile-page a {
+            transition:
+              transform 0.25s ease,
+              box-shadow 0.25s ease,
+              background-color 0.25s ease;
+          }
+
+          .profile-page button:not(:disabled):active,
+          .profile-page a:active {
+            transform: scale(0.97);
+          }
+
+          .profile-page input {
+            transition:
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
+          }
+
+          .profile-page input:focus {
+            box-shadow: 0 0 0 3px rgba(39, 163, 107, 0.12);
+          }
+
+          .profile-message {
+            animation: profileFadeUp 0.4s ease both;
+          }
+
+          .profile-back {
+            animation: profileFadeUp 0.8s ease 0.35s both;
+          }
+
+          @keyframes profilePageEnter {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes profileFadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(22px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes profileAvatarFloat {
+            0%,
+            100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-6px);
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .profile-page *,
+            .profile-page *::before,
+            .profile-page *::after {
+              animation-duration: 0.01ms !important;
+              animation-iteration-count: 1 !important;
+              transition-duration: 0.01ms !important;
+            }
+          }
+        `}</style>
       </main>
 
       <Footer />

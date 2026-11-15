@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
 import { translations } from "@/lib/translations";
+import { apiRequest } from "@/lib/api";
 
 export default function BookingLapanganPage() {
   const params = useParams();
@@ -17,8 +18,10 @@ export default function BookingLapanganPage() {
   const { language } = useLanguage();
   const isEnglish = language === "en";
 
-  const t =
-    translations[language]?.booking || translations.id.booking;
+  const t = translations[language]?.booking || translations.id.booking;
+
+  const [sumberLapangan, setSumberLapangan] = useState(daftarLapangan);
+  const [isLoadingLapangan, setIsLoadingLapangan] = useState(true);
 
   const [unit, setUnit] = useState("");
   const [tanggal, setTanggal] = useState("");
@@ -27,8 +30,6 @@ export default function BookingLapanganPage() {
   const [expandedUnit, setExpandedUnit] = useState(null);
   const [filterWaktu, setFilterWaktu] = useState("Semua Waktu");
   const [filterCabor, setFilterCabor] = useState("Semua");
-
-  // Status pengecekan login
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const getTanggalHariIni = () => {
@@ -40,7 +41,6 @@ export default function BookingLapanganPage() {
     return `${tahun}-${bulan}-${tanggal}`;
   };
 
-  // Memeriksa apakah pengguna sudah login
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -58,7 +58,23 @@ export default function BookingLapanganPage() {
     setIsCheckingAuth(false);
   }, [params.id, router]);
 
-  const lapangan = daftarLapangan.find(
+  useEffect(() => {
+    async function fetchLapangans() {
+      try {
+        const res = await apiRequest("/lapangan");
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setSumberLapangan(res.data);
+        }
+      } catch (err) {
+        console.warn("Fallback pilih jadwal lapangan:", err.message);
+      } finally {
+        setIsLoadingLapangan(false);
+      }
+    }
+    fetchLapangans();
+  }, []);
+
+  const lapangan = sumberLapangan.find(
     (item) => String(item.id) === String(params.id)
   );
 
@@ -71,31 +87,27 @@ export default function BookingLapanganPage() {
 
     const date = new Date(`${value}T00:00:00`);
 
-    return date.toLocaleDateString(
-      isEnglish ? "en-US" : "id-ID",
-      {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }
-    );
+    return date.toLocaleDateString(isEnglish ? "en-US" : "id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
   };
 
-  // Loading saat memeriksa login
-  if (isCheckingAuth) {
+  if (isCheckingAuth || (isLoadingLapangan && !lapangan)) {
     return (
       <>
         <Navbar />
 
         <main className="min-h-screen bg-background flex items-center justify-center px-5">
-          <div className="text-center">
+          <div className="text-center booking-fade-up">
             <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
 
             <p className="mt-4 text-sm font-medium text-gray-500">
               {isEnglish
-                ? "Checking account access..."
-                : "Memeriksa akses akun..."}
+                ? "Loading court schedule..."
+                : "Memuat jadwal lapangan..."}
             </p>
           </div>
         </main>
@@ -111,7 +123,7 @@ export default function BookingLapanganPage() {
         <Navbar />
 
         <main className="min-h-screen bg-background flex items-center justify-center px-5">
-          <div className="text-center">
+          <div className="text-center booking-fade-up">
             <h1 className="text-2xl font-bold text-dark-text">
               {isEnglish ? "Court not found" : "Lapangan tidak ditemukan"}
             </h1>
@@ -136,17 +148,27 @@ export default function BookingLapanganPage() {
     );
   }
 
-  const daftarUnit = lapangan.unitLapangan || [];
-
-  const daftarJam = Array.from({ length: 15 }, (_, index) => {
-    return `${String(index + 8).padStart(2, "0")}:00`;
-  });
-
   const kategoriLapangan = Array.isArray(lapangan.kategori)
     ? lapangan.kategori
     : lapangan.kategori
       ? [lapangan.kategori]
       : [];
+
+  const rawUnits = lapangan.unitLapangan || lapangan.unit_lapangan;
+  const daftarUnit =
+    Array.isArray(rawUnits) && rawUnits.length > 0
+      ? rawUnits
+      : [
+        {
+          nama: `${lapangan.nama} - Court 1`,
+          kategori: kategoriLapangan[0] || "Court",
+          gambar: lapangan.gambar,
+        },
+      ];
+
+  const daftarJam = Array.from({ length: 15 }, (_, index) => {
+    return `${String(index + 8).padStart(2, "0")}:00`;
+  });
 
   const daftarTanggal = Array.from({ length: 7 }, (_, index) => {
     const date = new Date();
@@ -173,17 +195,9 @@ export default function BookingLapanganPage() {
   const daftarJamFilter = daftarJam.filter((waktu) => {
     const jamAngka = Number(waktu.split(":")[0]);
 
-    if (filterWaktu === "Pagi") {
-      return jamAngka >= 6 && jamAngka < 12;
-    }
-
-    if (filterWaktu === "Siang") {
-      return jamAngka >= 12 && jamAngka < 18;
-    }
-
-    if (filterWaktu === "Malam") {
-      return jamAngka >= 18;
-    }
+    if (filterWaktu === "Pagi") return jamAngka >= 6 && jamAngka < 12;
+    if (filterWaktu === "Siang") return jamAngka >= 12 && jamAngka < 18;
+    if (filterWaktu === "Malam") return jamAngka >= 18;
 
     return true;
   });
@@ -202,23 +216,78 @@ export default function BookingLapanganPage() {
     return kategoriUnit.includes(filterCabor);
   });
 
-  // Simulasi jadwal yang sudah dipesan.
-  // Nantinya akan diganti dengan data dari backend.
   const jamSudahDipesan = (indexUnit, indexJam) => {
     return (indexUnit + indexJam) % 5 === 1;
+  };
+
+  const cekKetersediaanDurasi = (
+    namaUnit,
+    jamMulai,
+    durasiPilihan
+  ) => {
+    const indexUnit = daftarUnit.findIndex((item) => {
+      const nama = item.nama || item.namaUnit || item.unit;
+      return nama === namaUnit;
+    });
+
+    const indexJamMulai = daftarJam.indexOf(jamMulai);
+
+    if (indexUnit === -1 || indexJamMulai === -1) {
+      return false;
+    }
+
+    const jumlahJam = Number(durasiPilihan);
+
+    if (
+      !Number.isInteger(jumlahJam) ||
+      jumlahJam < 1 ||
+      indexJamMulai + jumlahJam > daftarJam.length
+    ) {
+      return false;
+    }
+
+    for (let i = 0; i < jumlahJam; i++) {
+      if (jamSudahDipesan(indexUnit, indexJamMulai + i)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const jamTersediaUntukDurasi = (indexUnit, indexJam) => {
+    const jumlahJam = Number(durasi);
+
+    if (indexJam + jumlahJam > daftarJam.length) {
+      return false;
+    }
+
+    for (let i = 0; i < jumlahJam; i++) {
+      if (jamSudahDipesan(indexUnit, indexJam + i)) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const formatJamSelesai = (jamMulai) => {
     if (!jamMulai) return "-";
 
-    const jamAngka = Number(jamMulai.split(":")[0]);
-    const jamSelesai = jamAngka + Number(durasi);
+    const [jamAngka, menit] = jamMulai.split(":").map(Number);
 
-    return `${String(jamSelesai).padStart(2, "0")}:00`;
+    const totalMenit =
+      jamAngka * 60 + menit + Number(durasi) * 60;
+
+    const jamSelesai = Math.floor(totalMenit / 60);
+    const menitSelesai = totalMenit % 60;
+
+    return `${String(jamSelesai).padStart(2, "0")}:${String(
+      menitSelesai
+    ).padStart(2, "0")}`;
   };
 
-  const totalHarga =
-    Number(lapangan.harga || 0) * Number(durasi);
+  const totalHarga = Number(lapangan.harga || 0);
 
   const lanjutBooking = () => {
     if (!unit || !tanggal || !jam || !durasi) {
@@ -226,6 +295,24 @@ export default function BookingLapanganPage() {
         isEnglish
           ? "Please complete all booking details."
           : "Lengkapi pilihan lapangan, tanggal, jam, dan durasi terlebih dahulu."
+      );
+      return;
+    }
+
+    if (tanggal < getTanggalHariIni()) {
+      alert(
+        isEnglish
+          ? "Please select a valid booking date."
+          : "Tanggal booking tidak boleh sebelum hari ini."
+      );
+      return;
+    }
+
+    if (!cekKetersediaanDurasi(unit, jam, durasi)) {
+      alert(
+        isEnglish
+          ? "The selected time slot is unavailable for this duration. Please choose another time."
+          : "Jadwal tidak tersedia untuk durasi yang dipilih. Silakan pilih jam lain."
       );
       return;
     }
@@ -257,11 +344,11 @@ export default function BookingLapanganPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-background pb-20">
+      <main className="booking-animate min-h-screen bg-background pb-20">
         {/* HEADER */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-soft-mint via-background to-white">
-          <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-secondary/10 blur-3xl" />
-          <div className="absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-primary/10 blur-3xl" />
+        <section className="booking-header relative overflow-hidden bg-gradient-to-br from-soft-mint via-background to-white">
+          <div className="booking-glow absolute -top-20 -right-20 w-72 h-72 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="booking-glow booking-glow-delay absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-primary/10 blur-3xl" />
 
           <div className="relative max-w-7xl mx-auto px-5 lg:px-8 pt-8 pb-10">
             <Link
@@ -273,9 +360,9 @@ export default function BookingLapanganPage() {
             </Link>
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
-              <div>
+              <div className="booking-fade-up">
                 <div className="inline-flex items-center gap-2 rounded-full bg-white/80 border border-primary/10 px-4 py-2 text-xs font-semibold text-primary shadow-sm backdrop-blur-lg">
-                  <span className="w-2 h-2 rounded-full bg-secondary" />
+                  <span className="w-2 h-2 rounded-full bg-secondary booking-pulse" />
                   {t.headerLabel}
                 </div>
 
@@ -288,10 +375,11 @@ export default function BookingLapanganPage() {
                 </p>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {kategoriLapangan.map((kategori) => (
+                  {kategoriLapangan.map((kategori, index) => (
                     <span
                       key={kategori}
-                      className="rounded-full bg-soft-mint px-4 py-2 text-xs font-semibold text-primary"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                      className="booking-chip rounded-full bg-soft-mint px-4 py-2 text-xs font-semibold text-primary"
                     >
                       {kategori}
                     </span>
@@ -299,7 +387,7 @@ export default function BookingLapanganPage() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-white/80 bg-white/70 backdrop-blur-xl p-5 shadow-lg shadow-primary/5 md:min-w-[260px]">
+              <div className="booking-selected-card rounded-3xl border border-white/80 bg-white/70 backdrop-blur-xl p-5 shadow-lg shadow-primary/5 md:min-w-[260px]">
                 <p className="text-xs font-medium text-gray-500">
                   {isEnglish ? "Selected court" : "Lapangan pilihan"}
                 </p>
@@ -321,7 +409,7 @@ export default function BookingLapanganPage() {
                     {formatRupiah(lapangan.harga)}
                     <span className="text-xs font-medium text-gray-400">
                       {" "}
-                      / {isEnglish ? "hour" : "jam"}
+                      / {isEnglish ? "session" : "sesi"}
                     </span>
                   </p>
                 </div>
@@ -332,14 +420,12 @@ export default function BookingLapanganPage() {
 
         <div className="max-w-7xl mx-auto px-5 lg:px-8 mt-8">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-7 items-start">
-
             {/* BAGIAN KIRI */}
             <div className="space-y-7">
-
               {/* PILIH TANGGAL */}
-              <section className="liquid-booking-page-card p-5 md:p-7">
+              <section className="liquid-booking-page-card booking-card-enter p-5 md:p-7">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-soft-mint text-xl">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-soft-mint text-xl booking-icon">
                     📅
                   </div>
 
@@ -357,18 +443,19 @@ export default function BookingLapanganPage() {
                 </div>
 
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                  {daftarTanggal.map((item) => {
+                  {daftarTanggal.map((item, index) => {
                     const aktif = tanggal === item.value;
 
                     return (
                       <button
                         key={item.value}
                         type="button"
+                        style={{ animationDelay: `${index * 60}ms` }}
                         onClick={() => {
                           setTanggal(item.value);
                           setJam("");
                         }}
-                        className={`rounded-2xl border px-2 py-4 text-center transition-all ${aktif
+                        className={`booking-date-button rounded-2xl border px-2 py-4 text-center transition-all ${aktif
                             ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
                             : "border-gray-100 bg-background text-dark-text hover:border-secondary hover:bg-soft-mint"
                           }`}
@@ -416,7 +503,7 @@ export default function BookingLapanganPage() {
               </section>
 
               {/* PILIH LAPANGAN */}
-              <section className="liquid-booking-page-card p-5 md:p-7">
+              <section className="liquid-booking-page-card booking-card-enter p-5 md:p-7">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <h2 className="text-lg font-bold text-dark-text">
@@ -515,7 +602,7 @@ export default function BookingLapanganPage() {
                       </p>
                     </div>
                   ) : (
-                    daftarUnitFilter.map((item) => {
+                    daftarUnitFilter.map((item, index) => {
                       const namaUnit =
                         item.nama || item.namaUnit || item.unit;
 
@@ -526,17 +613,21 @@ export default function BookingLapanganPage() {
                       return (
                         <div
                           key={namaUnit}
-                          className={`overflow-hidden rounded-3xl border transition-all ${isSelected
+                          style={{ animationDelay: `${index * 100}ms` }}
+                          className={`booking-unit-card overflow-hidden rounded-3xl border transition-all ${isSelected
                               ? "border-primary bg-soft-mint/50 shadow-md shadow-primary/5"
                               : "border-gray-100 bg-white hover:border-secondary/50"
                             }`}
                         >
                           <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
-
                             {/* FOTO UNIT */}
-                            <div className="relative h-48 sm:h-full min-h-[190px] bg-soft-mint">
+                            <div className="booking-unit-image relative h-48 sm:h-full min-h-[190px] bg-soft-mint">
                               <Image
-                                src={item.gambar || lapangan.gambar}
+                                src={
+                                  item.gambar ||
+                                  lapangan.gambar ||
+                                  "/images/lapangan/padel/padel01/padel1.jpeg"
+                                }
                                 alt={namaUnit}
                                 fill
                                 sizes="(max-width: 640px) 100vw, 180px"
@@ -544,7 +635,9 @@ export default function BookingLapanganPage() {
                               />
 
                               <div className="absolute left-3 top-3 rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
-                                {item.kategori || kategoriLapangan[0] || "Court"}
+                                {item.kategori ||
+                                  kategoriLapangan[0] ||
+                                  "Court"}
                               </div>
                             </div>
 
@@ -564,7 +657,7 @@ export default function BookingLapanganPage() {
                                     {formatRupiah(lapangan.harga)}
                                     <span className="font-normal text-gray-400">
                                       {" "}
-                                      / {isEnglish ? "hour" : "jam"}
+                                      / {isEnglish ? "session" : "sesi"}
                                     </span>
                                   </p>
                                 </div>
@@ -572,7 +665,7 @@ export default function BookingLapanganPage() {
                                 <button
                                   type="button"
                                   onClick={() => pilihUnit(namaUnit)}
-                                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${isSelected
+                                  className={`booking-select-button rounded-full px-5 py-2.5 text-sm font-semibold transition ${isSelected
                                       ? "bg-primary text-white"
                                       : "border border-primary text-primary hover:bg-soft-mint"
                                     }`}
@@ -609,7 +702,7 @@ export default function BookingLapanganPage() {
                                 </button>
 
                                 {isExpanded && (
-                                  <div className="mt-4">
+                                  <div className="booking-schedule-enter mt-4">
                                     <p className="mb-3 text-xs text-gray-500">
                                       {isEnglish
                                         ? "Select your preferred starting time."
@@ -621,8 +714,8 @@ export default function BookingLapanganPage() {
                                         const indexJam =
                                           daftarJam.indexOf(waktu);
 
-                                        const sudahDipesan =
-                                          jamSudahDipesan(
+                                        const tersedia =
+                                          jamTersediaUntukDurasi(
                                             indexUnit,
                                             indexJam
                                           );
@@ -634,12 +727,12 @@ export default function BookingLapanganPage() {
                                           <button
                                             key={waktu}
                                             type="button"
-                                            disabled={sudahDipesan}
+                                            disabled={!tersedia}
                                             onClick={() => {
                                               setUnit(namaUnit);
                                               setJam(waktu);
                                             }}
-                                            className={`rounded-xl border px-2 py-3 text-xs font-semibold transition ${sudahDipesan
+                                            className={`booking-time-button rounded-xl border px-2 py-3 text-xs font-semibold transition ${!tersedia
                                                 ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300"
                                                 : isJamSelected
                                                   ? "border-primary bg-primary text-white shadow-md shadow-primary/20"
@@ -665,22 +758,26 @@ export default function BookingLapanganPage() {
             </div>
 
             {/* RINGKASAN BOOKING */}
-            <aside className="lg:sticky lg:top-24 self-start min-w-0">
+            <aside className="booking-summary-enter lg:sticky lg:top-24 self-start min-w-0">
               <div className="liquid-booking-summary w-full">
-                <div className="bg-gradient-to-br from-primary to-secondary p-6 text-white">
-                  <p className="text-sm text-white/80">
-                    {isEnglish ? "Your booking" : "Booking Kamu"}
-                  </p>
+                <div className="relative overflow-hidden bg-gradient-to-br from-primary to-secondary p-6 text-white">
+                  <div className="booking-summary-glow absolute -right-12 -top-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
 
-                  <h2 className="mt-1 text-2xl font-bold">
-                    {isEnglish ? "Booking Summary" : "Ringkasan Booking"}
-                  </h2>
+                  <div className="relative">
+                    <p className="text-sm text-white/80">
+                      {isEnglish ? "Your booking" : "Booking Kamu"}
+                    </p>
 
-                  <p className="mt-2 text-xs leading-relaxed text-white/80">
-                    {isEnglish
-                      ? "Check your booking details before continuing."
-                      : "Periksa kembali detail pesanan sebelum melanjutkan."}
-                  </p>
+                    <h2 className="mt-1 text-2xl font-bold">
+                      {isEnglish ? "Booking Summary" : "Ringkasan Booking"}
+                    </h2>
+
+                    <p className="mt-2 text-xs leading-relaxed text-white/80">
+                      {isEnglish
+                        ? "Check your booking details before continuing."
+                        : "Periksa kembali detail pesanan sebelum melanjutkan."}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="p-5">
@@ -738,7 +835,23 @@ export default function BookingLapanganPage() {
                       <select
                         id="durasi"
                         value={durasi}
-                        onChange={(e) => setDurasi(e.target.value)}
+                        onChange={(e) => {
+                          const durasiBaru = e.target.value;
+
+                          setDurasi(durasiBaru);
+
+                          if (
+                            unit &&
+                            jam &&
+                            !cekKetersediaanDurasi(
+                              unit,
+                              jam,
+                              durasiBaru
+                            )
+                          ) {
+                            setJam("");
+                          }
+                        }}
                         className="liquid-booking-input mt-2 w-full"
                       >
                         {[1, 2, 3, 4].map((angka) => (
@@ -750,10 +863,12 @@ export default function BookingLapanganPage() {
                     </div>
                   </div>
 
-                  <div className="mt-6 rounded-2xl bg-soft-mint p-4">
+                  <div className="booking-price-box mt-6 rounded-2xl bg-soft-mint p-4">
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <span>
-                        {isEnglish ? "Price per hour" : "Harga per jam"}
+                        {isEnglish
+                          ? "Price per session"
+                          : "Harga per sesi"}
                       </span>
 
                       <span>{formatRupiah(lapangan.harga)}</span>
@@ -783,7 +898,7 @@ export default function BookingLapanganPage() {
                   <button
                     type="button"
                     onClick={lanjutBooking}
-                    className="liquid-booking-button mt-5 flex w-full items-center justify-center gap-2"
+                    className="liquid-booking-button booking-continue-button mt-5 flex w-full items-center justify-center gap-2"
                   >
                     {isEnglish ? "Continue booking" : "Lanjutkan Booking"}
                     <span className="text-lg">›</span>
@@ -797,6 +912,458 @@ export default function BookingLapanganPage() {
             </aside>
           </div>
         </div>
+
+        <style jsx global>{`
+          @keyframes bookingFadeUp {
+            from {
+              opacity: 0;
+              transform: translateY(24px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes bookingFadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes bookingFloat {
+            0%,
+            100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-12px);
+            }
+          }
+
+          @keyframes bookingPulse {
+            0%,
+            100% {
+              opacity: 1;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 0.5;
+              transform: scale(0.75);
+            }
+          }
+
+          .booking-fade-up {
+            animation: bookingFadeUp 0.8s ease both;
+          }
+
+          .booking-header {
+            animation: bookingFadeIn 0.8s ease both;
+          }
+
+          .booking-selected-card {
+            animation: bookingFadeUp 0.8s ease 0.15s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+
+          .booking-selected-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px rgba(20, 107, 69, 0.12);
+          }
+
+          .booking-glow {
+            animation: bookingFloat 7s ease-in-out infinite;
+            pointer-events: none;
+          }
+
+          .booking-glow-delay {
+            animation-delay: -3s;
+          }
+
+          .booking-pulse {
+            animation: bookingPulse 2s ease-in-out infinite;
+          }
+
+          .booking-chip {
+            animation: bookingFadeUp 0.5s ease both;
+          }
+
+          .booking-card-enter {
+            animation: bookingFadeUp 0.75s ease both;
+          }
+
+          .booking-animate > div > div > div > section:nth-child(1) {
+            animation-delay: 0.1s;
+          }
+
+          .booking-animate > div > div > div > section:nth-child(2) {
+            animation-delay: 0.22s;
+          }
+
+          .booking-icon {
+            transition: transform 0.3s ease;
+          }
+
+          .liquid-booking-page-card:hover .booking-icon {
+            transform: rotate(-6deg) scale(1.08);
+          }
+
+          .booking-date-button {
+            animation: bookingFadeUp 0.45s ease both;
+          }
+
+          .booking-date-button:hover {
+            transform: translateY(-4px);
+          }
+
+          .booking-unit-card {
+            animation: bookingFadeUp 0.55s ease both;
+            transition:
+              transform 0.3s ease,
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+          }
+
+          .booking-unit-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(20, 107, 69, 0.08);
+          }
+
+          .booking-unit-image {
+            overflow: hidden;
+          }
+
+          .booking-unit-image img {
+            transition: transform 0.65s cubic-bezier(0.2, 0.7, 0.3, 1);
+          }
+
+          .booking-unit-card:hover .booking-unit-image img {
+            transform: scale(1.06);
+          }
+
+          .booking-select-button,
+          .booking-time-button,
+          .booking-continue-button {
+            transition:
+              transform 0.25s ease,
+              box-shadow 0.25s ease,
+              background-color 0.25s ease;
+          }
+
+          .booking-select-button:hover:not(:disabled),
+          .booking-time-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+          }
+
+          .booking-time-button:active:not(:disabled),
+          .booking-select-button:active:not(:disabled) {
+            transform: scale(0.96);
+          }
+
+          .booking-schedule-enter {
+            animation: bookingFadeUp 0.35s ease both;
+          }
+
+          .booking-summary-enter {
+            animation: bookingFadeUp 0.8s ease 0.3s both;
+          }
+
+          .booking-summary-glow {
+            animation: bookingFloat 6s ease-in-out infinite;
+          }
+
+          .booking-price-box {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+
+          .booking-price-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(20, 107, 69, 0.08);
+          }
+
+          .booking-continue-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(20, 107, 69, 0.2);
+          }
+
+          .booking-continue-button:active {
+            transform: scale(0.98);
+          }
+
+          .dark .booking-animate {
+            background-color: #101a15 !important;
+            color: #edf5ef;
+          }
+
+          .dark .booking-header {
+            background: linear-gradient(
+              135deg,
+              #1c3529 0%,
+              #14251b 55%,
+              #101a15 100%
+            ) !important;
+          }
+
+          .dark .booking-header h1,
+          .dark .booking-header h2,
+          .dark .booking-header .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-header .text-gray-600,
+          .dark .booking-header .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-header .bg-white\/80 {
+            background-color: rgba(27, 43, 34, 0.85) !important;
+            border-color: rgba(125, 219, 168, 0.18) !important;
+            color: #7ddba8 !important;
+          }
+
+          .dark .booking-selected-card {
+            background: rgba(27, 43, 34, 0.82) !important;
+            border-color: rgba(125, 219, 168, 0.15) !important;
+            backdrop-filter: blur(18px);
+          }
+
+          .dark .booking-selected-card h2 {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-selected-card p {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-selected-card .text-primary {
+            color: #7ddba8 !important;
+          }
+
+          .dark .booking-chip {
+            background-color: #233d2d !important;
+            color: #7ddba8 !important;
+          }
+
+          .dark .liquid-booking-page-card {
+            background: rgba(27, 43, 34, 0.82) !important;
+            border: 1px solid rgba(125, 219, 168, 0.14) !important;
+            color: #edf5ef;
+            backdrop-filter: blur(18px);
+          }
+
+          .dark .liquid-booking-page-card h2,
+          .dark .liquid-booking-page-card h3,
+          .dark .liquid-booking-page-card .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .liquid-booking-page-card .text-gray-500,
+          .dark .liquid-booking-page-card .text-gray-600 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .liquid-booking-page-card .text-gray-400 {
+            color: #91a398 !important;
+          }
+
+          .dark .booking-date-button:not(.bg-primary) {
+            background-color: #14221a !important;
+            border-color: rgba(125, 219, 168, 0.18) !important;
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-date-button:not(.bg-primary) span {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-date-button:not(.bg-primary):hover {
+            background-color: #233d2d !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-date-button.bg-primary {
+            background-color: #146b45 !important;
+            border-color: #27a36b !important;
+            color: #ffffff !important;
+          }
+
+          .dark .liquid-booking-input {
+            background-color: #14221a !important;
+            color: #edf5ef !important;
+            border: 1px solid rgba(125, 219, 168, 0.2) !important;
+          }
+
+          .dark .liquid-booking-input:focus {
+            border-color: #27a36b !important;
+            outline-color: #27a36b;
+          }
+
+          .dark .liquid-booking-input option {
+            background-color: #1b2b22;
+            color: #edf5ef;
+          }
+
+          .dark .booking-animate label {
+            color: #b2c1b7;
+          }
+
+          .dark .booking-animate .bg-soft-mint {
+            background-color: #233d2d !important;
+          }
+
+          .dark .booking-animate .text-primary {
+            color: #7ddba8;
+          }
+
+          .dark .booking-animate .bg-gray-200 {
+            background-color: #52645a !important;
+          }
+
+          .dark .booking-animate .border-secondary\/20 {
+            border-color: rgba(125, 219, 168, 0.2) !important;
+          }
+
+          .dark .booking-unit-card {
+            background-color: #1b2b22 !important;
+            border-color: rgba(125, 219, 168, 0.15) !important;
+          }
+
+          .dark .booking-unit-card.border-primary {
+            background-color: #233d2d !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-unit-card h3,
+          .dark .booking-unit-card .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-unit-card .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-unit-card .text-gray-400 {
+            color: #91a398 !important;
+          }
+
+          .dark .booking-unit-card .border-primary\/10 {
+            border-color: rgba(125, 219, 168, 0.15) !important;
+          }
+
+          .dark .booking-select-button:not(.bg-primary) {
+            background-color: #14221a !important;
+            color: #7ddba8 !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-select-button:not(.bg-primary):hover {
+            background-color: #233d2d !important;
+          }
+
+          .dark .booking-select-button.bg-primary {
+            background-color: #146b45 !important;
+            color: #ffffff !important;
+          }
+
+          .dark .booking-time-button:not(.bg-primary) {
+            background-color: #233d2d !important;
+            border-color: rgba(125, 219, 168, 0.25) !important;
+            color: #7ddba8 !important;
+          }
+
+          .dark .booking-time-button:not(.bg-primary):hover:not(:disabled) {
+            background-color: #1b2b22 !important;
+            border-color: #27a36b !important;
+          }
+
+          .dark .booking-time-button.bg-primary {
+            background-color: #146b45 !important;
+            border-color: #27a36b !important;
+            color: #ffffff !important;
+          }
+
+          .dark .booking-time-button:disabled {
+            background-color: #26332b !important;
+            border-color: #34443a !important;
+            color: #718078 !important;
+          }
+
+          .dark .liquid-booking-summary {
+            background-color: rgba(27, 43, 34, 0.9) !important;
+            border: 1px solid rgba(125, 219, 168, 0.15) !important;
+            color: #edf5ef;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(18px);
+          }
+
+          .dark .liquid-booking-summary .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .liquid-booking-summary .text-gray-400 {
+            color: #91a398 !important;
+          }
+
+          .dark .liquid-booking-summary .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .liquid-booking-summary .border-gray-100 {
+            border-color: rgba(125, 219, 168, 0.15) !important;
+          }
+
+          .dark .booking-price-box {
+            background-color: #233d2d !important;
+            border: 1px solid rgba(125, 219, 168, 0.2);
+          }
+
+          .dark .booking-price-box .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark .booking-price-box .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          .dark .booking-price-box .text-primary {
+            color: #7ddba8 !important;
+          }
+
+          .dark .booking-continue-button {
+            background-color: #146b45;
+            color: #ffffff;
+          }
+
+          .dark .booking-continue-button:hover {
+            background-color: #27a36b;
+          }
+
+          .dark main.min-h-screen.bg-background {
+            background-color: #101a15 !important;
+          }
+
+          .dark main.min-h-screen .text-dark-text {
+            color: #edf5ef !important;
+          }
+
+          .dark main.min-h-screen .text-gray-500 {
+            color: #b2c1b7 !important;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .booking-animate *,
+            .booking-animate *::before,
+            .booking-animate *::after {
+              animation-duration: 0.01ms !important;
+              animation-iteration-count: 1 !important;
+              transition-duration: 0.01ms !important;
+              scroll-behavior: auto !important;
+            }
+          }
+        `}</style>
       </main>
 
       <Footer />
