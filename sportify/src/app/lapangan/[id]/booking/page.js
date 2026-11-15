@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
 import { translations } from "@/lib/translations";
+import { apiRequest } from "@/lib/api";
 
 export default function BookingLapanganPage() {
   const params = useParams();
@@ -18,6 +19,9 @@ export default function BookingLapanganPage() {
   const isEnglish = language === "en";
 
   const t = translations[language]?.booking || translations.id.booking;
+
+  const [sumberLapangan, setSumberLapangan] = useState(daftarLapangan);
+  const [isLoadingLapangan, setIsLoadingLapangan] = useState(true);
 
   const [unit, setUnit] = useState("");
   const [tanggal, setTanggal] = useState("");
@@ -54,7 +58,23 @@ export default function BookingLapanganPage() {
     setIsCheckingAuth(false);
   }, [params.id, router]);
 
-  const lapangan = daftarLapangan.find(
+  useEffect(() => {
+    async function fetchLapangans() {
+      try {
+        const res = await apiRequest("/lapangan");
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setSumberLapangan(res.data);
+        }
+      } catch (err) {
+        console.warn("Fallback pilih jadwal lapangan:", err.message);
+      } finally {
+        setIsLoadingLapangan(false);
+      }
+    }
+    fetchLapangans();
+  }, []);
+
+  const lapangan = sumberLapangan.find(
     (item) => String(item.id) === String(params.id)
   );
 
@@ -75,7 +95,7 @@ export default function BookingLapanganPage() {
     });
   };
 
-  if (isCheckingAuth) {
+  if (isCheckingAuth || (isLoadingLapangan && !lapangan)) {
     return (
       <>
         <Navbar />
@@ -86,8 +106,8 @@ export default function BookingLapanganPage() {
 
             <p className="mt-4 text-sm font-medium text-gray-500">
               {isEnglish
-                ? "Checking account access..."
-                : "Memeriksa akses akun..."}
+                ? "Loading court schedule..."
+                : "Memuat jadwal lapangan..."}
             </p>
           </div>
         </main>
@@ -128,17 +148,27 @@ export default function BookingLapanganPage() {
     );
   }
 
-  const daftarUnit = lapangan.unitLapangan || [];
-
-  const daftarJam = Array.from({ length: 15 }, (_, index) => {
-    return `${String(index + 8).padStart(2, "0")}:00`;
-  });
-
   const kategoriLapangan = Array.isArray(lapangan.kategori)
     ? lapangan.kategori
     : lapangan.kategori
       ? [lapangan.kategori]
       : [];
+
+  const rawUnits = lapangan.unitLapangan || lapangan.unit_lapangan;
+  const daftarUnit =
+    Array.isArray(rawUnits) && rawUnits.length > 0
+      ? rawUnits
+      : [
+        {
+          nama: `${lapangan.nama} - Court 1`,
+          kategori: kategoriLapangan[0] || "Court",
+          gambar: lapangan.gambar,
+        },
+      ];
+
+  const daftarJam = Array.from({ length: 15 }, (_, index) => {
+    return `${String(index + 8).padStart(2, "0")}:00`;
+  });
 
   const daftarTanggal = Array.from({ length: 7 }, (_, index) => {
     const date = new Date();
@@ -186,13 +216,10 @@ export default function BookingLapanganPage() {
     return kategoriUnit.includes(filterCabor);
   });
 
-  // SIMULASI JADWAL
-  // Nantinya diganti dengan data ketersediaan dari backend.
   const jamSudahDipesan = (indexUnit, indexJam) => {
     return (indexUnit + indexJam) % 5 === 1;
   };
 
-  // Memastikan seluruh slot selama durasi yang dipilih tersedia.
   const cekKetersediaanDurasi = (
     namaUnit,
     jamMulai,
@@ -228,7 +255,6 @@ export default function BookingLapanganPage() {
     return true;
   };
 
-  // Mengecek ketersediaan slot berdasarkan durasi yang dipilih.
   const jamTersediaUntukDurasi = (indexUnit, indexJam) => {
     const jumlahJam = Number(durasi);
 
@@ -261,7 +287,6 @@ export default function BookingLapanganPage() {
     ).padStart(2, "0")}`;
   };
 
-  // Harga lapangan dihitung per sesi, bukan dikalikan durasi.
   const totalHarga = Number(lapangan.harga || 0);
 
   const lanjutBooking = () => {
@@ -598,7 +623,11 @@ export default function BookingLapanganPage() {
                             {/* FOTO UNIT */}
                             <div className="booking-unit-image relative h-48 sm:h-full min-h-[190px] bg-soft-mint">
                               <Image
-                                src={item.gambar || lapangan.gambar}
+                                src={
+                                  item.gambar ||
+                                  lapangan.gambar ||
+                                  "/images/lapangan/padel/padel01/padel1.jpeg"
+                                }
                                 alt={namaUnit}
                                 fill
                                 sizes="(max-width: 640px) 100vw, 180px"
@@ -1064,16 +1093,11 @@ export default function BookingLapanganPage() {
             transform: scale(0.98);
           }
 
-          /* ========================================
-             DARK MODE - SPORTIFY BOOKING PAGE
-          ======================================== */
-
           .dark .booking-animate {
             background-color: #101a15 !important;
             color: #edf5ef;
           }
 
-          /* HEADER */
           .dark .booking-header {
             background: linear-gradient(
               135deg,
@@ -1097,10 +1121,9 @@ export default function BookingLapanganPage() {
           .dark .booking-header .bg-white\/80 {
             background-color: rgba(27, 43, 34, 0.85) !important;
             border-color: rgba(125, 219, 168, 0.18) !important;
-            color: #7ddbA8 !important;
+            color: #7ddba8 !important;
           }
 
-          /* KARTU LAPANGAN PILIHAN */
           .dark .booking-selected-card {
             background: rgba(27, 43, 34, 0.82) !important;
             border-color: rgba(125, 219, 168, 0.15) !important;
@@ -1116,15 +1139,14 @@ export default function BookingLapanganPage() {
           }
 
           .dark .booking-selected-card .text-primary {
-            color: #7ddbA8 !important;
+            color: #7ddba8 !important;
           }
 
           .dark .booking-chip {
             background-color: #233d2d !important;
-            color: #7ddbA8 !important;
+            color: #7ddba8 !important;
           }
 
-          /* KARTU UTAMA */
           .dark .liquid-booking-page-card {
             background: rgba(27, 43, 34, 0.82) !important;
             border: 1px solid rgba(125, 219, 168, 0.14) !important;
@@ -1147,7 +1169,6 @@ export default function BookingLapanganPage() {
             color: #91a398 !important;
           }
 
-          /* TANGGAL */
           .dark .booking-date-button:not(.bg-primary) {
             background-color: #14221a !important;
             border-color: rgba(125, 219, 168, 0.18) !important;
@@ -1169,7 +1190,6 @@ export default function BookingLapanganPage() {
             color: #ffffff !important;
           }
 
-          /* INPUT DAN SELECT */
           .dark .liquid-booking-input {
             background-color: #14221a !important;
             color: #edf5ef !important;
@@ -1186,7 +1206,6 @@ export default function BookingLapanganPage() {
             color: #edf5ef;
           }
 
-          /* LABEL DAN FILTER */
           .dark .booking-animate label {
             color: #b2c1b7;
           }
@@ -1196,10 +1215,9 @@ export default function BookingLapanganPage() {
           }
 
           .dark .booking-animate .text-primary {
-            color: #7ddbA8;
+            color: #7ddba8;
           }
 
-          /* LEGENDA */
           .dark .booking-animate .bg-gray-200 {
             background-color: #52645a !important;
           }
@@ -1208,7 +1226,6 @@ export default function BookingLapanganPage() {
             border-color: rgba(125, 219, 168, 0.2) !important;
           }
 
-          /* KARTU UNIT LAPANGAN */
           .dark .booking-unit-card {
             background-color: #1b2b22 !important;
             border-color: rgba(125, 219, 168, 0.15) !important;
@@ -1236,10 +1253,9 @@ export default function BookingLapanganPage() {
             border-color: rgba(125, 219, 168, 0.15) !important;
           }
 
-          /* TOMBOL PILIH LAPANGAN */
           .dark .booking-select-button:not(.bg-primary) {
             background-color: #14221a !important;
-            color: #7ddbA8 !important;
+            color: #7ddba8 !important;
             border-color: #27a36b !important;
           }
 
@@ -1252,11 +1268,10 @@ export default function BookingLapanganPage() {
             color: #ffffff !important;
           }
 
-          /* JADWAL JAM */
           .dark .booking-time-button:not(.bg-primary) {
             background-color: #233d2d !important;
             border-color: rgba(125, 219, 168, 0.25) !important;
-            color: #7ddbA8 !important;
+            color: #7ddba8 !important;
           }
 
           .dark .booking-time-button:not(.bg-primary):hover:not(:disabled) {
@@ -1276,7 +1291,6 @@ export default function BookingLapanganPage() {
             color: #718078 !important;
           }
 
-          /* RINGKASAN BOOKING */
           .dark .liquid-booking-summary {
             background-color: rgba(27, 43, 34, 0.9) !important;
             border: 1px solid rgba(125, 219, 168, 0.15) !important;
@@ -1301,7 +1315,6 @@ export default function BookingLapanganPage() {
             border-color: rgba(125, 219, 168, 0.15) !important;
           }
 
-          /* KOTAK TOTAL HARGA */
           .dark .booking-price-box {
             background-color: #233d2d !important;
             border: 1px solid rgba(125, 219, 168, 0.2);
@@ -1316,10 +1329,9 @@ export default function BookingLapanganPage() {
           }
 
           .dark .booking-price-box .text-primary {
-            color: #7ddbA8 !important;
+            color: #7ddba8 !important;
           }
 
-          /* TOMBOL LANJUTKAN */
           .dark .booking-continue-button {
             background-color: #146b45;
             color: #ffffff;
@@ -1329,7 +1341,6 @@ export default function BookingLapanganPage() {
             background-color: #27a36b;
           }
 
-          /* LOADING DAN NOT FOUND */
           .dark main.min-h-screen.bg-background {
             background-color: #101a15 !important;
           }
@@ -1342,7 +1353,6 @@ export default function BookingLapanganPage() {
             color: #b2c1b7 !important;
           }
 
-          /* ANIMASI */
           @media (prefers-reduced-motion: reduce) {
             .booking-animate *,
             .booking-animate *::before,

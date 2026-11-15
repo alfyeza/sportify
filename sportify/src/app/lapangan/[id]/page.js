@@ -10,11 +10,15 @@ import CardLapangan from "@/components/CardLapangan";
 import { daftarLapangan } from "@/lib/lapangan";
 import { useLanguage } from "@/components/LanguageProvider";
 import { translations } from "@/lib/translations";
+import { apiRequest } from "@/lib/api";
 
 export default function DetailLapangan() {
   const params = useParams();
   const router = useRouter();
   const id = params.id;
+
+  const [sumberLapangan, setSumberLapangan] = useState(daftarLapangan);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [fotoAktif, setFotoAktif] = useState(0);
   const { language } = useLanguage();
@@ -33,6 +37,22 @@ export default function DetailLapangan() {
   const [ratingInput, setRatingInput] = useState(5);
   const [komentarInput, setKomentarInput] = useState("");
   const [ulasanTambahan, setUlasanTambahan] = useState([]);
+
+  useEffect(() => {
+    async function fetchLapangans() {
+      try {
+        const res = await apiRequest("/lapangan");
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setSumberLapangan(res.data);
+        }
+      } catch (err) {
+        console.warn("Fallback detail lapangan:", err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchLapangans();
+  }, []);
 
   const handleBookingClick = () => {
     const bookingPath = `/lapangan/${id}/booking`;
@@ -72,7 +92,7 @@ export default function DetailLapangan() {
     }
   }, [id]);
 
-  const lapangan = daftarLapangan.find(
+  const lapangan = sumberLapangan.find(
     (item) => String(item.id) === String(id)
   );
 
@@ -141,6 +161,26 @@ export default function DetailLapangan() {
     setShowReviewForm(false);
   };
 
+  if (isLoading && !lapangan) {
+    return (
+      <>
+        <Navbar />
+        <main
+          className="min-h-screen flex items-center justify-center px-4"
+          style={{
+            background: "var(--bg-main)",
+            color: "var(--text-secondary)",
+          }}
+        >
+          <p className="text-sm">
+            {isEnglish ? "Loading venue details..." : "Memuat detail lapangan..."}
+          </p>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   if (!lapangan) {
     return (
       <>
@@ -208,7 +248,7 @@ export default function DetailLapangan() {
       ? [lapangan.kategori]
       : [];
 
-  const rekomendasi = daftarLapangan.filter((item) => {
+  const rekomendasi = sumberLapangan.filter((item) => {
     const kategoriItem = Array.isArray(item.kategori)
       ? item.kategori
       : item.kategori
@@ -457,9 +497,7 @@ export default function DetailLapangan() {
                     type="button"
                     onClick={() => setFotoAktif(index)}
                     aria-label={`Lihat foto ${index + 1}`}
-                    className={`h-2 rounded-full transition-all duration-300 ${fotoAktif === index
-                      ? "w-8 bg-primary"
-                      : "w-2"
+                    className={`h-2 rounded-full transition-all duration-300 ${fotoAktif === index ? "w-8 bg-primary" : "w-2"
                       }`}
                     style={
                       fotoAktif === index
@@ -800,8 +838,8 @@ export default function DetailLapangan() {
                         onClick={() => setRatingInput(star)}
                         aria-label={`${star} stars`}
                         className={`transition hover:scale-125 ${star <= ratingInput
-                          ? "text-yellow-400"
-                          : "text-gray-400"
+                            ? "text-yellow-400"
+                            : "text-gray-400"
                           }`}
                       >
                         ★
@@ -830,9 +868,7 @@ export default function DetailLapangan() {
                     value={namaReviewer}
                     onChange={(e) => setNamaReviewer(e.target.value)}
                     placeholder={
-                      isEnglish
-                        ? "Enter your name"
-                        : "Masukkan nama"
+                      isEnglish ? "Enter your name" : "Masukkan nama"
                     }
                     className="liquid-auth-input w-full text-sm py-3"
                   />
@@ -844,7 +880,6 @@ export default function DetailLapangan() {
                     style={{ color: "var(--text-secondary)" }}
                   >
                     {isEnglish ? "Your Review" : "Ulasan Kamu"}
-
                     <span className="text-red-500 ml-1">*</span>
                   </label>
 

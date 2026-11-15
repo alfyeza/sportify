@@ -7,6 +7,7 @@ import { daftarLapangan } from "@/lib/lapangan";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
+import { apiRequest } from "@/lib/api";
 
 function generateBookingId() {
   return "SPT-" + Math.floor(100000 + Math.random() * 900000);
@@ -20,6 +21,7 @@ function getTodayDateString() {
 
 function BookingContent() {
   const searchParams = useSearchParams();
+  const [sumberLapangan, setSumberLapangan] = useState(daftarLapangan);
   const router = useRouter();
   const { language } = useLanguage();
 
@@ -30,10 +32,50 @@ function BookingContent() {
   const tanggal = searchParams.get("tanggal");
   const jam = searchParams.get("jam");
   const durasi = Number(searchParams.get("durasi")) || 1;
+  const rawLapanganId = searchParams.get("lapangan");
+  const UUID_MAP = {
+    "1": "a1111111-aaaa-1111-aaaa-111111111111",
+    "2": "a2222222-aaaa-2222-aaaa-222222222222",
+    "3": "a3333333-aaaa-3333-aaaa-333333333333",
+    "4": "a4444444-aaaa-4444-aaaa-444444444444",
+    "5": "a5555555-aaaa-5555-aaaa-555555555555",
+  };
+  const REVERSE_UUID_MAP = {
+    "a1111111-aaaa-1111-aaaa-111111111111": "1",
+    "a2222222-aaaa-2222-aaaa-222222222222": "2",
+    "a3333333-aaaa-3333-aaaa-333333333333": "3",
+    "a4444444-aaaa-4444-aaaa-444444444444": "4",
+    "a5555555-aaaa-5555-aaaa-555555555555": "5",
+  };
 
-  const lapangan = daftarLapangan.find(
-    (item) => String(item.id) === String(lapanganId)
+  const resolvedNumId = REVERSE_UUID_MAP[rawLapanganId] || rawLapanganId;
+  const [isLoadingLapangan, setIsLoadingLapangan] = useState(true);
+
+  useEffect(() => {
+    async function fetchLapangans() {
+      try {
+        const res = await apiRequest("/lapangan");
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setSumberLapangan(res.data);
+        }
+      } catch (err) {
+        console.warn("Fallback checkout lapangan:", err.message);
+      } finally {
+        setIsLoadingLapangan(false);
+      }
+    }
+    fetchLapangans();
+  }, []);
+
+  const dbLapanganId = UUID_MAP[rawLapanganId] || rawLapanganId;
+
+  const lapangan = sumberLapangan.find(
+    (item) =>
+      String(item.id) === String(dbLapanganId) ||
+      String(item.id) === String(rawLapanganId)
   );
+
+
 
   const [namaPemesan, setNamaPemesan] = useState("");
   const [emailPemesan, setEmailPemesan] = useState("");
@@ -113,6 +155,10 @@ function BookingContent() {
     );
   }
 
+  if (isLoadingLapangan && !lapangan) {
+    return null;
+  }
+
   if (!lapangan) {
     return (
       <>
@@ -177,7 +223,7 @@ function BookingContent() {
 
   const jamSelesai = hitungJamSelesai(jam, durasi);
 
-  const handleProsesBooking = (e) => {
+  const handleProsesBooking = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
@@ -221,7 +267,44 @@ function BookingContent() {
     setIsSubmitting(true);
 
     try {
-      const bookingId = generateBookingId();
+      let bookingId = generateBookingId();
+
+      // 1. Simpan pemesanan ke Supabase
+      try {
+        const formattedJamMulai = jam.length === 5 ? `${jam}:00` : jam;
+        const formattedJamSelesai = jamSelesai.length === 5 ? `${jamSelesai}:00` : jamSelesai;
+
+        const apiRes = await apiRequest("/booking", {
+          method: "POST",
+          body: JSON.stringify({
+            lapangan_id: lapanganId,
+            tanggal_main: tanggal,
+            jam_mulai: formattedJamMulai,
+            jam_selesai: formattedJamSelesai,
+            durasi_jam: durasi,
+            total_biaya: totalHarga,
+            metode_pembayaran: metodePembayaran,
+            catatan: `Unit: ${unit}. Pemesan: ${namaPemesan.trim()}`,
+          }),
+        });
+
+        if (apiRes.success && apiRes.data) {
+          bookingId = apiRes.data.kodeBooking || apiRes.data.bookingId || bookingId;
+        }
+      } catch (backendError) {
+        // Jika terjadi benturan jadwal atau error validasi di database
+        if (
+          backendError.message.includes("Benturan") ||
+          backendError.message.includes("bentrok") ||
+          backendError.message.includes("sudah dipesan") ||
+          backendError.message.includes("diblokir")
+        ) {
+          setErrorMessage(backendError.message);
+          setIsSubmitting(false);
+          return;
+        }
+        console.warn("Sinkronisasi Supabase:", backendError.message);
+      }
 
       const kategoriUtama = Array.isArray(lapangan.kategori)
         ? lapangan.kategori[0]

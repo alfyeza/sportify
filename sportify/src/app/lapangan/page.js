@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,6 +8,7 @@ import CardLapangan from "@/components/CardLapangan";
 import { daftarLapangan } from "@/lib/lapangan";
 import { translations } from "@/lib/translations";
 import { useLanguage } from "@/components/LanguageProvider";
+import { apiRequest } from "@/lib/api";
 
 const kategoriOlahraga = [
   "Semua",
@@ -29,10 +30,27 @@ const pilihanHarga = [
 ];
 
 function KontenHalamanLapangan() {
+  const [liveLapangans, setLiveLapangans] = useState([]);
   const [pencarian, setPencarian] = useState("");
   const [kategoriPilihan, setKategoriPilihan] = useState(null);
   const [urutan, setUrutan] = useState("rekomendasi");
   const [filterHarga, setFilterHarga] = useState("semua");
+
+  useEffect(() => {
+    async function fetchLapangans() {
+      try {
+        const res = await apiRequest("/lapangan");
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setLiveLapangans(res.data);
+        }
+      } catch (err) {
+        console.warn("Fallback katalog lapangan:", err.message);
+      }
+    }
+    fetchLapangans();
+  }, []);
+
+  const sumberLapangan = liveLapangans.length > 0 ? liveLapangans : daftarLapangan;
 
   const { language } = useLanguage();
   const t = translations[language]?.lapangan || translations.id.lapangan;
@@ -60,7 +78,7 @@ function KontenHalamanLapangan() {
     filterHarga !== "semua" ||
     urutan !== "rekomendasi";
 
-  const hasilFilter = daftarLapangan
+  const hasilFilter = sumberLapangan
     .filter((lapangan) => {
       const kategoriLapangan = Array.isArray(lapangan.kategori)
         ? lapangan.kategori
@@ -118,10 +136,10 @@ function KontenHalamanLapangan() {
 
   const jumlahKategori = (kategori) => {
     if (kategori === "Semua") {
-      return daftarLapangan.length;
+      return sumberLapangan.length;
     }
 
-    return daftarLapangan.filter((lapangan) => {
+    return sumberLapangan.filter((lapangan) => {
       const kategoriLapangan = Array.isArray(lapangan.kategori)
         ? lapangan.kategori
         : [lapangan.kategori];
@@ -202,7 +220,7 @@ function KontenHalamanLapangan() {
                     </p>
 
                     <p className="text-lg font-bold text-primary">
-                      {daftarLapangan.length}
+                      {sumberLapangan.length}
                     </p>
                   </div>
 
@@ -342,8 +360,8 @@ function KontenHalamanLapangan() {
                       type="button"
                       onClick={() => setFilterHarga(item.value)}
                       className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 sportify-price-button ${filterHarga === item.value
-                          ? "bg-primary text-white shadow-md shadow-primary/20"
-                          : "border hover:border-primary hover:text-primary"
+                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                        : "border hover:border-primary hover:text-primary"
                         }`}
                       style={{
                         ...(filterHarga !== item.value

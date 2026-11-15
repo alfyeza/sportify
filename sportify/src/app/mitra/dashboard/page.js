@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
+import { apiRequest } from "@/lib/api";
 
 const bookingContoh = [
     {
@@ -174,6 +175,14 @@ export default function MitraDashboardPage() {
     const [namaMitra, setNamaMitra] = useState("Mitra Sportify");
     const [tanggal, setTanggal] = useState("");
     const [filterBooking, setFilterBooking] = useState("Semua");
+    const [stats, setStats] = useState({
+        bookingHariIni: 0,
+        totalPendapatan: 0,
+        totalLapangan: 0,
+        menungguKonfirmasi: 0,
+    });
+    const [realBookings, setRealBookings] = useState([]);
+    const [isLive, setIsLive] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -185,7 +194,7 @@ export default function MitraDashboardPage() {
             return;
         }
 
-        if (role && !["mitra", "pemilik", "owner"].includes(role.toLowerCase())) {
+        if (role && !["mitra", "pemilik", "owner", "admin"].includes(role.toLowerCase())) {
             router.replace("/profile");
             return;
         }
@@ -216,19 +225,86 @@ export default function MitraDashboardPage() {
                 }
             )
         );
+
+        async function fetchDashboard() {
+            try {
+                const res = await apiRequest("/mitra/dashboard");
+                if (res.success && res.data) {
+                    if (res.data.statistik) {
+                        setStats(res.data.statistik);
+                    }
+                    if (Array.isArray(res.data.daftarBooking) && res.data.daftarBooking.length > 0) {
+                        setRealBookings(
+                            res.data.daftarBooking.map((b) => ({
+                                id: b.kodeBooking || b.id,
+                                rawId: b.id,
+                                nama: b.pemesan?.fullName || "Pelanggan",
+                                lapangan: b.tempat || b.lapangan,
+                                unit: b.kategori,
+                                tanggal: b.tanggal,
+                                waktu: b.jam,
+                                harga: b.total,
+                                status:
+                                    b.statusBayarDb === "lunas" || b.statusPembayaran === "Paid"
+                                        ? "Dibayar"
+                                        : b.statusPemesanan === "dibatalkan"
+                                            ? "Dibatalkan"
+                                            : "Menunggu",
+                                statusPemesanan: b.statusPemesanan,
+                            }))
+                        );
+                        setIsLive(true);
+                    }
+                }
+            } catch (e) {
+                console.error("Gagal memuat dashboard mitra:", e);
+            }
+        }
+
+        fetchDashboard();
     }, [router, isEnglish]);
 
+    const sourceBookings = isLive && realBookings.length > 0 ? realBookings : bookingContoh;
     const daftarBooking =
         filterBooking === "Semua"
-            ? bookingContoh
-            : bookingContoh.filter((item) => item.status === filterBooking);
+            ? sourceBookings
+            : sourceBookings.filter((item) => item.status === filterBooking);
 
     const formatRupiah = (angka) =>
         new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
             maximumFractionDigits: 0,
-        }).format(angka);
+        }).format(angka || 0);
+
+    const displayStatistik = isLive
+        ? [
+            {
+                label: "Booking Hari Ini",
+                value: String(stats.bookingHariIni),
+                perubahan: "Jadwal hari ini",
+                icon: "calendar",
+            },
+            {
+                label: "Total Pendapatan",
+                value: formatRupiah(stats.totalPendapatan),
+                perubahan: "Dari pesanan aktif/selesai",
+                icon: "wallet",
+            },
+            {
+                label: "Total Lapangan",
+                value: String(stats.totalLapangan),
+                perubahan: "Lapangan terdaftar",
+                icon: "court",
+            },
+            {
+                label: "Menunggu Konfirmasi",
+                value: String(stats.menungguKonfirmasi),
+                perubahan: "Perlu diverifikasi",
+                icon: "clock",
+            },
+        ]
+        : statistik;
 
     const statusStyle = (status) => {
         if (status === "Dibayar") {
@@ -256,8 +332,11 @@ export default function MitraDashboardPage() {
                                 <span className="rounded-full bg-[#EAF5EF] px-3 py-1 text-xs font-semibold text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
                                     Dashboard Mitra
                                 </span>
-                                <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
-                                    Data Demo
+                                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isLive
+                                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
+                                    : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                    }`}>
+                                    {isLive ? "Database Supabase Terhubung" : "Mode Pratinjau"}
                                 </span>
                             </div>
 
@@ -299,7 +378,7 @@ export default function MitraDashboardPage() {
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                            {statistik.map((item, index) => (
+                            {displayStatistik.map((item, index) => (
                                 <div
                                     key={index}
                                     className="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-white/[0.04]"
@@ -495,8 +574,8 @@ export default function MitraDashboardPage() {
                                     key={filter}
                                     onClick={() => setFilterBooking(filter)}
                                     className={`rounded-full px-4 py-2 text-xs font-semibold transition ${filterBooking === filter
-                                            ? "bg-[#146B45] text-white"
-                                            : "bg-gray-100 text-gray-500 hover:bg-[#EAF5EF] hover:text-[#146B45] dark:bg-white/10 dark:text-gray-300"
+                                        ? "bg-[#146B45] text-white"
+                                        : "bg-gray-100 text-gray-500 hover:bg-[#EAF5EF] hover:text-[#146B45] dark:bg-white/10 dark:text-gray-300"
                                         }`}
                                 >
                                     {isEnglish

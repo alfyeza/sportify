@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import LoadingState from "@/components/LoadingState";
 import EmptyState from "@/components/EmptyState";
 import { useLanguage } from "@/components/LanguageProvider";
+import { apiRequest } from "@/lib/api";
 
 const formatRupiah = (angka) =>
   new Intl.NumberFormat("id-ID", {
@@ -187,22 +188,35 @@ export default function RiwayatPage() {
       return;
     }
 
-    try {
-      const stored = localStorage.getItem("sportify_bookings");
-
-      if (stored) {
-        const parsed = JSON.parse(stored);
-
-        setBookings(Array.isArray(parsed) ? parsed : []);
-      } else {
-        setBookings([]);
+    async function loadRiwayat() {
+      try {
+        const res = await apiRequest("/booking");
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setBookings(res.data);
+          localStorage.setItem("sportify_bookings", JSON.stringify(res.data));
+          return;
+        }
+      } catch (error) {
+        console.warn("Gagal membaca riwayat dari Supabase, beralih ke cache:", error.message);
       }
-    } catch (error) {
-      console.error("Gagal membaca riwayat booking:", error);
-      setBookings([]);
-    } finally {
-      setLoading(false);
+
+      try {
+        const stored = localStorage.getItem("sportify_bookings");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setBookings(Array.isArray(parsed) ? parsed : []);
+        } else {
+          setBookings([]);
+        }
+      } catch (err) {
+        console.error("Gagal membaca cache lokal:", err);
+        setBookings([]);
+      } finally {
+        setLoading(false);
+      }
     }
+
+    loadRiwayat().finally(() => setLoading(false));
   }, [router]);
 
   // MEMERIKSA APAKAH BOOKING BISA DIBATALKAN
@@ -278,7 +292,7 @@ export default function RiwayatPage() {
   };
 
   // PROSES PEMBATALAN BOOKING
-  const handleCancelBooking = () => {
+  const handleCancelBooking = async () => {
     if (!cancelTarget) return;
 
     if (
@@ -289,16 +303,27 @@ export default function RiwayatPage() {
       return;
     }
 
-    const updatedBookings = bookings.map((booking) =>
-      booking.id === cancelTarget.id
-        ? {
-          ...booking,
-          statusBooking: "Cancelled",
-        }
-        : booking
-    );
-
     try {
+      // Sinkronkan pembatalan ke backend Supabase
+      try {
+        await apiRequest(`/booking/${cancelTarget.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ status_pemesanan: "dibatalkan" }),
+        });
+      } catch (backendError) {
+        console.warn("Gagal update pembatalan di Supabase:", backendError.message);
+      }
+
+      const updatedBookings = bookings.map((booking) =>
+        booking.id === cancelTarget.id
+          ? {
+            ...booking,
+            statusBooking: "Cancelled",
+            statusPemesanan: "dibatalkan",
+          }
+          : booking
+      );
+
       localStorage.setItem(
         "sportify_bookings",
         JSON.stringify(updatedBookings)
@@ -311,6 +336,7 @@ export default function RiwayatPage() {
           ? {
             ...previous,
             statusBooking: "Cancelled",
+            statusPemesanan: "dibatalkan",
           }
           : previous
       );
