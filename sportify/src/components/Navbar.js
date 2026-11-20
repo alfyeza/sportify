@@ -62,10 +62,11 @@ export default function Navbar() {
   // TUTUP MENU
   const closeMenu = () => setMenuOpen(false);
 
-  // AMBIL TEMA YANG TERSIMPAN
+  // AMBIL TEMA TERSIMPAN
   useEffect(() => {
     const savedTheme =
-      localStorage.getItem("sportify-theme") || "light";
+      localStorage.getItem("sportify-theme") ||
+      "light";
 
     setTheme(savedTheme);
 
@@ -175,16 +176,17 @@ export default function Navbar() {
   const isPenyewa =
     user && !isMitra && !isAdmin;
 
-  // LINK NAVBAR
+  // LINK NAVBAR DESKTOP
   const navLinkClass = (path) =>
-    `liquid-nav-link transition-colors ${isActive(path)
-      ? "text-primary font-bold bg-soft-mint px-3 py-1.5 rounded-full"
+    `liquid-nav-link sportify-nav-link ${isActive(path)
+      ? "sportify-nav-link-active bg-soft-mint dark:bg-white/10 px-3 py-1.5 rounded-full"
       : ""
     }`;
 
+  // LINK NAVBAR MOBILE
   const mobileLinkClass = (path) =>
-    `liquid-nav-link py-2 px-3 rounded-xl ${isActive(path)
-      ? "bg-soft-mint text-primary font-bold"
+    `liquid-nav-link sportify-nav-link sportify-mobile-link ${isActive(path)
+      ? "sportify-nav-link-active bg-soft-mint dark:bg-white/10 font-bold"
       : ""
     }`;
 
@@ -283,7 +285,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="text-gray-500 hover:text-red-600 text-sm font-medium px-2 py-1 transition"
+                  className="text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 text-sm font-medium px-2 py-1 transition"
                   title={t.logout}
                 >
                   {t.logout}
@@ -294,7 +296,7 @@ export default function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="text-dark-text dark:text-white font-semibold text-sm hover:text-primary transition"
+                  className="liquid-nav-link sportify-nav-link font-semibold text-sm"
                 >
                   {t.login}
                 </Link>
@@ -482,7 +484,7 @@ export default function Navbar() {
                     <Link
                       href="/login"
                       onClick={closeMenu}
-                      className="liquid-nav-link py-2 px-3"
+                      className="liquid-nav-link sportify-nav-link sportify-mobile-link"
                     >
                       {t.login}
                     </Link>

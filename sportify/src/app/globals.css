@@ -1515,3 +1515,118 @@ main a {
     animation: none !important;
   }
 }
+
+/* =========================================
+   FIX NAVBAR TEXT - DARK MODE
+========================================= */
+
+/* Tulisan navbar saat dark mode */
+html.dark .liquid-navbar .liquid-nav-link,
+html.dark .liquid-mobile-menu .liquid-nav-link {
+  color: #E8F0EA !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Tulisan navbar ketika kursor diarahkan */
+html.dark .liquid-navbar .liquid-nav-link:hover,
+html.dark .liquid-mobile-menu .liquid-nav-link:hover {
+  color: #7DDBA8 !important;
+}
+
+/* Tulisan navbar saat halaman sedang aktif */
+html.dark .liquid-navbar .liquid-nav-link.active,
+html.dark .liquid-mobile-menu .liquid-nav-link.active {
+  color: #7DDBA8 !important;
+}
+
+/* Pastikan tulisan dropdown juga terlihat */
+html.dark .liquid-navbar button,
+html.dark .liquid-mobile-menu button {
+  color: #E8F0EA;
+}
+
+/* =========================================
+   SPORTIFY NAVBAR - TEXT VISIBILITY FIX
+========================================= */
+
+/* Pastikan konten navbar berada di atas efek glass */
+.liquid-navbar>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* Warna teks navbar LIGHT MODE */
+.liquid-navbar .sportify-nav-link {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+
+  color: #202B25 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  font-weight: 500;
+  text-decoration: none;
+
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+/* Warna teks navbar DARK MODE */
+html.dark .liquid-navbar .sportify-nav-link,
+html.dark .liquid-mobile-menu .sportify-nav-link {
+  color: #EDF5EF !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Hover LIGHT MODE */
+.liquid-navbar .sportify-nav-link:hover,
+.liquid-mobile-menu .sportify-nav-link:hover {
+  color: #146B45 !important;
+}
+
+/* Hover DARK MODE */
+html.dark .liquid-navbar .sportify-nav-link:hover,
+html.dark .liquid-mobile-menu .sportify-nav-link:hover {
+  color: #B7E34A !important;
+}
+
+/* Link halaman aktif LIGHT MODE */
+.liquid-navbar .sportify-nav-link-active,
+.liquid-mobile-menu .sportify-nav-link-active {
+  color: #146B45 !important;
+  font-weight: 700;
+}
+
+/* Link halaman aktif DARK MODE */
+html.dark .liquid-navbar .sportify-nav-link-active,
+html.dark .liquid-mobile-menu .sportify-nav-link-active {
+  color: #B7E34A !important;
+}
+
+/* Link menu mobile */
+.liquid-mobile-menu .sportify-mobile-link {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+}
+
+/* Login desktop dan mobile */
+.liquid-navbar a.sportify-nav-link,
+.liquid-mobile-menu a.sportify-nav-link {
+  text-decoration: none;
+}
+
+/* Tombol logout tetap memiliki warna sendiri */
+html.dark .liquid-navbar button {
+  color: #EDF5EF;
+}
+
+/* Pastikan logo tidak tertutup efek glass */
+.liquid-navbar>a:first-child {
+  position: relative;
+  z-index: 2;
+}

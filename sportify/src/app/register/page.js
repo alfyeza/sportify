@@ -23,11 +23,17 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // =====================================================
+  // HANDLE REGISTER
+  // =====================================================
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     // VALIDASI KOLOM WAJIB
     if (
@@ -131,32 +137,42 @@ export default function RegisterPage() {
         }),
       });
 
-      // AMBIL TOKEN
+      // PASTIKAN REGISTRASI BERHASIL
+      if (!data || data.success !== true) {
+        throw new Error(
+          data?.message ||
+          (isEnglish
+            ? "Registration failed."
+            : "Registrasi gagal.")
+        );
+      }
+
+      // AMBIL TOKEN DARI RESPONSE BACKEND
       const token =
         data?.token ||
         data?.accessToken ||
         data?.access_token ||
         data?.data?.token ||
-        data?.data?.accessToken;
+        data?.data?.accessToken ||
+        null;
 
-      // AMBIL DATA USER
+      // AMBIL DATA USER DARI RESPONSE BACKEND
       const user =
         data?.user ||
-        data?.data?.user;
+        data?.data?.user ||
+        null;
 
-      // VALIDASI RESPONS BACKEND
-      if (!token || !user) {
+      // DATA USER WAJIB ADA, TOKEN BOLEH NULL
+      if (!user || !user.id || !user.email || !user.role) {
         throw new Error(
           isEnglish
-            ? "Registration response is incomplete."
-            : "Respons registrasi dari server tidak lengkap."
+            ? "User data from server is incomplete."
+            : "Data pengguna dari server tidak lengkap."
         );
       }
 
       // VALIDASI ROLE DARI BACKEND
-      const registeredRole = String(
-        user.role || ""
-      ).toLowerCase();
+      const registeredRole = String(user.role).toLowerCase();
 
       if (registeredRole !== role) {
         throw new Error(
@@ -166,37 +182,49 @@ export default function RegisterPage() {
         );
       }
 
-      // SIMPAN DATA LOGIN
+      // BENTUK DATA USER
       const userWithRole = {
         ...user,
         role: registeredRole,
       };
 
-      localStorage.setItem("token", token);
+      // JIKA TOKEN TERSEDIA, SIMPAN SESI DI FRONTEND
+      if (typeof token === "string" && token.length > 0) {
+        localStorage.setItem("token", token);
 
-      localStorage.setItem(
-        "sportify_user",
-        JSON.stringify(userWithRole)
-      );
+        localStorage.setItem(
+          "sportify_user",
+          JSON.stringify(userWithRole)
+        );
 
-      localStorage.setItem(
-        "sportify_role",
-        registeredRole
-      );
+        localStorage.setItem(
+          "sportify_role",
+          registeredRole
+        );
 
-      // NOTIFIKASI PERUBAHAN STATUS LOGIN
-      window.dispatchEvent(
-        new Event("sportify-auth-change")
-      );
+        // NOTIFIKASI PERUBAHAN STATUS AUTENTIKASI
+        window.dispatchEvent(
+          new Event("sportify-auth-change")
+        );
 
-      // REDIRECT BERDASARKAN ROLE
-      if (registeredRole === "mitra") {
-        router.replace("/mitra/dashboard");
-      } else {
-        router.replace("/profile");
+        // REDIRECT BERDASARKAN ROLE
+        if (registeredRole === "mitra") {
+          router.replace("/mitra/dashboard");
+        } else {
+          router.replace("/profile");
+        }
+
+        router.refresh();
+        return;
       }
 
-      router.refresh();
+      // REGISTRASI BERHASIL, TETAPI SESSION/TOKEN BELUM TERSEDIA
+      // JANGAN ANGGAP PENGGUNA SUDAH LOGIN
+      setSuccess(
+        isEnglish
+          ? "Registration successful. Please check your email for confirmation if required, then log in."
+          : "Registrasi berhasil. Silakan periksa email untuk konfirmasi jika diminta, kemudian masuk ke akun Anda."
+      );
 
     } catch (err) {
       setError(
@@ -209,6 +237,10 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+  // =====================================================
+  // REGISTER PAGE
+  // =====================================================
 
   return (
     <>
@@ -257,6 +289,7 @@ export default function RegisterPage() {
 
               <div className="grid grid-cols-2 gap-3">
 
+                {/* PENYEWA */}
                 <button
                   type="button"
                   onClick={() => {
@@ -278,6 +311,7 @@ export default function RegisterPage() {
                   )}
                 </button>
 
+                {/* MITRA */}
                 <button
                   type="button"
                   onClick={() => {
@@ -476,6 +510,23 @@ export default function RegisterPage() {
                 className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-4 py-3 text-sm text-red-600 dark:text-red-400"
               >
                 {error}
+              </div>
+            )}
+
+            {/* PESAN SUKSES */}
+            {success && (
+              <div
+                role="status"
+                className="rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 px-4 py-3 text-sm text-green-700 dark:text-green-400"
+              >
+                {success}
+
+                <Link
+                  href="/login"
+                  className="block mt-2 font-bold underline"
+                >
+                  {isEnglish ? "Go to Login" : "Masuk ke Akun"}
+                </Link>
               </div>
             )}
 
