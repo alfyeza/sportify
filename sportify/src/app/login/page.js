@@ -8,6 +8,24 @@ import Footer from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
 import { apiRequest } from "@/lib/api";
 
+const DEMO_ACCOUNTS = [
+  {
+    role: "Penyewa",
+    email: "penyewa@sportify.test",
+    password: "123456",
+  },
+  {
+    role: "Mitra",
+    email: "mitra@sportify.test",
+    password: "123456",
+  },
+  {
+    role: "Admin",
+    email: "admin@sportify.test",
+    password: "123456",
+  },
+];
+
 export default function LoginPage() {
   const { language } = useLanguage();
   const isEnglish = language === "en";
@@ -19,15 +37,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const executeLogin = async (rawEmail, rawPassword) => {
     setError("");
 
-    // VALIDASI EMAIL DAN PASSWORD
+    const normalizedEmail = rawEmail.trim().toLowerCase();
 
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail || !password) {
+    if (!normalizedEmail || !rawPassword) {
       setError(
         isEnglish
           ? "Email and password are required."
@@ -47,7 +62,7 @@ export default function LoginPage() {
       return;
     }
 
-    if (password.length < 6) {
+    if (rawPassword.length < 6) {
       setError(
         isEnglish
           ? "Password must contain at least 6 characters."
@@ -59,17 +74,13 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      // REQUEST LOGIN
-
       const data = await apiRequest("/auth/login", {
         method: "POST",
         body: JSON.stringify({
           email: normalizedEmail,
-          password,
+          password: rawPassword,
         }),
       });
-
-      // AMBIL TOKEN
 
       const token =
         data?.token ||
@@ -86,11 +97,7 @@ export default function LoginPage() {
         );
       }
 
-      // AMBIL DATA USER
-
-      const user =
-        data?.user ||
-        data?.data?.user;
+      const user = data?.user || data?.data?.user;
 
       if (!user) {
         throw new Error(
@@ -100,13 +107,8 @@ export default function LoginPage() {
         );
       }
 
-      // VALIDASI ROLE
-
       const userRole = String(
-        user.role ||
-        user.user_role ||
-        data?.role ||
-        ""
+        user.role || user.user_role || data?.role || ""
       ).toLowerCase();
 
       const validRoles = [
@@ -127,29 +129,14 @@ export default function LoginPage() {
         );
       }
 
-      // SIMPAN DATA LOGIN
-
       localStorage.setItem("token", token);
-
-      localStorage.setItem(
-        "sportify_user",
-        JSON.stringify(user)
-      );
-
+      localStorage.setItem("sportify_user", JSON.stringify(user));
       localStorage.setItem("sportify_role", userRole);
 
-      window.dispatchEvent(
-        new Event("sportify-auth-change")
-      );
+      window.dispatchEvent(new Event("sportify-auth-change"));
 
-      // CEK REDIRECT
-
-      const params = new URLSearchParams(
-        window.location.search
-      );
-
+      const params = new URLSearchParams(window.location.search);
       const redirectPath = params.get("redirect");
-
       let safeRedirect = null;
 
       if (
@@ -158,41 +145,27 @@ export default function LoginPage() {
         !redirectPath.startsWith("//")
       ) {
         try {
-          const redirectUrl = new URL(
-            redirectPath,
-            window.location.origin
-          );
+          const redirectUrl = new URL(redirectPath, window.location.origin);
 
-          if (
-            redirectUrl.origin === window.location.origin
-          ) {
+          if (redirectUrl.origin === window.location.origin) {
             safeRedirect =
-              redirectUrl.pathname +
-              redirectUrl.search +
-              redirectUrl.hash;
+              redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
           }
         } catch {
           safeRedirect = null;
         }
       }
 
-      // TENTUKAN HALAMAN BERDASARKAN ROLE
-
       let destination = "/profile";
 
       if (
-        ["mitra", "pemilik", "owner"].includes(userRole)
+        ["mitra", "pemilik", "owner", "admin"].includes(userRole)
       ) {
         destination = "/mitra/dashboard";
-      } else if (userRole === "admin") {
-        destination = "/admin/dashboard";
       }
-
-      // REDIRECT
 
       router.replace(safeRedirect || destination);
       router.refresh();
-
     } catch (err) {
       setError(
         err.message ||
@@ -205,13 +178,23 @@ export default function LoginPage() {
     }
   };
 
+  const handleLogin = (e) => {
+    e.preventDefault();
+    executeLogin(email, password);
+  };
+
+  const handleQuickLogin = (account) => {
+    setEmail(account.email);
+    setPassword(account.password);
+    executeLogin(account.email, account.password);
+  };
+
   return (
     <>
       <Navbar />
 
       <main className="min-h-screen bg-[var(--bg-main)] flex items-center justify-center px-4 py-10 sm:py-14">
         <div className="liquid-auth-card w-full max-w-md">
-
           {/* HEADER LOGIN */}
           <div className="text-center mb-7 sm:mb-8">
             <Link
@@ -223,15 +206,11 @@ export default function LoginPage() {
 
             <div className="mt-5 sm:mt-6">
               <span className="inline-block px-4 py-2 rounded-full bg-soft-mint text-primary text-xs font-bold tracking-wider">
-                {isEnglish
-                  ? "WELCOME BACK"
-                  : "SELAMAT DATANG KEMBALI"}
+                {isEnglish ? "WELCOME BACK" : "SELAMAT DATANG KEMBALI"}
               </span>
 
               <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-main)] mt-4">
-                {isEnglish
-                  ? "Welcome Back!"
-                  : "Selamat Datang!"}
+                {isEnglish ? "Welcome Back!" : "Selamat Datang!"}
               </h1>
 
               <p className="text-[var(--text-secondary)] mt-2 text-sm leading-relaxed">
@@ -243,11 +222,7 @@ export default function LoginPage() {
           </div>
 
           {/* FORM LOGIN */}
-          <form
-            onSubmit={handleLogin}
-            className="space-y-4 sm:space-y-5"
-          >
-
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
             {/* EMAIL */}
             <div>
               <label className="block text-sm font-semibold text-[var(--text-main)] mb-2">
@@ -257,9 +232,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 placeholder={
-                  isEnglish
-                    ? "Enter your email"
-                    : "Masukkan email"
+                  isEnglish ? "Enter your email" : "Masukkan email"
                 }
                 className="liquid-auth-input"
                 value={email}
@@ -282,9 +255,7 @@ export default function LoginPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder={
-                    isEnglish
-                      ? "Enter your password"
-                      : "Masukkan password"
+                    isEnglish ? "Enter your password" : "Masukkan password"
                   }
                   className="liquid-auth-input pr-16"
                   value={password}
@@ -298,9 +269,7 @@ export default function LoginPage() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
+                  onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-primary"
                   disabled={loading}
                 >
@@ -341,37 +310,56 @@ export default function LoginPage() {
 
               {!loading && <span>&gt;</span>}
             </button>
-
           </form>
 
-          {/* LINK REGISTER */}
-          <div className="text-center text-sm text-[var(--text-secondary)] mt-6 sm:mt-7 leading-relaxed">
-            {isEnglish
-              ? "Don't have an account?"
-              : "Belum punya akun?"}{" "}
+          {/* AKUN DEMO SESUAI ROLE */}
+          <div className="mt-6 pt-5 border-t border-[var(--border-main)]">
+            <p className="text-center text-xs font-medium text-[var(--text-secondary)] mb-3">
+              {isEnglish
+                ? "Quick Login by Role (Database Connected)"
+                : "Login Cepat Sesuai Role (Terkoneksi Database)"}
+            </p>
 
+            <div className="grid grid-cols-3 gap-2">
+              {DEMO_ACCOUNTS.map((account) => (
+                <button
+                  key={account.role}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickLogin(account)}
+                  className="flex flex-col items-center justify-center rounded-xl border border-[var(--border-main)] bg-transparent px-2 py-2.5 text-center transition hover:border-primary hover:bg-soft-mint/60 disabled:opacity-50"
+                >
+                  <span className="text-xs font-bold text-primary">
+                    {account.role}
+                  </span>
+                  <span className="mt-0.5 text-[10px] text-[var(--text-secondary)] truncate max-w-full">
+                    {account.email.split("@")[0]}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* LINK REGISTER */}
+          <div className="text-center text-sm text-[var(--text-secondary)] mt-6 leading-relaxed">
+            {isEnglish ? "Don't have an account?" : "Belum punya akun?"}{" "}
             <Link
               href="/register"
               className="text-primary font-bold hover:underline"
             >
-              {isEnglish
-                ? "Register now"
-                : "Daftar sekarang"}
+              {isEnglish ? "Register now" : "Daftar sekarang"}
             </Link>
           </div>
 
           {/* KEMBALI KE BERANDA */}
-          <div className="text-center mt-6 sm:mt-7 pt-5 sm:pt-6 border-t border-[var(--border-main)]">
+          <div className="text-center mt-5 pt-5 border-t border-[var(--border-main)]">
             <Link
               href="/"
               className="text-sm text-[var(--text-secondary)] hover:text-primary transition"
             >
-              &lt; {isEnglish
-                ? "Back to Home"
-                : "Kembali ke Beranda"}
+              &lt; {isEnglish ? "Back to Home" : "Kembali ke Beranda"}
             </Link>
           </div>
-
         </div>
       </main>
 
