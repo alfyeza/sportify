@@ -25,6 +25,7 @@ export default function Navbar() {
       contact: "Contact Us",
       riwayat: "Riwayat",
       profil: "Profil",
+      dashboard: "Dashboard",
       login: "Login",
       daftar: "Daftar",
       logout: "Keluar",
@@ -42,6 +43,7 @@ export default function Navbar() {
       contact: "Contact Us",
       riwayat: "History",
       profil: "Profile",
+      dashboard: "Dashboard",
       login: "Login",
       daftar: "Register",
       logout: "Logout",
@@ -175,6 +177,9 @@ export default function Navbar() {
   const isPenyewa =
     user && !isMitra && !isAdmin;
 
+  const accountHref =
+    isAdmin || isMitra ? "/mitra/dashboard" : "/profile";
+
   // LINK NAVBAR
   const navLinkClass = (path) =>
     `liquid-nav-link transition-colors ${isActive(path)
@@ -268,7 +273,7 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
 
                 <Link
-                  href="/profile"
+                  href={accountHref}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-soft-mint text-primary text-sm font-semibold hover:bg-green-100 transition"
                 >
                   <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs shrink-0">
@@ -276,7 +281,7 @@ export default function Navbar() {
                   </span>
 
                   <span className="max-w-[90px] truncate">
-                    {user.fullName || t.profil}
+                    {user.fullName || (isAdmin || isMitra ? t.dashboard : t.profil)}
                   </span>
                 </Link>
 
@@ -458,11 +463,11 @@ export default function Navbar() {
 
               {user && (
                 <Link
-                  href="/profile"
+                  href={accountHref}
                   onClick={closeMenu}
-                  className={mobileLinkClass("/profile")}
+                  className={mobileLinkClass(accountHref)}
                 >
-                  {t.profil} ({user.fullName || "User"})
+                  {isAdmin || isMitra ? t.dashboard : t.profil} ({user.fullName || "User"})
                 </Link>
               )}
 

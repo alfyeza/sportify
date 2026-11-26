@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LoadingState from "@/components/LoadingState";
-import EmptyState from "@/components/EmptyState";
 import { useLanguage } from "@/components/LanguageProvider";
 import { apiRequest } from "@/lib/api";
 
@@ -60,12 +59,8 @@ function Icon({ name, size = 20 }) {
             </>
         ),
         arrow: <path d="m9 18 6-6-6-6" />,
-        eye: (
-            <>
-                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
-                <circle cx="12" cy="12" r="3" />
-            </>
-        ),
+        check: <path d="m5 13 4 4L19 7" />,
+        close: <path d="M18 6 6 18M6 6l12 12" />,
     };
 
     return <svg {...common}>{paths[name] || paths.court}</svg>;
@@ -111,12 +106,14 @@ export default function MitraLapanganPage() {
     const isEnglish = language === "en";
 
     const [venues, setVenues] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [search, setSearch] = useState("");
     const [filterStatus, setFilterStatus] = useState("Semua");
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
+    const [verifyingId, setVerifyingId] = useState(null);
 
     const fetchVenues = useCallback(async () => {
         setLoading(true);
@@ -166,13 +163,34 @@ export default function MitraLapanganPage() {
             ""
         ).toLowerCase();
 
-        if (!["mitra", "pemilik", "owner"].includes(role)) {
+        if (!["mitra", "pemilik", "owner", "admin"].includes(role)) {
             router.replace("/profile");
             return;
         }
 
+        setIsAdmin(role === "admin");
         fetchVenues();
     }, [router, fetchVenues]);
+
+    const handleVerifyVenue = async (venueId, newStatus) => {
+        setVerifyingId(venueId);
+        try {
+            await apiRequest(`/mitra/lapangan/${venueId}`, {
+                method: "PATCH",
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            setVenues((prev) =>
+                prev.map((item) =>
+                    item.id === venueId ? { ...item, status: newStatus } : item
+                )
+            );
+        } catch (err) {
+            alert(err.message || "Gagal memperbarui status verifikasi lapangan.");
+        } finally {
+            setVerifyingId(null);
+        }
+    };
 
     const filteredVenues = venues.filter((venue) => {
         const keyword = search.toLowerCase();
@@ -255,13 +273,23 @@ export default function MitraLapanganPage() {
                             </Link>
 
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                {isEnglish ? "My Venues" : "Kelola Lapangan"}
+                                {isAdmin
+                                    ? isEnglish
+                                        ? "Manage & Verify Venues (Admin)"
+                                        : "Kelola & Verifikasi Lapangan (Admin)"
+                                    : isEnglish
+                                        ? "My Venues"
+                                        : "Kelola Lapangan"}
                             </h1>
 
                             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                {isEnglish
-                                    ? "Manage your registered sports venues."
-                                    : "Kelola informasi dan daftar lapangan olahraga milikmu."}
+                                {isAdmin
+                                    ? isEnglish
+                                        ? "Review, verify, and manage all sports venues from partners."
+                                        : "Tinjau, verifikasi, dan kelola seluruh lapangan olahraga dari semua mitra."
+                                    : isEnglish
+                                        ? "Manage your registered sports venues."
+                                        : "Kelola informasi dan daftar lapangan olahraga milikmu."}
                             </p>
                         </div>
 
@@ -445,8 +473,15 @@ export default function MitraLapanganPage() {
 
                                     const image =
                                         venue.gambar ||
+                                        venue.fotoUrl ||
                                         venue.foto?.[0] ||
                                         "/images/placeholder.jpg";
+
+                                    const normalizedStatus = (venue.status || "").toLowerCase();
+                                    const isActive =
+                                        normalizedStatus.includes("aktif") ||
+                                        normalizedStatus.includes("approved") ||
+                                        normalizedStatus.includes("disetujui");
 
                                     return (
                                         <article
@@ -520,6 +555,31 @@ export default function MitraLapanganPage() {
                                                         <Icon name="arrow" size={16} />
                                                     </Link>
                                                 </div>
+
+                                                {/* Tombol Verifikasi Khusus Admin */}
+                                                {isAdmin && (
+                                                    <div className="grid grid-cols-2 gap-2 border-t border-gray-100 pt-3 dark:border-white/10">
+                                                        <button
+                                                            type="button"
+                                                            disabled={verifyingId === venue.id || isActive}
+                                                            onClick={() => handleVerifyVenue(venue.id, "aktif")}
+                                                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#146B45] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#105638] disabled:cursor-not-allowed disabled:opacity-40"
+                                                        >
+                                                            <Icon name="check" size={15} />
+                                                            {isEnglish ? "Approve" : "Verifikasi Aktif"}
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            disabled={verifyingId === venue.id || normalizedStatus.includes("tolak")}
+                                                            onClick={() => handleVerifyVenue(venue.id, "ditolak")}
+                                                            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-400"
+                                                        >
+                                                            <Icon name="close" size={15} />
+                                                            {isEnglish ? "Reject" : "Tolak"}
+                                                        </button>
+                                                    </div>
+                                                )}
 
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <Link

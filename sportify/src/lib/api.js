@@ -153,15 +153,13 @@ async function getAuthenticatedProfile() {
     .maybeSingle();
 
   if (profError || !profile) {
-    // Fallback jika profile belum terbentuk
-    const fallbackProfile = {
+    return {
       id: user.id,
       email: user.email,
       full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Pengguna",
       phone: user.user_metadata?.phone || "",
       role: user.user_metadata?.role || "penyewa",
     };
-    return fallbackProfile;
   }
 
   return profile;
@@ -386,7 +384,7 @@ export async function apiRequest(endpoint, options = {}) {
   }
 
   // -----------------------------------------------------
-  // 6. DAFTAR & DETAIL LAPANGAN PUBLIK (DENGAN PENCARIAN & PAGINATION)
+  // 6. DAFTAR & DETAIL LAPANGAN PUBLIK
   // -----------------------------------------------------
   if (cleanPath === "/lapangan" && method === "GET") {
     let query = supabase
@@ -402,7 +400,9 @@ export async function apiRequest(endpoint, options = {}) {
 
     const searchQuery = params.get("q") || params.get("search");
     if (searchQuery && searchQuery.trim()) {
-      query = query.or(`nama.ilike.%${searchQuery.trim()}%,lokasi.ilike.%${searchQuery.trim()}%,alamat.ilike.%${searchQuery.trim()}%`);
+      query = query.or(
+        `nama.ilike.%${searchQuery.trim()}%,lokasi.ilike.%${searchQuery.trim()}%,alamat.ilike.%${searchQuery.trim()}%`
+      );
     }
 
     const page = parseInt(params.get("page") || "1", 10);
@@ -437,7 +437,7 @@ export async function apiRequest(endpoint, options = {}) {
   }
 
   // -----------------------------------------------------
-  // 7. CEK JADWAL / SLOT TERISI (RPC & FALLBACK QUERY)
+  // 7. CEK JADWAL / SLOT TERISI
   // -----------------------------------------------------
   if (cleanPath === "/jadwal" && method === "GET") {
     const lapanganId = params.get("lapangan_id");
@@ -460,7 +460,6 @@ export async function apiRequest(endpoint, options = {}) {
       // Fallback manual jika RPC belum dibuat di Supabase
     }
 
-    // Fallback: Query manual tabel pemesanan & blokir_jadwal
     const [bookingsRes, blocksRes] = await Promise.all([
       supabase
         .from("pemesanan")
@@ -494,7 +493,7 @@ export async function apiRequest(endpoint, options = {}) {
   }
 
   // -----------------------------------------------------
-  // 8. PEMESANAN / BOOKING (DENGAN ANTI BENTURAN JADWAL)
+  // 8. PEMESANAN / BOOKING
   // -----------------------------------------------------
   if (cleanPath === "/booking") {
     const profile = await getAuthenticatedProfile();
@@ -502,11 +501,21 @@ export async function apiRequest(endpoint, options = {}) {
     if (method === "GET") {
       let query = supabase
         .from("pemesanan")
-        .select("*, lapangan(nama, lokasi, kategori, harga, foto_url), profiles(full_name, email, phone)")
+        .select("*, lapangan(nama, lokasi, kategori, harga, foto_url, owner_id), profiles(full_name, email, phone)")
         .order("created_at", { ascending: false });
 
       if (profile.role === "penyewa") {
         query = query.eq("user_id", profile.id);
+      } else if (profile.role !== "admin") {
+        const { data: venues } = await supabase
+          .from("lapangan")
+          .select("id")
+          .eq("owner_id", profile.id);
+        const venueIds = (venues || []).map((v) => v.id);
+        if (venueIds.length === 0) {
+          return { success: true, data: [] };
+        }
+        query = query.in("lapangan_id", venueIds);
       }
 
       const { data, error } = await query;
@@ -526,14 +535,15 @@ export async function apiRequest(endpoint, options = {}) {
         throw new Error("Durasi atau total biaya tidak valid.");
       }
 
-      // Validasi awal benturan jadwal sebelum insert
       const { data: conflictBooking } = await supabase
         .from("pemesanan")
         .select("id")
         .eq("lapangan_id", body.lapangan_id)
         .eq("tanggal_main", body.tanggal_main)
         .neq("status_pemesanan", "dibatalkan")
-        .or(`and(jam_mulai.gte.${body.jam_mulai},jam_mulai.lt.${body.jam_selesai}),and(jam_selesai.gt.${body.jam_mulai},jam_selesai.lte.${body.jam_selesai})`)
+        .or(
+          `and(jam_mulai.gte.${body.jam_mulai},jam_mulai.lt.${body.jam_selesai}),and(jam_selesai.gt.${body.jam_mulai},jam_selesai.lte.${body.jam_selesai})`
+        )
         .limit(1);
 
       if (conflictBooking && conflictBooking.length > 0) {
@@ -595,7 +605,6 @@ export async function apiRequest(endpoint, options = {}) {
       const body = getBody(options);
       const allowedUpdates = { updated_at: new Date().toISOString() };
 
-      // Penyewa hanya boleh membatalkan pesanan miliknya sendiri
       if (profile.role === "penyewa") {
         if (body.status_pemesanan === "dibatalkan" || body.action === "cancel") {
           allowedUpdates.status_pemesanan = "dibatalkan";
@@ -605,7 +614,6 @@ export async function apiRequest(endpoint, options = {}) {
           allowedUpdates.bukti_bayar_path = body.bukti_bayar_path;
         }
       } else {
-        // Mitra / Admin memiliki akses penuh verifikasi status
         if (body.status_pemesanan) allowedUpdates.status_pemesanan = body.status_pemesanan;
         if (body.status_pembayaran) allowedUpdates.status_pembayaran = body.status_pembayaran;
         if (body.bukti_bayar_path) allowedUpdates.bukti_bayar_path = body.bukti_bayar_path;
@@ -616,9 +624,12 @@ export async function apiRequest(endpoint, options = {}) {
         .update(allowedUpdates)
         .eq("id", bookingId)
         .select("*, lapangan(nama, lokasi, kategori, harga, foto_url), profiles(full_name, email, phone)")
-        .single();
+        .maybeSingle();
 
       if (error) throw new Error(error.message);
+      if (!data) {
+        throw new Error("Gagal memperbarui pesanan. Pastikan kebijakan akses database (RLS) sudah dijalankan.");
+      }
 
       return {
         success: true,
@@ -637,30 +648,45 @@ export async function apiRequest(endpoint, options = {}) {
       throw new Error("Akses ditolak. Fitur ini hanya untuk Pengelola/Mitra.");
     }
 
-    // 1. Ambil daftar lapangan milik mitra
-    const { data: venues } = await supabase
-      .from("lapangan")
-      .select("id")
-      .eq("owner_id", profile.id);
+    let venueQuery = supabase.from("lapangan").select("id");
+    if (profile.role !== "admin") {
+      venueQuery = venueQuery.eq("owner_id", profile.id);
+    }
 
+    const { data: venues } = await venueQuery;
     const venueIds = (venues || []).map((v) => v.id);
 
-    // 2. Ambil pemesanan terkait lapangan mitra
     let bookingQuery = supabase
       .from("pemesanan")
       .select("*, lapangan(nama, lokasi, kategori, harga), profiles(full_name, email, phone)")
       .order("created_at", { ascending: false });
 
-    if (profile.role !== "admin" && venueIds.length > 0) {
-      bookingQuery = bookingQuery.in("lapangan_id", venueIds);
+    if (profile.role !== "admin") {
+      if (venueIds.length > 0) {
+        bookingQuery = bookingQuery.in("lapangan_id", venueIds);
+      } else {
+        return {
+          success: true,
+          data: {
+            statistik: {
+              totalPendapatan: 0,
+              totalPemesanan: 0,
+              bookingHariIni: 0,
+              totalLapangan: 0,
+              menungguKonfirmasi: 0,
+              dikonfirmasi: 0,
+              selesai: 0,
+            },
+            daftarBooking: [],
+          },
+        };
+      }
     }
 
     const { data: allBookings, error: bErr } = await bookingQuery;
     if (bErr) throw new Error(bErr.message);
 
     const bookings = allBookings || [];
-
-    // Hitung metrik rekapitulasi
     const todayStr = new Date().toISOString().split("T")[0];
     let totalPendapatan = 0;
     let totalBookingHariIni = 0;
@@ -703,7 +729,7 @@ export async function apiRequest(endpoint, options = {}) {
   }
 
   // -----------------------------------------------------
-  // 10. KELOLA LAPANGAN MITRA / ADMIN
+  // 10. KELOLA & VERIFIKASI LAPANGAN MITRA / ADMIN
   // -----------------------------------------------------
   if (
     cleanPath === "/mitra/lapangan" ||
@@ -745,6 +771,8 @@ export async function apiRequest(endpoint, options = {}) {
         throw new Error("Harga per sesi harus lebih dari 0.");
       }
 
+      const initialStatus = profile.role === "admin" ? "aktif" : "menunggu_verifikasi";
+
       const { data, error } = await supabase
         .from("lapangan")
         .insert({
@@ -759,7 +787,7 @@ export async function apiRequest(endpoint, options = {}) {
           jam_buka: body.jamBuka || "08:00",
           jam_tutup: body.jamTutup || "22:00",
           foto_url: body.fotoUrl || "/images/lapangan/default.jpg",
-          status: "aktif",
+          status: initialStatus,
         })
         .select()
         .single();
@@ -768,7 +796,10 @@ export async function apiRequest(endpoint, options = {}) {
       return {
         success: true,
         data: mapLapangan(data),
-        message: "Lapangan berhasil ditambahkan.",
+        message:
+          profile.role === "admin"
+            ? "Lapangan berhasil ditambahkan dan langsung aktif."
+            : "Lapangan berhasil ditambahkan dan menunggu verifikasi Admin.",
       };
     }
 
@@ -794,7 +825,17 @@ export async function apiRequest(endpoint, options = {}) {
       if (body.alamat !== undefined) updates.alamat = body.alamat.trim();
       if (body.deskripsi !== undefined) updates.deskripsi = body.deskripsi;
       if (body.fasilitas !== undefined) updates.fasilitas = body.fasilitas;
-      if (body.status !== undefined) updates.status = body.status;
+      if (body.fotoUrl !== undefined) updates.foto_url = body.fotoUrl;
+      if (body.jamBuka !== undefined) updates.jam_buka = body.jamBuka;
+      if (body.jamTutup !== undefined) updates.jam_tutup = body.jamTutup;
+
+      if (body.status !== undefined) {
+        if (["aktif", "ditolak", "menunggu_verifikasi"].includes(body.status) && profile.role !== "admin") {
+          throw new Error("Hanya Administrator yang dapat mengubah status verifikasi lapangan.");
+        }
+        updates.status = body.status;
+      }
+
       if (body.kategori !== undefined) updates.kategori = validateKategori(body.kategori);
       if (body.harga !== undefined) {
         const harga = Number(body.harga);
@@ -809,9 +850,13 @@ export async function apiRequest(endpoint, options = {}) {
         .update(updates)
         .eq("id", venueId)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw new Error(error.message);
+      if (!data) {
+        throw new Error("Gagal memperbarui lapangan. Pastikan kebijakan akses database (RLS) sudah dijalankan.");
+      }
+
       return {
         success: true,
         data: mapLapangan(data),
@@ -894,6 +939,156 @@ export async function apiRequest(endpoint, options = {}) {
     }
   }
 
+  // -----------------------------------------------------
+  // 12. KEUANGAN & PENCAIRAN DANA MITRA / ADMIN
+  // -----------------------------------------------------
+  if (
+    cleanPath === "/mitra/keuangan" ||
+    cleanPath === "/mitra/pencairan" ||
+    cleanPath === "/mitra/keuangan/pencairan" ||
+    cleanPath.startsWith("/mitra/pencairan/")
+  ) {
+    const profile = await getAuthenticatedProfile();
+    if (!["mitra", "admin"].includes(profile.role)) {
+      throw new Error("Akses ditolak. Fitur ini hanya untuk Pengelola/Mitra.");
+    }
+
+    if (method === "GET") {
+      let venueQuery = supabase.from("lapangan").select("id");
+      if (profile.role !== "admin") {
+        venueQuery = venueQuery.eq("owner_id", profile.id);
+      }
+      const { data: venues } = await venueQuery;
+      const venueIds = (venues || []).map((v) => v.id);
+
+      let bookingQuery = supabase
+        .from("pemesanan")
+        .select("*, lapangan(nama, lokasi, kategori, harga), profiles(full_name, email, phone)")
+        .order("created_at", { ascending: false });
+
+      if (profile.role !== "admin") {
+        if (venueIds.length > 0) {
+          bookingQuery = bookingQuery.in("lapangan_id", venueIds);
+        } else {
+          bookingQuery = null;
+        }
+      }
+
+      const bookingsRes = bookingQuery ? await bookingQuery : { data: [], error: null };
+      if (bookingsRes.error) throw new Error(bookingsRes.error.message);
+
+      let pencairanQuery = supabase
+        .from("pencairan_dana")
+        .select("*, profiles:mitra_id(full_name, email)")
+        .order("created_at", { ascending: false });
+
+      if (profile.role !== "admin") {
+        pencairanQuery = pencairanQuery.eq("mitra_id", profile.id);
+      }
+
+      const pencairanRes = await pencairanQuery;
+      const riwayatPencairan = pencairanRes.error ? [] : pencairanRes.data || [];
+
+      const validBookings = (bookingsRes.data || []).filter(
+        (b) =>
+          b.status_pembayaran === "lunas" ||
+          b.status_pemesanan === "selesai" ||
+          b.status_pemesanan === "dikonfirmasi"
+      );
+
+      const totalPendapatan = validBookings.reduce(
+        (sum, b) => sum + (Number(b.total_biaya) || 0),
+        0
+      );
+
+      const totalDicairkan = riwayatPencairan
+        .filter((p) => p.status !== "ditolak")
+        .reduce((sum, p) => sum + (Number(p.jumlah) || 0), 0);
+
+      const saldoTersedia = Math.max(0, totalPendapatan - totalDicairkan);
+
+      return {
+        success: true,
+        data: {
+          ringkasan: {
+            totalPendapatan,
+            totalDicairkan,
+            saldoTersedia,
+          },
+          riwayatTransaksi: validBookings.map(mapBooking),
+          riwayatPencairan,
+        },
+      };
+    }
+
+    if (method === "POST") {
+      const body = getBody(options);
+      const jumlah = Number(body.jumlah);
+      const namaBank = (body.namaBank || body.nama_bank || "").trim();
+      const nomorRekening = (body.nomorRekening || body.nomor_rekening || "").trim();
+      const namaPemilik = (
+        body.namaPemilikRekening ||
+        body.nama_pemilik_rekening ||
+        profile.full_name ||
+        ""
+      ).trim();
+
+      if (!Number.isFinite(jumlah) || jumlah < 50000) {
+        throw new Error("Minimal pengajuan pencairan dana adalah Rp 50.000.");
+      }
+      if (!namaBank || !nomorRekening || !namaPemilik) {
+        throw new Error("Nama bank, nomor rekening, dan nama pemilik rekening wajib diisi.");
+      }
+
+      const { data, error } = await supabase
+        .from("pencairan_dana")
+        .insert({
+          mitra_id: profile.id,
+          jumlah,
+          nama_bank: namaBank,
+          nomor_rekening: nomorRekening,
+          nama_pemilik_rekening: namaPemilik,
+          status: "menunggu_proses",
+          catatan: body.catatan || "",
+        })
+        .select()
+        .single();
+
+      if (error) throw new Error(error.message);
+
+      return {
+        success: true,
+        data,
+        message: "Pengajuan pencairan dana berhasil dikirim.",
+      };
+    }
+
+    if (["PUT", "PATCH"].includes(method)) {
+      if (profile.role !== "admin") {
+        throw new Error("Hanya Administrator yang dapat memproses pencairan dana.");
+      }
+      const pencairanId = cleanPath.replace("/mitra/pencairan/", "").split("/")[0];
+      const body = getBody(options);
+
+      const { data, error } = await supabase
+        .from("pencairan_dana")
+        .update({
+          status: body.status || "selesai",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", pencairanId)
+        .select()
+        .maybeSingle();
+
+      if (error) throw new Error(error.message);
+      return {
+        success: true,
+        data,
+        message: "Status pencairan dana berhasil diperbarui.",
+      };
+    }
+  }
+
   throw new Error(`Endpoint ${endpoint} belum tersedia.`);
 }
 
@@ -913,7 +1108,7 @@ export async function uploadBerkas(file, bucketName = "bukti-pembayaran") {
     throw new Error("Format file harus JPG, PNG, WEBP, atau PDF.");
   }
 
-  const maxSize = 2 * 1024 * 1024; // 2MB
+  const maxSize = 2 * 1024 * 1024;
   if (file.size > maxSize) {
     throw new Error("Ukuran file maksimal 2MB.");
   }
@@ -940,7 +1135,6 @@ export async function uploadBerkas(file, bucketName = "bukti-pembayaran") {
 // =====================================================
 export async function getBuktiBayarSignedUrl(filePath, expiresInSeconds = 3600) {
   if (!filePath) return null;
-  // Jika sudah berupa URL publik penuh
   if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
     return filePath;
   }

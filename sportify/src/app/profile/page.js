@@ -145,7 +145,7 @@ export default function ProfilePage() {
       }
 
       if (userRole === "admin") {
-        router.replace("/admin/dashboard");
+        router.replace("/mitra/dashboard");
         return;
       }
 
@@ -624,8 +624,8 @@ export default function ProfilePage() {
                 {message && (
                   <div
                     className={`profile-message mb-5 rounded-xl border px-4 py-3 text-sm ${messageType === "success"
-                        ? "border-green-500/20 bg-green-500/10 text-green-700 dark:text-green-400"
-                        : "border-red-500/20 bg-red-500/10 text-red-700 dark:text-red-400"
+                      ? "border-green-500/20 bg-green-500/10 text-green-700 dark:text-green-400"
+                      : "border-red-500/20 bg-red-500/10 text-red-700 dark:text-red-400"
                       }`}
                   >
                     {message}

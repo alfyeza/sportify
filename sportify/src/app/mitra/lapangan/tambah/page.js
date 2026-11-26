@@ -673,8 +673,8 @@ export default function TambahLapanganPage() {
                                                 toggleKategori(kategori)
                                             }
                                             className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${selected
-                                                    ? "border-[#146B45] bg-[#EAF5EF] text-[#146B45] dark:border-green-400 dark:bg-green-900/30 dark:text-green-400"
-                                                    : "border-gray-200 bg-white text-gray-500 hover:border-[#146B45] dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                                                ? "border-[#146B45] bg-[#EAF5EF] text-[#146B45] dark:border-green-400 dark:bg-green-900/30 dark:text-green-400"
+                                                : "border-gray-200 bg-white text-gray-500 hover:border-[#146B45] dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
                                                 }`}
                                         >
                                             {selected && "✓ "}
@@ -876,8 +876,8 @@ export default function TambahLapanganPage() {
 
                                                                         <span
                                                                             className={`text-xs font-semibold ${jadwal.tutupHari
-                                                                                    ? "text-red-500"
-                                                                                    : "text-[#146B45] dark:text-green-400"
+                                                                                ? "text-red-500"
+                                                                                : "text-[#146B45] dark:text-green-400"
                                                                                 }`}
                                                                         >
                                                                             {jadwal.tutupHari
@@ -1093,8 +1093,8 @@ export default function TambahLapanganPage() {
                                                 <label
                                                     key={fasilitas}
                                                     className={`flex cursor-pointer items-center gap-2 rounded-xl border p-3 text-sm transition ${selected
-                                                            ? "border-[#146B45] bg-[#EAF5EF] text-[#146B45] dark:border-green-400 dark:bg-green-900/20 dark:text-green-400"
-                                                            : "border-gray-200 text-gray-500 hover:border-[#146B45] dark:border-white/10 dark:text-gray-300"
+                                                        ? "border-[#146B45] bg-[#EAF5EF] text-[#146B45] dark:border-green-400 dark:bg-green-900/20 dark:text-green-400"
+                                                        : "border-gray-200 text-gray-500 hover:border-[#146B45] dark:border-white/10 dark:text-gray-300"
                                                         }`}
                                                 >
                                                     <input
