@@ -174,7 +174,7 @@ export default function Navbar() {
   ].includes(role);
 
   const isAdmin = role === "admin";
-
+  const accountHref = isAdmin ? "/admin" : isMitra ? "/mitra/lapangan" : "/profile";
   const isPenyewa =
     user && !isMitra && !isAdmin;
 

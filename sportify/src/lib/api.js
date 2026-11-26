@@ -125,7 +125,28 @@ function mapBooking(row) {
     createdAt: row.created_at,
   };
 }
+export async function getBuktiBayarSignedUrl(pathOrUrl, expiresIn = 60) {
+  if (!pathOrUrl) return null;
+  if (typeof pathOrUrl === "string" && pathOrUrl.startsWith("http")) {
+    return pathOrUrl;
+  }
 
+  const bucket = pathOrUrl.includes("/") ? pathOrUrl.split("/")[0] : "bukti-pembayaran";
+  const objectPath = pathOrUrl.includes("/")
+    ? pathOrUrl.split("/").slice(1).join("/")
+    : pathOrUrl;
+
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .createSignedUrl(objectPath, expiresIn);
+
+  if (error) {
+    console.error("Gagal membuat signed URL bukti bayar:", error.message);
+    return null;
+  }
+
+  return data?.signedUrl || null;
+}
 function validateKategori(kategori) {
   const list = Array.isArray(kategori) ? kategori : [kategori];
   if (list.length === 0) {
@@ -984,4 +1005,10 @@ export async function apiRequest(endpoint, options = {}) {
       let pencairanQuery = supabase
         .from("pencairan_dana")
         .select("*, profiles:mitra_id(full_name, email)")
-        .order("created_at", {
+        .order("created_at", { ascending: false });
+
+      if (error) throw new Error(error.message);
+      return { success: true, data: data || [] };
+    }
+  }
+}
