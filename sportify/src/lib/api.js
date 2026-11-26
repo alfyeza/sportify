@@ -68,13 +68,17 @@ function mapLapangan(row) {
 
 function mapBooking(row) {
   const statusMap = {
+    menunggu: "Pending",
     menunggu_konfirmasi: "Pending",
     dikonfirmasi: "Confirmed",
     selesai: "Completed",
     dibatalkan: "Cancelled",
+    ditolak: "Rejected",
   };
   const paymentMap = {
+    belum_bayar: "Pending",
     menunggu_pembayaran: "Pending",
+    menunggu_verifikasi: "Pending",
     lunas: "Paid",
     gagal: "Failed",
     dibatalkan: "Cancelled",
@@ -108,7 +112,6 @@ function mapBooking(row) {
     statusPemesanan: row.status_pemesanan,
     statusPembayaran: paymentMap[row.status_pembayaran] || row.status_pembayaran,
     statusBayarDb: row.status_pembayaran,
-    metodePembayaran: row.metode_pembayaran || "qris",
     buktiBayarPath: row.bukti_bayar_path || "",
     catatan: row.catatan || "",
     pemesan: row.profiles
@@ -356,8 +359,8 @@ export async function apiRequest(endpoint, options = {}) {
       if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
         throw new Error("Rating harus antara 1 sampai 5.");
       }
-      if (cerita.length < 10 || cerita.length > 1000) {
-        throw new Error("Cerita harus terdiri dari 10 sampai 1000 karakter.");
+      if (cerita.length < 20 || cerita.length > 1000) {
+        throw new Error("Cerita harus terdiri dari 20 sampai 1000 karakter.");
       }
 
       const { data, error } = await supabase
@@ -563,10 +566,9 @@ export async function apiRequest(endpoint, options = {}) {
           jam_selesai: body.jam_selesai,
           durasi_jam: durasi,
           total_biaya: totalBiaya,
-          metode_pembayaran: body.metode_pembayaran || "qris",
           catatan: body.catatan || "",
-          status_pemesanan: "menunggu_konfirmasi",
-          status_pembayaran: "menunggu_pembayaran",
+          status_pemesanan: "menunggu",
+          status_pembayaran: "belum_bayar",
         })
         .select("*, lapangan(nama, lokasi, kategori, harga, foto_url), profiles(full_name, email, phone)")
         .single();
@@ -603,7 +605,7 @@ export async function apiRequest(endpoint, options = {}) {
 
     if (["PUT", "PATCH"].includes(method)) {
       const body = getBody(options);
-      const allowedUpdates = { updated_at: new Date().toISOString() };
+      const allowedUpdates = {};
 
       if (profile.role === "penyewa") {
         if (body.status_pemesanan === "dibatalkan" || body.action === "cancel") {
@@ -612,6 +614,7 @@ export async function apiRequest(endpoint, options = {}) {
         }
         if (body.bukti_bayar_path) {
           allowedUpdates.bukti_bayar_path = body.bukti_bayar_path;
+          allowedUpdates.status_pembayaran = "menunggu_verifikasi";
         }
       } else {
         if (body.status_pemesanan) allowedUpdates.status_pemesanan = body.status_pemesanan;
@@ -702,7 +705,7 @@ export async function apiRequest(endpoint, options = {}) {
       if (b.tanggal_main === todayStr) {
         totalBookingHariIni++;
       }
-      if (b.status_pemesanan === "menunggu_konfirmasi") {
+      if (b.status_pemesanan === "menunggu" || b.status_pemesanan === "menunggu_konfirmasi") {
         pendingCount++;
       } else if (b.status_pemesanan === "dikonfirmasi") {
         confirmedCount++;
@@ -786,7 +789,7 @@ export async function apiRequest(endpoint, options = {}) {
           harga,
           jam_buka: body.jamBuka || "08:00",
           jam_tutup: body.jamTutup || "22:00",
-          foto_url: body.fotoUrl || "/images/lapangan/default.jpg",
+          foto_url: body.fotoUrl || body.gambar || "/images/lapangan/default.jpg",
           status: initialStatus,
         })
         .select()
@@ -818,7 +821,7 @@ export async function apiRequest(endpoint, options = {}) {
 
     if (method === "PUT" || method === "PATCH") {
       const body = getBody(options);
-      const updates = { updated_at: new Date().toISOString() };
+      const updates = {};
 
       if (body.nama !== undefined) updates.nama = body.nama.trim();
       if (body.lokasi !== undefined) updates.lokasi = body.lokasi.trim();
@@ -826,6 +829,7 @@ export async function apiRequest(endpoint, options = {}) {
       if (body.deskripsi !== undefined) updates.deskripsi = body.deskripsi;
       if (body.fasilitas !== undefined) updates.fasilitas = body.fasilitas;
       if (body.fotoUrl !== undefined) updates.foto_url = body.fotoUrl;
+      if (body.gambar !== undefined && !body.fotoUrl) updates.foto_url = body.gambar;
       if (body.jamBuka !== undefined) updates.jam_buka = body.jamBuka;
       if (body.jamTutup !== undefined) updates.jam_tutup = body.jamTutup;
 
@@ -980,172 +984,4 @@ export async function apiRequest(endpoint, options = {}) {
       let pencairanQuery = supabase
         .from("pencairan_dana")
         .select("*, profiles:mitra_id(full_name, email)")
-        .order("created_at", { ascending: false });
-
-      if (profile.role !== "admin") {
-        pencairanQuery = pencairanQuery.eq("mitra_id", profile.id);
-      }
-
-      const pencairanRes = await pencairanQuery;
-      const riwayatPencairan = pencairanRes.error ? [] : pencairanRes.data || [];
-
-      const validBookings = (bookingsRes.data || []).filter(
-        (b) =>
-          b.status_pembayaran === "lunas" ||
-          b.status_pemesanan === "selesai" ||
-          b.status_pemesanan === "dikonfirmasi"
-      );
-
-      const totalPendapatan = validBookings.reduce(
-        (sum, b) => sum + (Number(b.total_biaya) || 0),
-        0
-      );
-
-      const totalDicairkan = riwayatPencairan
-        .filter((p) => p.status !== "ditolak")
-        .reduce((sum, p) => sum + (Number(p.jumlah) || 0), 0);
-
-      const saldoTersedia = Math.max(0, totalPendapatan - totalDicairkan);
-
-      return {
-        success: true,
-        data: {
-          ringkasan: {
-            totalPendapatan,
-            totalDicairkan,
-            saldoTersedia,
-          },
-          riwayatTransaksi: validBookings.map(mapBooking),
-          riwayatPencairan,
-        },
-      };
-    }
-
-    if (method === "POST") {
-      const body = getBody(options);
-      const jumlah = Number(body.jumlah);
-      const namaBank = (body.namaBank || body.nama_bank || "").trim();
-      const nomorRekening = (body.nomorRekening || body.nomor_rekening || "").trim();
-      const namaPemilik = (
-        body.namaPemilikRekening ||
-        body.nama_pemilik_rekening ||
-        profile.full_name ||
-        ""
-      ).trim();
-
-      if (!Number.isFinite(jumlah) || jumlah < 50000) {
-        throw new Error("Minimal pengajuan pencairan dana adalah Rp 50.000.");
-      }
-      if (!namaBank || !nomorRekening || !namaPemilik) {
-        throw new Error("Nama bank, nomor rekening, dan nama pemilik rekening wajib diisi.");
-      }
-
-      const { data, error } = await supabase
-        .from("pencairan_dana")
-        .insert({
-          mitra_id: profile.id,
-          jumlah,
-          nama_bank: namaBank,
-          nomor_rekening: nomorRekening,
-          nama_pemilik_rekening: namaPemilik,
-          status: "menunggu_proses",
-          catatan: body.catatan || "",
-        })
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-
-      return {
-        success: true,
-        data,
-        message: "Pengajuan pencairan dana berhasil dikirim.",
-      };
-    }
-
-    if (["PUT", "PATCH"].includes(method)) {
-      if (profile.role !== "admin") {
-        throw new Error("Hanya Administrator yang dapat memproses pencairan dana.");
-      }
-      const pencairanId = cleanPath.replace("/mitra/pencairan/", "").split("/")[0];
-      const body = getBody(options);
-
-      const { data, error } = await supabase
-        .from("pencairan_dana")
-        .update({
-          status: body.status || "selesai",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", pencairanId)
-        .select()
-        .maybeSingle();
-
-      if (error) throw new Error(error.message);
-      return {
-        success: true,
-        data,
-        message: "Status pencairan dana berhasil diperbarui.",
-      };
-    }
-  }
-
-  throw new Error(`Endpoint ${endpoint} belum tersedia.`);
-}
-
-// =====================================================
-// UPLOAD BERKAS KE SUPABASE STORAGE
-// =====================================================
-export async function uploadBerkas(file, bucketName = "bukti-pembayaran") {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) throw new Error("Silakan login terlebih dahulu.");
-  if (!file) throw new Error("Pilih file terlebih dahulu.");
-
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-  if (!allowedTypes.includes(file.type)) {
-    throw new Error("Format file harus JPG, PNG, WEBP, atau PDF.");
-  }
-
-  const maxSize = 2 * 1024 * 1024;
-  if (file.size > maxSize) {
-    throw new Error("Ukuran file maksimal 2MB.");
-  }
-
-  const fileExt = file.name.split(".").pop();
-  const filePath = `${user.id}/${Date.now()}.${fileExt}`;
-
-  const { error } = await supabase.storage
-    .from(bucketName)
-    .upload(filePath, file);
-
-  if (error) throw new Error("Gagal mengunggah file: " + error.message);
-
-  if (bucketName === "foto-lapangan") {
-    const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-    return data.publicUrl;
-  }
-
-  return filePath;
-}
-
-// =====================================================
-// HELPER BUKTI BAYAR: SIGNED URL (PRIVAT)
-// =====================================================
-export async function getBuktiBayarSignedUrl(filePath, expiresInSeconds = 3600) {
-  if (!filePath) return null;
-  if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
-    return filePath;
-  }
-
-  const { data, error } = await supabase.storage
-    .from("bukti-pembayaran")
-    .createSignedUrl(filePath, expiresInSeconds);
-
-  if (error || !data?.signedUrl) {
-    return null;
-  }
-
-  return data.signedUrl;
-}
+        .order("created_at", {
