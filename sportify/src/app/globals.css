@@ -6,14 +6,60 @@
 ======================================== */
 
 @theme {
-  --color-primary: #146B45;
-  --color-secondary: #27A36B;
-  --color-soft-mint: #EAF5EF;
-  --color-lime: #B7E34A;
-  --color-background: #F7F9F7;
-  --color-dark-text: #202B25;
+  --color-primary: #E85002;
+  --color-secondary: #F16001;
+  --color-soft-mint: #D9C3AB;
+  --color-lime: #D9C3AB;
+  --color-background: #F9F9F9;
+  --color-dark-text: #000000;
   --color-warning: #E9A23B;
   --color-danger: #DC5555;
+
+  /* Class hijau Tailwind dialihkan ke oranye */
+  --color-green-50: #FFF4ED;
+  --color-green-100: #FFE6D5;
+  --color-green-200: #FEC9A9;
+  --color-green-300: #FDA372;
+  --color-green-400: #F97A2E;
+  --color-green-500: #F16001;
+  --color-green-600: #E85002;
+  --color-green-700: #C13F02;
+  --color-green-800: #993308;
+  --color-green-900: #7C2D0A;
+  --color-green-950: #431403;
+  --color-emerald-50: #FFF4ED;
+  --color-emerald-100: #FFE6D5;
+  --color-emerald-200: #FEC9A9;
+  --color-emerald-300: #FDA372;
+  --color-emerald-400: #F97A2E;
+  --color-emerald-500: #F16001;
+  --color-emerald-600: #E85002;
+  --color-emerald-700: #C13F02;
+  --color-emerald-800: #993308;
+  --color-emerald-900: #7C2D0A;
+  --color-emerald-950: #431403;
+  --color-lime-50: #FFF4ED;
+  --color-lime-100: #FFE6D5;
+  --color-lime-200: #FEC9A9;
+  --color-lime-300: #FDA372;
+  --color-lime-400: #F97A2E;
+  --color-lime-500: #F16001;
+  --color-lime-600: #E85002;
+  --color-lime-700: #C13F02;
+  --color-lime-800: #993308;
+  --color-lime-900: #7C2D0A;
+  --color-lime-950: #431403;
+  --color-teal-50: #FFF4ED;
+  --color-teal-100: #FFE6D5;
+  --color-teal-200: #FEC9A9;
+  --color-teal-300: #FDA372;
+  --color-teal-400: #F97A2E;
+  --color-teal-500: #F16001;
+  --color-teal-600: #E85002;
+  --color-teal-700: #C13F02;
+  --color-teal-800: #993308;
+  --color-teal-900: #7C2D0A;
+  --color-teal-950: #431403;
 }
 
 /* ========================================
@@ -23,52 +69,52 @@
 :root {
   color-scheme: light;
 
-  --bg-main: #F7F9F7;
+  --bg-main: #F9F9F9;
   --bg-card: rgba(255, 255, 255, 0.82);
   --bg-card-solid: #FFFFFF;
-  --bg-soft: #EAF5EF;
+  --bg-soft: #D9C3AB;
 
-  --text-main: #202B25;
-  --text-secondary: #6B756F;
-  --text-muted: #89918C;
+  --text-main: #000000;
+  --text-secondary: #646464;
+  --text-muted: #646464;
 
-  --border-main: rgba(20, 107, 69, 0.10);
-  --border-soft: rgba(32, 43, 37, 0.08);
+  --border-main: rgba(232, 80, 2, 0.10);
+  --border-soft: rgba(0, 0, 0, 0.08);
 
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-border: rgba(255, 255, 255, 0.90);
 
-  --shadow-card: 0 12px 35px rgba(32, 43, 37, 0.06);
-  --shadow-glass: 0 15px 45px rgba(20, 107, 69, 0.07);
+  --shadow-card: 0 12px 35px rgba(0, 0, 0, 0.06);
+  --shadow-glass: 0 15px 45px rgba(232, 80, 2, 0.07);
 
   --input-bg: rgba(255, 255, 255, 0.85);
-  --input-text: #202B25;
-  --input-border: rgba(32, 43, 37, 0.12);
+  --input-text: #000000;
+  --input-border: rgba(0, 0, 0, 0.12);
 }
 
 html.dark {
   color-scheme: dark;
 
-  --bg-main: #101A15;
-  --bg-card: rgba(27, 43, 34, 0.82);
-  --bg-card-solid: #1B2B22;
-  --bg-soft: #233D2D;
+  --bg-main: #000000;
+  --bg-card: rgba(51, 51, 51, 0.82);
+  --bg-card-solid: #333333;
+  --bg-soft: #333333;
 
-  --text-main: #EDF5EF;
-  --text-secondary: #B2C1B7;
-  --text-muted: #91A398;
+  --text-main: #F9F9F9;
+  --text-secondary: #A7A7A7;
+  --text-muted: #A7A7A7;
 
-  --border-main: rgba(110, 190, 139, 0.16);
+  --border-main: rgba(241, 96, 1, 0.16);
   --border-soft: rgba(255, 255, 255, 0.09);
 
-  --glass-bg: rgba(27, 43, 34, 0.76);
+  --glass-bg: rgba(51, 51, 51, 0.76);
   --glass-border: rgba(255, 255, 255, 0.10);
 
   --shadow-card: 0 12px 35px rgba(0, 0, 0, 0.20);
   --shadow-glass: 0 15px 45px rgba(0, 0, 0, 0.22);
 
-  --input-bg: rgba(20, 34, 26, 0.90);
-  --input-text: #EDF5EF;
+  --input-bg: rgba(0, 0, 0, 0.90);
+  --input-text: #F9F9F9;
   --input-border: rgba(255, 255, 255, 0.13);
 }
 
@@ -154,7 +200,7 @@ html.dark .liquid-navbar::before {
 }
 
 .liquid-nav-link:hover {
-  color: #27A36B;
+  color: #F16001;
 }
 
 .liquid-outline-button {
@@ -172,28 +218,28 @@ html.dark .liquid-navbar::before {
 
 .liquid-outline-button:hover {
   background: var(--bg-soft);
-  color: #27A36B;
+  color: #F16001;
   transform: translateY(-2px);
 }
 
 .liquid-primary-button {
   padding: 10px 20px;
   border-radius: 12px;
-  background: rgba(20, 107, 69, 0.95);
+  background: rgba(232, 80, 2, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: white;
   font-size: 14px;
   font-weight: 600;
 
   box-shadow:
-    0 4px 15px rgba(20, 107, 69, 0.18),
+    0 4px 15px rgba(232, 80, 2, 0.18),
     inset 0 1px 1px rgba(255, 255, 255, 0.2);
 
   transition: all 0.3s ease;
 }
 
 .liquid-primary-button:hover {
-  background: #27A36B;
+  background: #F16001;
   transform: translateY(-2px);
 }
 
@@ -265,13 +311,13 @@ html.dark .liquid-navbar::before {
 
 .liquid-cta {
   background: linear-gradient(135deg,
-      rgba(20, 107, 69, 0.96),
-      rgba(39, 163, 107, 0.92));
+      rgba(232, 80, 2, 0.96),
+      rgba(241, 96, 1, 0.92));
 
   border: 1px solid rgba(255, 255, 255, 0.25);
 
   box-shadow:
-    0 20px 50px rgba(20, 107, 69, 0.15),
+    0 20px 50px rgba(232, 80, 2, 0.15),
     inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 
@@ -314,7 +360,7 @@ html.dark .liquid-navbar::before {
   border-radius: 20px;
   background: var(--bg-soft);
   border: 1px solid var(--border-main);
-  color: #27A36B;
+  color: #F16001;
   font-size: 11px;
   font-weight: 600;
 }
@@ -326,7 +372,7 @@ html.dark .liquid-navbar::before {
   padding: 11px 18px;
   border-radius: 999px;
   background: var(--bg-soft);
-  color: #146B45;
+  color: #E85002;
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -334,11 +380,11 @@ html.dark .liquid-navbar::before {
 }
 
 html.dark .liquid-detail-button {
-  color: #8FE0AC;
+  color: #F16001;
 }
 
 .liquid-detail-button:hover {
-  background: #146B45;
+  background: #E85002;
   color: white;
   transform: translateY(-2px);
 }
@@ -382,8 +428,8 @@ html.dark .liquid-detail-button {
 }
 
 .liquid-search-container:focus-within {
-  border-color: #27A36B;
-  box-shadow: 0 0 0 3px rgba(39, 163, 107, 0.12);
+  border-color: #F16001;
+  box-shadow: 0 0 0 3px rgba(241, 96, 1, 0.12);
 }
 
 .liquid-filter-button {
@@ -403,10 +449,10 @@ html.dark .liquid-detail-button {
 
 .liquid-filter-button:hover,
 .liquid-filter-button.active {
-  background: #146B45;
+  background: #E85002;
   color: white;
-  border-color: #146B45;
-  box-shadow: 0 6px 18px rgba(20, 107, 69, 0.16);
+  border-color: #E85002;
+  box-shadow: 0 6px 18px rgba(232, 80, 2, 0.16);
 }
 
 .liquid-empty-state {
@@ -438,7 +484,7 @@ html.dark .liquid-detail-button {
 .liquid-detail-category {
   padding: 8px 16px;
   border-radius: 30px;
-  background: rgba(20, 107, 69, 0.95);
+  background: rgba(232, 80, 2, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
   font-size: 13px;
@@ -500,20 +546,20 @@ html.dark .liquid-detail-button {
   border: none;
   border-radius: 15px;
 
-  background: #146B45;
+  background: #E85002;
   color: white;
 
   font-weight: 700;
   cursor: pointer;
 
-  box-shadow: 0 6px 18px rgba(20, 107, 69, 0.16);
+  box-shadow: 0 6px 18px rgba(232, 80, 2, 0.16);
   transition: all 0.25s ease;
 }
 
 .liquid-booking-button:hover {
-  background: #27A36B;
+  background: #F16001;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(20, 107, 69, 0.18);
+  box-shadow: 0 8px 20px rgba(232, 80, 2, 0.18);
 }
 
 .liquid-booking-button:disabled {
@@ -592,7 +638,7 @@ html.dark .liquid-detail-button {
   height: 42px;
   border-radius: 14px;
   background: var(--bg-soft);
-  color: #27A36B;
+  color: #F16001;
   font-size: 13px;
   font-weight: 800;
 }
@@ -624,15 +670,15 @@ html.dark .liquid-detail-button {
 }
 
 .liquid-unit-card:hover {
-  border-color: #27A36B;
+  border-color: #F16001;
   transform: translateY(-3px);
   box-shadow: var(--shadow-card);
 }
 
 .liquid-unit-card.selected {
-  border: 2px solid #27A36B;
+  border: 2px solid #F16001;
   background: var(--bg-soft);
-  box-shadow: 0 8px 24px rgba(20, 107, 69, 0.10);
+  box-shadow: 0 8px 24px rgba(232, 80, 2, 0.10);
 }
 
 .liquid-booking-input {
@@ -650,8 +696,8 @@ html.dark .liquid-detail-button {
 }
 
 .liquid-booking-input:focus {
-  border-color: #27A36B;
-  box-shadow: 0 0 0 4px rgba(39, 163, 107, 0.10);
+  border-color: #F16001;
+  box-shadow: 0 0 0 4px rgba(241, 96, 1, 0.10);
 }
 
 .liquid-time-button {
@@ -665,15 +711,15 @@ html.dark .liquid-detail-button {
 }
 
 .liquid-time-button:hover {
-  border-color: #27A36B;
+  border-color: #F16001;
   background: var(--bg-soft);
 }
 
 .liquid-time-button.selected {
   color: white;
-  background: #146B45;
-  border-color: #146B45;
-  box-shadow: 0 6px 16px rgba(20, 107, 69, 0.18);
+  background: #E85002;
+  border-color: #E85002;
+  box-shadow: 0 6px 16px rgba(232, 80, 2, 0.18);
 }
 
 .liquid-booking-summary {
@@ -771,8 +817,8 @@ html.dark .liquid-detail-button {
 }
 
 .liquid-auth-input:focus {
-  border-color: #27A36B;
-  box-shadow: 0 0 0 4px rgba(39, 163, 107, 0.10);
+  border-color: #F16001;
+  box-shadow: 0 0 0 4px rgba(241, 96, 1, 0.10);
 }
 
 /* ========================================
@@ -786,10 +832,10 @@ html.dark .liquid-detail-button {
 
   background:
     radial-gradient(circle at 10% 20%,
-      rgba(183, 227, 74, 0.18),
+      rgba(217, 195, 171, 0.18),
       transparent 30%),
     radial-gradient(circle at 90% 70%,
-      rgba(39, 163, 107, 0.13),
+      rgba(241, 96, 1, 0.13),
       transparent 30%),
     linear-gradient(135deg,
       var(--bg-soft),
@@ -808,7 +854,7 @@ html.dark .liquid-detail-button {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
-  color: #27A36B;
+  color: #F16001;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -826,7 +872,7 @@ html.dark .liquid-detail-button {
 .liquid-about-decoration-one {
   width: 260px;
   height: 260px;
-  background: rgba(183, 227, 74, 0.13);
+  background: rgba(217, 195, 171, 0.13);
   top: -100px;
   left: -70px;
 }
@@ -834,7 +880,7 @@ html.dark .liquid-detail-button {
 .liquid-about-decoration-two {
   width: 320px;
   height: 320px;
-  background: rgba(39, 163, 107, 0.10);
+  background: rgba(241, 96, 1, 0.10);
   bottom: -160px;
   right: -80px;
 }
@@ -862,7 +908,7 @@ html.dark .liquid-detail-button {
 
   border-radius: 18px;
   background: var(--bg-soft);
-  color: #27A36B;
+  color: #F16001;
   font-size: 25px;
 }
 
@@ -877,7 +923,7 @@ html.dark .liquid-detail-button {
 
   border-radius: 50%;
   background: var(--bg-soft);
-  color: #27A36B;
+  color: #F16001;
 
   font-weight: 700;
   font-size: 13px;
@@ -890,10 +936,10 @@ html.dark .liquid-detail-button {
   border-radius: 32px;
 
   background: linear-gradient(135deg,
-      #146B45,
-      #27A36B);
+      #E85002,
+      #F16001);
 
-  box-shadow: 0 24px 60px rgba(20, 107, 69, 0.20);
+  box-shadow: 0 24px 60px rgba(232, 80, 2, 0.20);
 }
 
 .liquid-about-cta::before {
@@ -913,7 +959,7 @@ html.dark .liquid-detail-button {
   width: 220px;
   height: 220px;
   border-radius: 50%;
-  background: rgba(183, 227, 74, 0.12);
+  background: rgba(217, 195, 171, 0.12);
   bottom: -140px;
   left: -50px;
 }
@@ -956,15 +1002,15 @@ html.dark .liquid-detail-button {
 ======================================== */
 
 html.dark .bg-white {
-  background-color: #1B2B22;
+  background-color: #333333;
 }
 
 html.dark .bg-gray-50 {
-  background-color: #18251D;
+  background-color: #333333;
 }
 
 html.dark .bg-gray-100 {
-  background-color: #23352A;
+  background-color: #333333;
 }
 
 html.dark .text-dark-text {
@@ -972,27 +1018,27 @@ html.dark .text-dark-text {
 }
 
 html.dark .text-gray-900 {
-  color: #EDF5EF;
+  color: #F9F9F9;
 }
 
 html.dark .text-gray-800 {
-  color: #E1ECE4;
+  color: #F9F9F9;
 }
 
 html.dark .text-gray-700 {
-  color: #D1DED5;
+  color: #F9F9F9;
 }
 
 html.dark .text-gray-600 {
-  color: #B2C1B7;
+  color: #A7A7A7;
 }
 
 html.dark .text-gray-500 {
-  color: #A0B1A6;
+  color: #A7A7A7;
 }
 
 html.dark .text-gray-400 {
-  color: #91A398;
+  color: #A7A7A7;
 }
 
 html.dark .border-gray-100,
@@ -1007,11 +1053,11 @@ html.dark .divide-gray-200> :not(:last-child) {
 }
 
 html.dark .hover\:bg-gray-50:hover {
-  background-color: #23352A;
+  background-color: #333333;
 }
 
 html.dark .hover\:bg-gray-100:hover {
-  background-color: #2A4032;
+  background-color: #333333;
 }
 
 /* ========================================
@@ -1032,8 +1078,8 @@ html.dark textarea::placeholder {
 }
 
 html.dark select option {
-  background-color: #1B2B22;
-  color: #EDF5EF;
+  background-color: #333333;
+  color: #F9F9F9;
 }
 
 /* ========================================
@@ -1049,7 +1095,7 @@ html.dark .bg-yellow-50 {
 }
 
 html.dark .bg-green-50 {
-  background-color: rgba(39, 163, 107, 0.12);
+  background-color: rgba(241, 96, 1, 0.12);
 }
 
 html.dark .border-red-200 {
@@ -1257,16 +1303,16 @@ html.dark .border-yellow-200 {
 
 /* Background putih */
 html.dark .bg-white {
-  background-color: #1B2B22 !important;
+  background-color: #333333 !important;
 }
 
 /* Background abu-abu */
 html.dark .bg-gray-50 {
-  background-color: #18251D !important;
+  background-color: #333333 !important;
 }
 
 html.dark .bg-gray-100 {
-  background-color: #23352A !important;
+  background-color: #333333 !important;
 }
 
 /* Warna tulisan */
@@ -1274,16 +1320,16 @@ html.dark .text-black,
 html.dark .text-gray-900,
 html.dark .text-gray-800,
 html.dark .text-dark-text {
-  color: #EDF5EF !important;
+  color: #F9F9F9 !important;
 }
 
 html.dark .text-gray-700 {
-  color: #D1DED5 !important;
+  color: #F9F9F9 !important;
 }
 
 html.dark .text-gray-600,
 html.dark .text-gray-500 {
-  color: #B2C1B7 !important;
+  color: #A7A7A7 !important;
 }
 
 /* Tulisan putih tetap putih */
@@ -1302,30 +1348,30 @@ html.dark .border-gray-300 {
 html.dark input,
 html.dark textarea,
 html.dark select {
-  background-color: #1B2B22;
-  color: #EDF5EF;
+  background-color: #333333;
+  color: #F9F9F9;
   border-color: rgba(255, 255, 255, 0.15);
 }
 
 html.dark input::placeholder,
 html.dark textarea::placeholder {
-  color: #91A398;
+  color: #A7A7A7;
 }
 
 /* Dropdown */
 html.dark select option {
-  background-color: #1B2B22;
-  color: #EDF5EF;
+  background-color: #333333;
+  color: #F9F9F9;
 }
 
 /* Tabel */
 html.dark table {
-  color: #EDF5EF;
+  color: #F9F9F9;
 }
 
 html.dark th {
-  background-color: #23352A;
-  color: #EDF5EF;
+  background-color: #333333;
+  color: #F9F9F9;
 }
 
 html.dark td {
@@ -1345,8 +1391,8 @@ html.dark .liquid-about-card,
 html.dark .liquid-booking-card,
 html.dark .liquid-booking-page-card,
 html.dark .liquid-empty-state {
-  background-color: #1B2B22;
-  color: #EDF5EF;
+  background-color: #333333;
+  color: #F9F9F9;
   border-color: rgba(255, 255, 255, 0.10);
 }
 
@@ -1480,11 +1526,11 @@ main a {
 
   0%,
   100% {
-    box-shadow: 0 0 0 rgba(39, 163, 107, 0);
+    box-shadow: 0 0 0 rgba(241, 96, 1, 0);
   }
 
   50% {
-    box-shadow: 0 0 24px rgba(39, 163, 107, 0.16);
+    box-shadow: 0 0 24px rgba(241, 96, 1, 0.16);
   }
 }
 
@@ -1523,7 +1569,7 @@ main a {
 /* Tulisan navbar saat dark mode */
 html.dark .liquid-navbar .liquid-nav-link,
 html.dark .liquid-mobile-menu .liquid-nav-link {
-  color: #E8F0EA !important;
+  color: #F9F9F9 !important;
   opacity: 1 !important;
   visibility: visible !important;
 }
@@ -1531,19 +1577,19 @@ html.dark .liquid-mobile-menu .liquid-nav-link {
 /* Tulisan navbar ketika kursor diarahkan */
 html.dark .liquid-navbar .liquid-nav-link:hover,
 html.dark .liquid-mobile-menu .liquid-nav-link:hover {
-  color: #7DDBA8 !important;
+  color: #F16001 !important;
 }
 
 /* Tulisan navbar saat halaman sedang aktif */
 html.dark .liquid-navbar .liquid-nav-link.active,
 html.dark .liquid-mobile-menu .liquid-nav-link.active {
-  color: #7DDBA8 !important;
+  color: #F16001 !important;
 }
 
 /* Pastikan tulisan dropdown juga terlihat */
 html.dark .liquid-navbar button,
 html.dark .liquid-mobile-menu button {
-  color: #E8F0EA;
+  color: #F9F9F9;
 }
 
 /* =========================================
@@ -1562,7 +1608,7 @@ html.dark .liquid-mobile-menu button {
   align-items: center;
   position: relative;
 
-  color: #202B25 !important;
+  color: #000000 !important;
   opacity: 1 !important;
   visibility: visible !important;
 
@@ -1577,7 +1623,7 @@ html.dark .liquid-mobile-menu button {
 /* Warna teks navbar DARK MODE */
 html.dark .liquid-navbar .sportify-nav-link,
 html.dark .liquid-mobile-menu .sportify-nav-link {
-  color: #EDF5EF !important;
+  color: #F9F9F9 !important;
   opacity: 1 !important;
   visibility: visible !important;
 }
@@ -1585,26 +1631,26 @@ html.dark .liquid-mobile-menu .sportify-nav-link {
 /* Hover LIGHT MODE */
 .liquid-navbar .sportify-nav-link:hover,
 .liquid-mobile-menu .sportify-nav-link:hover {
-  color: #146B45 !important;
+  color: #E85002 !important;
 }
 
 /* Hover DARK MODE */
 html.dark .liquid-navbar .sportify-nav-link:hover,
 html.dark .liquid-mobile-menu .sportify-nav-link:hover {
-  color: #B7E34A !important;
+  color: #D9C3AB !important;
 }
 
 /* Link halaman aktif LIGHT MODE */
 .liquid-navbar .sportify-nav-link-active,
 .liquid-mobile-menu .sportify-nav-link-active {
-  color: #146B45 !important;
+  color: #E85002 !important;
   font-weight: 700;
 }
 
 /* Link halaman aktif DARK MODE */
 html.dark .liquid-navbar .sportify-nav-link-active,
 html.dark .liquid-mobile-menu .sportify-nav-link-active {
-  color: #B7E34A !important;
+  color: #D9C3AB !important;
 }
 
 /* Link menu mobile */
@@ -1622,7 +1668,1337 @@ html.dark .liquid-mobile-menu .sportify-nav-link-active {
 
 /* Tombol logout tetap memiliki warna sendiri */
 html.dark .liquid-navbar button {
-  color: #EDF5EF;
+  color: #F9F9F9;
+}
+
+/* Pastikan logo tidak tertutup efek glass */
+.liquid-navbar>a:first-child {
+  position: relative;
+  z-index: 2;
+}
+
+.liquid-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-main);
+  box-shadow: var(--shadow-glass);
+}
+
+.liquid-facility {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 20px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-main);
+  color: #F16001;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.liquid-detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: #E85002;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+html.dark .liquid-detail-button {
+  color: #F16001;
+}
+
+.liquid-detail-button:hover {
+  background: #E85002;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   CATALOG PAGE
+======================================== */
+
+.liquid-catalog-header {
+  position: relative;
+
+  background: linear-gradient(135deg,
+      var(--bg-card),
+      var(--bg-soft),
+      var(--glass-bg));
+
+  backdrop-filter: blur(25px) saturate(160%);
+  -webkit-backdrop-filter: blur(25px) saturate(160%);
+
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+.liquid-search-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 58px;
+  padding: 0 20px;
+  border-radius: 18px;
+
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+
+  transition: all 0.3s ease;
+}
+
+.liquid-search-container:focus-within {
+  border-color: #F16001;
+  box-shadow: 0 0 0 3px rgba(241, 96, 1, 0.12);
+}
+
+.liquid-filter-button {
+  padding: 11px 22px;
+  border-radius: 999px;
+
+  background: var(--glass-bg);
+  border: 1px solid var(--border-main);
+
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  transition: all 0.3s ease;
+}
+
+.liquid-filter-button:hover,
+.liquid-filter-button.active {
+  background: #E85002;
+  color: white;
+  border-color: #E85002;
+  box-shadow: 0 6px 18px rgba(232, 80, 2, 0.16);
+}
+
+.liquid-empty-state {
+  border-radius: 28px;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+}
+
+/* ========================================
+   DETAIL PAGE
+======================================== */
+
+.liquid-detail-header {
+  background: linear-gradient(135deg,
+      var(--bg-card),
+      var(--bg-soft),
+      var(--glass-bg));
+
+  backdrop-filter: blur(25px) saturate(160%);
+  -webkit-backdrop-filter: blur(25px) saturate(160%);
+
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+.liquid-detail-category {
+  padding: 8px 16px;
+  border-radius: 30px;
+  background: rgba(232, 80, 2, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.liquid-photo {
+  border-radius: 22px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+  background: var(--bg-card-solid);
+}
+
+.liquid-info-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+
+  box-shadow: var(--shadow-card);
+}
+
+.liquid-facility-detail {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-main);
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.liquid-booking-card {
+  background: linear-gradient(145deg,
+      var(--bg-card),
+      var(--bg-soft));
+
+  backdrop-filter: blur(25px) saturate(160%);
+  -webkit-backdrop-filter: blur(25px) saturate(160%);
+
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+
+  box-shadow: var(--shadow-glass);
+}
+
+.liquid-booking-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 15px 25px;
+  border: none;
+  border-radius: 15px;
+
+  background: #E85002;
+  color: white;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  box-shadow: 0 6px 18px rgba(232, 80, 2, 0.16);
+  transition: all 0.25s ease;
+}
+
+.liquid-booking-button:hover {
+  background: #F16001;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(232, 80, 2, 0.18);
+}
+
+.liquid-booking-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.liquid-rating-box {
+  padding: 14px 22px;
+  border-radius: 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-main);
+}
+
+.liquid-review-item {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-main);
+  border-radius: 18px;
+  transition: all 0.3s ease;
+}
+
+.liquid-review-item:hover {
+  background: var(--bg-soft);
+  border-color: var(--border-main);
+}
+
+/* ========================================
+   BOOKING PAGE
+======================================== */
+
+.liquid-booking-page-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  padding: 32px;
+  border-radius: 30px;
+
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.liquid-booking-venue {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.liquid-booking-divider {
+  height: 1px;
+  background: var(--border-soft);
+  margin: 30px 0;
+}
+
+.liquid-booking-section {
+  padding: 4px 0;
+}
+
+.liquid-booking-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.liquid-booking-step>span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--bg-soft);
+  color: #F16001;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.liquid-booking-step h3 {
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.liquid-booking-step p {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.liquid-unit-card {
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+
+  background: var(--bg-card);
+  color: var(--text-main);
+
+  transition: all 0.25s ease;
+}
+
+.liquid-unit-card:hover {
+  border-color: #F16001;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+}
+
+.liquid-unit-card.selected {
+  border: 2px solid #F16001;
+  background: var(--bg-soft);
+  box-shadow: 0 8px 24px rgba(232, 80, 2, 0.10);
+}
+
+.liquid-booking-input {
+  width: 100%;
+  padding: 15px 17px;
+
+  border: 1px solid var(--input-border);
+  border-radius: 15px;
+
+  outline: none;
+  background: var(--input-bg);
+  color: var(--input-text);
+
+  transition: all 0.2s ease;
+}
+
+.liquid-booking-input:focus {
+  border-color: #F16001;
+  box-shadow: 0 0 0 4px rgba(241, 96, 1, 0.10);
+}
+
+.liquid-time-button {
+  padding: 13px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.liquid-time-button:hover {
+  border-color: #F16001;
+  background: var(--bg-soft);
+}
+
+.liquid-time-button.selected {
+  color: white;
+  background: #E85002;
+  border-color: #E85002;
+  box-shadow: 0 6px 16px rgba(232, 80, 2, 0.18);
+}
+
+.liquid-booking-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+
+  width: 100%;
+  min-width: 0;
+  height: auto;
+
+  padding: 24px;
+  border-radius: 22px;
+
+  background: linear-gradient(135deg,
+      var(--bg-soft),
+      var(--bg-card));
+
+  border: 1px solid var(--border-main);
+  box-sizing: border-box;
+}
+
+.liquid-summary-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 15px;
+
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.liquid-summary-row span {
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+.liquid-summary-row strong {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: right;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.liquid-summary-row strong.price {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========================================
+   LOGIN & REGISTER
+======================================== */
+
+.liquid-auth-card {
+  padding: 36px;
+  border-radius: 30px;
+
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+
+  box-shadow: var(--shadow-glass);
+
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+}
+
+.liquid-auth-input {
+  width: 100%;
+  padding: 15px 17px;
+
+  border: 1px solid var(--input-border);
+  border-radius: 15px;
+
+  outline: none;
+  background: var(--input-bg);
+  color: var(--input-text);
+
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.liquid-auth-input::placeholder {
+  color: var(--text-muted);
+}
+
+.liquid-auth-input:focus {
+  border-color: #F16001;
+  box-shadow: 0 0 0 4px rgba(241, 96, 1, 0.10);
+}
+
+/* ========================================
+   ABOUT PAGE
+======================================== */
+
+.liquid-about-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 110px 0;
+
+  background:
+    radial-gradient(circle at 10% 20%,
+      rgba(217, 195, 171, 0.18),
+      transparent 30%),
+    radial-gradient(circle at 90% 70%,
+      rgba(241, 96, 1, 0.13),
+      transparent 30%),
+    linear-gradient(135deg,
+      var(--bg-soft),
+      var(--bg-main));
+}
+
+.liquid-about-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 18px;
+  border-radius: 999px;
+
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  color: #F16001;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+
+  box-shadow: var(--shadow-card);
+}
+
+.liquid-about-decoration {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.liquid-about-decoration-one {
+  width: 260px;
+  height: 260px;
+  background: rgba(217, 195, 171, 0.13);
+  top: -100px;
+  left: -70px;
+}
+
+.liquid-about-decoration-two {
+  width: 320px;
+  height: 320px;
+  background: rgba(241, 96, 1, 0.10);
+  bottom: -160px;
+  right: -80px;
+}
+
+.liquid-about-card {
+  padding: 36px;
+  border-radius: 30px;
+
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+
+  box-shadow: var(--shadow-glass);
+}
+
+.liquid-about-icon {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+  background: var(--bg-soft);
+  color: #F16001;
+  font-size: 25px;
+}
+
+.liquid-about-check {
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: var(--bg-soft);
+  color: #F16001;
+
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.liquid-about-cta {
+  position: relative;
+  overflow: hidden;
+  padding: 75px 30px;
+  border-radius: 32px;
+
+  background: linear-gradient(135deg,
+      #E85002,
+      #F16001);
+
+  box-shadow: 0 24px 60px rgba(232, 80, 2, 0.20);
+}
+
+.liquid-about-cta::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  top: -170px;
+  right: -50px;
+}
+
+.liquid-about-cta::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(217, 195, 171, 0.12);
+  bottom: -140px;
+  left: -50px;
+}
+
+/* ========================================
+   MOBILE NAVBAR
+======================================== */
+
+.liquid-mobile-menu {
+  border-radius: 22px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  box-shadow: var(--shadow-glass);
+  animation: mobileMenuAppear 0.2s ease-out;
+}
+
+@keyframes mobileMenuAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.liquid-mobile-menu .liquid-nav-link {
+  display: block;
+  padding: 8px 4px;
+}
+
+/* ========================================
+   DARK MODE - COMMON ELEMENTS
+======================================== */
+
+html.dark .bg-white {
+  background-color: #333333;
+}
+
+html.dark .bg-gray-50 {
+  background-color: #333333;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #333333;
+}
+
+html.dark .text-dark-text {
+  color: var(--text-main);
+}
+
+html.dark .text-gray-900 {
+  color: #F9F9F9;
+}
+
+html.dark .text-gray-800 {
+  color: #F9F9F9;
+}
+
+html.dark .text-gray-700 {
+  color: #F9F9F9;
+}
+
+html.dark .text-gray-600 {
+  color: #A7A7A7;
+}
+
+html.dark .text-gray-500 {
+  color: #A7A7A7;
+}
+
+html.dark .text-gray-400 {
+  color: #A7A7A7;
+}
+
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300 {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+html.dark .divide-gray-100> :not(:last-child),
+html.dark .divide-gray-200> :not(:last-child) {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #333333;
+}
+
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #333333;
+}
+
+/* ========================================
+   DARK MODE - FORM ELEMENTS
+======================================== */
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--input-border);
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: var(--text-muted);
+}
+
+html.dark select option {
+  background-color: #333333;
+  color: #F9F9F9;
+}
+
+/* ========================================
+   DARK MODE - ALERTS
+======================================== */
+
+html.dark .bg-red-50 {
+  background-color: rgba(220, 85, 85, 0.12);
+}
+
+html.dark .bg-yellow-50 {
+  background-color: rgba(233, 162, 59, 0.12);
+}
+
+html.dark .bg-green-50 {
+  background-color: rgba(241, 96, 1, 0.12);
+}
+
+html.dark .border-red-200 {
+  border-color: rgba(220, 85, 85, 0.25);
+}
+
+html.dark .border-yellow-200 {
+  border-color: rgba(233, 162, 59, 0.25);
+}
+
+/* ========================================
+   RESPONSIVE - TABLET & MOBILE
+======================================== */
+
+@media (min-width: 640px) {
+  .liquid-booking-venue {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .liquid-booking-summary {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 640px) {
+  .liquid-hero {
+    border-radius: 24px;
+  }
+
+  .liquid-category {
+    padding: 12px 18px;
+    font-size: 13px;
+  }
+
+  .liquid-cta {
+    border-radius: 24px;
+  }
+
+  .liquid-detail-header {
+    border-radius: 24px;
+  }
+
+  .liquid-info-card {
+    border-radius: 22px;
+  }
+
+  .liquid-booking-card {
+    border-radius: 22px;
+  }
+
+  .liquid-photo {
+    border-radius: 18px;
+  }
+
+  .liquid-facility-detail {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .liquid-review-item {
+    border-radius: 18px;
+  }
+
+  .liquid-search-container {
+    min-height: 54px;
+    padding: 0 15px;
+    border-radius: 16px;
+  }
+
+  .liquid-filter-button {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+
+  .liquid-empty-state {
+    border-radius: 22px;
+  }
+
+  .liquid-booking-page-card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .liquid-booking-divider {
+    margin: 24px 0;
+  }
+
+  .liquid-booking-section {
+    padding: 5px 0;
+  }
+
+  .liquid-booking-step {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .liquid-unit-card {
+    width: 100%;
+  }
+
+  .liquid-time-button {
+    min-height: 46px;
+  }
+
+  .liquid-booking-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .liquid-booking-summary {
+    padding: 18px;
+    border-radius: 18px;
+    gap: 18px;
+  }
+
+  .liquid-summary-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .liquid-summary-row span,
+  .liquid-summary-row strong {
+    font-size: 13px;
+  }
+
+  .liquid-booking-button {
+    min-height: 48px;
+  }
+
+  .liquid-auth-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 20px;
+    border-radius: 22px;
+  }
+
+  .liquid-auth-input {
+    width: 100%;
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .liquid-about-card {
+    padding: 25px 20px;
+    border-radius: 24px;
+  }
+
+  .liquid-about-hero {
+    padding: 75px 0;
+  }
+
+  .liquid-about-cta {
+    padding: 55px 22px;
+    border-radius: 24px;
+  }
+}
+
+@media (max-width: 380px) {
+  .liquid-navbar {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .liquid-navbar>a {
+    font-size: 20px;
+  }
+}
+
+/* ========================================
+   SCROLLBAR HIDDEN
+======================================== */
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================
+   DARK MODE - FIX TEXT & BACKGROUND
+======================================== */
+
+/* Background putih */
+html.dark .bg-white {
+  background-color: #333333 !important;
+}
+
+/* Background abu-abu */
+html.dark .bg-gray-50 {
+  background-color: #333333 !important;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #333333 !important;
+}
+
+/* Warna tulisan */
+html.dark .text-black,
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-dark-text {
+  color: #F9F9F9 !important;
+}
+
+html.dark .text-gray-700 {
+  color: #F9F9F9 !important;
+}
+
+html.dark .text-gray-600,
+html.dark .text-gray-500 {
+  color: #A7A7A7 !important;
+}
+
+/* Tulisan putih tetap putih */
+html.dark .text-white {
+  color: #FFFFFF !important;
+}
+
+/* Border */
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Input */
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #333333;
+  color: #F9F9F9;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #A7A7A7;
+}
+
+/* Dropdown */
+html.dark select option {
+  background-color: #333333;
+  color: #F9F9F9;
+}
+
+/* Tabel */
+html.dark table {
+  color: #F9F9F9;
+}
+
+html.dark th {
+  background-color: #333333;
+  color: #F9F9F9;
+}
+
+html.dark td {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Link */
+html.dark a:not(.liquid-primary-button):not(.liquid-booking-button) {
+  transition: color 0.2s ease;
+}
+
+/* Card */
+html.dark .liquid-card,
+html.dark .liquid-info-card,
+html.dark .liquid-auth-card,
+html.dark .liquid-about-card,
+html.dark .liquid-booking-card,
+html.dark .liquid-booking-page-card,
+html.dark .liquid-empty-state {
+  background-color: #333333;
+  color: #F9F9F9;
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+/* ========================================
+   GLOBAL ANIMATION - ALL PAGES
+======================================== */
+
+/* Animasi saat halaman dibuka */
+@keyframes sportifyPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: sportifyPageEnter 0.65s ease-out both;
+}
+
+/* Animasi judul dan teks */
+@keyframes sportifyTextEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main h1,
+main h2 {
+  animation: sportifyTextEnter 0.7s ease-out both;
+}
+
+/* Efek hover card */
+.liquid-card,
+.liquid-info-card,
+.liquid-auth-card,
+.liquid-about-card,
+.liquid-booking-card,
+.liquid-booking-page-card,
+.liquid-empty-state,
+.liquid-review-item,
+.liquid-unit-card {
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    background-color 0.3s ease;
+}
+
+/* Efek hover gambar */
+.liquid-card img,
+.liquid-photo {
+  transition: transform 0.5s ease;
+}
+
+.liquid-card:hover img {
+  transform: scale(1.035);
+}
+
+/* Efek tombol */
+button,
+.liquid-primary-button,
+.liquid-outline-button,
+.liquid-booking-button,
+.liquid-detail-button,
+.liquid-filter-button {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Efek hover link */
+main a {
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease;
+}
+
+/* Animasi dropdown */
+.liquid-mobile-menu {
+  transform-origin: top;
+  animation: sportifyDropdown 0.25s ease-out both;
+}
+
+@keyframes sportifyDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animasi elemen mengambang */
+@keyframes sportifyFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.sportify-float {
+  animation: sportifyFloat 4s ease-in-out infinite;
+}
+
+/* Efek cahaya */
+@keyframes sportifyGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(241, 96, 1, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 24px rgba(241, 96, 1, 0.16);
+  }
+}
+
+.sportify-glow {
+  animation: sportifyGlow 3s ease-in-out infinite;
+}
+
+/* Tampilan mobile */
+@media (max-width: 640px) {
+  main {
+    animation-duration: 0.45s;
+  }
+
+  .liquid-card:hover {
+    transform: none;
+  }
+}
+
+/* Menghormati pengaturan reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  main,
+  main h1,
+  main h2,
+  .sportify-float,
+  .sportify-glow,
+  .liquid-mobile-menu {
+    animation: none !important;
+  }
+}
+
+/* =========================================
+   FIX NAVBAR TEXT - DARK MODE
+========================================= */
+
+/* Tulisan navbar saat dark mode */
+html.dark .liquid-navbar .liquid-nav-link,
+html.dark .liquid-mobile-menu .liquid-nav-link {
+  color: #F9F9F9 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Tulisan navbar ketika kursor diarahkan */
+html.dark .liquid-navbar .liquid-nav-link:hover,
+html.dark .liquid-mobile-menu .liquid-nav-link:hover {
+  color: #F16001 !important;
+}
+
+/* Tulisan navbar saat halaman sedang aktif */
+html.dark .liquid-navbar .liquid-nav-link.active,
+html.dark .liquid-mobile-menu .liquid-nav-link.active {
+  color: #F16001 !important;
+}
+
+/* Pastikan tulisan dropdown juga terlihat */
+html.dark .liquid-navbar button,
+html.dark .liquid-mobile-menu button {
+  color: #F9F9F9;
+}
+
+/* =========================================
+   SPORTIFY NAVBAR - TEXT VISIBILITY FIX
+========================================= */
+
+/* Pastikan konten navbar berada di atas efek glass */
+.liquid-navbar>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* Warna teks navbar LIGHT MODE */
+.liquid-navbar .sportify-nav-link {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+
+  color: #000000 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  font-weight: 500;
+  text-decoration: none;
+
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+/* Warna teks navbar DARK MODE */
+html.dark .liquid-navbar .sportify-nav-link,
+html.dark .liquid-mobile-menu .sportify-nav-link {
+  color: #F9F9F9 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Hover LIGHT MODE */
+.liquid-navbar .sportify-nav-link:hover,
+.liquid-mobile-menu .sportify-nav-link:hover {
+  color: #E85002 !important;
+}
+
+/* Hover DARK MODE */
+html.dark .liquid-navbar .sportify-nav-link:hover,
+html.dark .liquid-mobile-menu .sportify-nav-link:hover {
+  color: #D9C3AB !important;
+}
+
+/* Link halaman aktif LIGHT MODE */
+.liquid-navbar .sportify-nav-link-active,
+.liquid-mobile-menu .sportify-nav-link-active {
+  color: #E85002 !important;
+  font-weight: 700;
+}
+
+/* Link halaman aktif DARK MODE */
+html.dark .liquid-navbar .sportify-nav-link-active,
+html.dark .liquid-mobile-menu .sportify-nav-link-active {
+  color: #D9C3AB !important;
+}
+
+/* Link menu mobile */
+.liquid-mobile-menu .sportify-mobile-link {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+}
+
+/* Login desktop dan mobile */
+.liquid-navbar a.sportify-nav-link,
+.liquid-mobile-menu a.sportify-nav-link {
+  text-decoration: none;
+}
+
+/* Tombol logout tetap memiliki warna sendiri */
+html.dark .liquid-navbar button {
+  color: #F9F9F9;
 }
 
 /* Pastikan logo tidak tertutup efek glass */

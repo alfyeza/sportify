@@ -90,11 +90,11 @@ export default function DetailLapanganMitraPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-8 text-[#202B25] dark:bg-[#111A15] dark:text-white sm:px-6 lg:px-10">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-8 text-[#333333] dark:bg-[#1A1A1A] dark:text-white sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-4xl space-y-6">
                     <Link
                         href="/mitra/lapangan"
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#146B45] hover:underline dark:text-green-400"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#E85002] hover:underline dark:text-green-400"
                     >
                         &larr; {isEnglish ? "Back to Venue List" : "Kembali ke Daftar Lapangan"}
                     </Link>
@@ -106,20 +106,20 @@ export default function DetailLapanganMitraPage() {
                             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
                             <button
                                 onClick={fetchDetail}
-                                className="mt-4 rounded-xl bg-[#146B45] px-5 py-2.5 text-sm font-semibold text-white"
+                                className="mt-4 rounded-xl bg-[#E85002] px-5 py-2.5 text-sm font-semibold text-white"
                             >
                                 {isEnglish ? "Try Again" : "Coba Lagi"}
                             </button>
                         </div>
                     ) : venue ? (
                         <div className="overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-                            <div className="relative h-64 w-full bg-[#EAF5EF] dark:bg-green-900/20 sm:h-80">
+                            <div className="relative h-64 w-full bg-[#FFF4ED] dark:bg-green-900/20 sm:h-80">
                                 <img
                                     src={venue.fotoUrl || venue.gambar || "/images/lapangan/default.jpg"}
                                     alt={venue.nama}
                                     className="h-full w-full object-cover"
                                 />
-                                <span className="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-1.5 text-xs font-bold text-[#146B45] shadow dark:bg-[#17221B] dark:text-green-400">
+                                <span className="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-1.5 text-xs font-bold text-[#E85002] shadow dark:bg-[#17221B] dark:text-green-400">
                                     Status: {venue.status}
                                 </span>
                             </div>
@@ -137,7 +137,7 @@ export default function DetailLapanganMitraPage() {
                                         <p className="text-xs text-gray-400">
                                             {isEnglish ? "Price per session" : "Harga per Sesi"}
                                         </p>
-                                        <p className="text-2xl font-bold text-[#146B45] dark:text-green-400">
+                                        <p className="text-2xl font-bold text-[#E85002] dark:text-green-400">
                                             {formatRupiah(venue.harga)}
                                         </p>
                                     </div>
@@ -147,7 +147,7 @@ export default function DetailLapanganMitraPage() {
                                     {(venue.kategori || []).map((kat, idx) => (
                                         <span
                                             key={idx}
-                                            className="rounded-full bg-[#EAF5EF] px-3.5 py-1.5 text-xs font-semibold text-[#146B45] dark:bg-green-900/30 dark:text-green-400"
+                                            className="rounded-full bg-[#FFF4ED] px-3.5 py-1.5 text-xs font-semibold text-[#E85002] dark:bg-green-900/30 dark:text-green-400"
                                         >
                                             {kat}
                                         </span>
@@ -189,7 +189,7 @@ export default function DetailLapanganMitraPage() {
                                                 type="button"
                                                 disabled={updatingStatus || venue.status === "aktif"}
                                                 onClick={() => handleUpdateStatus("aktif")}
-                                                className="rounded-xl bg-[#146B45] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#105638] disabled:opacity-40"
+                                                className="rounded-xl bg-[#E85002] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#C10801] disabled:opacity-40"
                                             >
                                                 {isEnglish ? "Approve Venue" : "Verifikasi Aktif"}
                                             </button>
@@ -207,7 +207,7 @@ export default function DetailLapanganMitraPage() {
 
                                     <Link
                                         href={`/mitra/lapangan/${venue.id}/edit`}
-                                        className="rounded-xl border border-[#146B45]/30 px-5 py-2.5 text-sm font-semibold text-[#146B45] transition hover:bg-[#EAF5EF] dark:border-green-400/30 dark:text-green-400"
+                                        className="rounded-xl border border-[#E85002]/30 px-5 py-2.5 text-sm font-semibold text-[#E85002] transition hover:bg-[#FFF4ED] dark:border-green-400/30 dark:text-green-400"
                                     >
                                         {isEnglish ? "Edit Venue" : "Edit Lapangan"}
                                     </Link>

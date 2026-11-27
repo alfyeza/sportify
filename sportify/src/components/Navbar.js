@@ -175,26 +175,27 @@ export default function Navbar() {
 
   const isAdmin = role === "admin";
   const accountHref = isAdmin ? "/admin" : isMitra ? "/mitra/lapangan" : "/profile";
+
   const isPenyewa =
     user && !isMitra && !isAdmin;
 
   // LINK NAVBAR DESKTOP
   const navLinkClass = (path) =>
     `liquid-nav-link sportify-nav-link ${isActive(path)
-      ? "sportify-nav-link-active bg-soft-mint dark:bg-white/10 px-3 py-1.5 rounded-full"
+      ? "sportify-nav-link-active bg-[#FFF0E8] dark:bg-white/10 px-3 py-1.5 rounded-full"
       : ""
     }`;
 
   // LINK NAVBAR MOBILE
   const mobileLinkClass = (path) =>
     `liquid-nav-link sportify-nav-link sportify-mobile-link ${isActive(path)
-      ? "sportify-nav-link-active bg-soft-mint dark:bg-white/10 font-bold"
+      ? "sportify-nav-link-active bg-[#FFF0E8] dark:bg-white/10 font-bold"
       : ""
     }`;
 
   // TOMBOL TEMA
   const themeButtonClass =
-    "flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-gray-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 text-dark-text dark:text-white text-sm font-semibold hover:bg-soft-mint dark:hover:bg-white/10 transition-all duration-300";
+    "flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-gray-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 text-dark-text dark:text-white text-sm font-semibold hover:bg-[#FFF0E8] dark:hover:bg-white/10 transition-all duration-300";
 
   return (
     <nav className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
@@ -273,7 +274,7 @@ export default function Navbar() {
 
                 <Link
                   href={accountHref}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-soft-mint text-primary text-sm font-semibold hover:bg-green-100 transition"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFF0E8] text-primary text-sm font-semibold hover:bg-[#FFE2D2] transition"
                 >
                   <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs shrink-0">
                     {user.fullName?.[0]?.toUpperCase() || "U"}
@@ -356,7 +357,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={handleThemeChange}
-              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/70 dark:bg-white/10 border border-white/80 dark:border-white/10 text-primary dark:text-lime-300 text-xl transition hover:bg-white dark:hover:bg-white/20"
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/70 dark:bg-white/10 border border-white/80 dark:border-white/10 text-primary dark:text-[#E85002] text-xl transition hover:bg-white dark:hover:bg-white/20"
               aria-label={
                 theme === "dark"
                   ? "Aktifkan mode terang"

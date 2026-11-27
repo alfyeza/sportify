@@ -140,14 +140,14 @@ export default function MitraJadwalPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-8 text-[#202B25] dark:bg-[#111A15] dark:text-white sm:px-6 lg:px-10">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-8 text-[#333333] dark:bg-[#1A1A1A] dark:text-white sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-7xl space-y-8">
                     {/* Header */}
                     <div>
                         <div className="mb-2">
                             <Link
                                 href="/mitra/dashboard"
-                                className="text-xs font-semibold text-[#146B45] hover:underline dark:text-green-400"
+                                className="text-xs font-semibold text-[#E85002] hover:underline dark:text-green-400"
                             >
                                 &larr; {isEnglish ? "Back to Dashboard" : "Kembali ke Dashboard"}
                             </Link>
@@ -260,7 +260,7 @@ export default function MitraJadwalPage() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="mt-2 w-full rounded-xl bg-[#146B45] py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#105638] disabled:opacity-50"
+                                    className="mt-2 w-full rounded-xl bg-[#E85002] py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#C10801] disabled:opacity-50"
                                 >
                                     {submitting ? "Memproses..." : "Terapkan Blokir Slot"}
                                 </button>
@@ -292,7 +292,7 @@ export default function MitraJadwalPage() {
                                             className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
                                         >
                                             <div>
-                                                <div className="font-semibold text-[#146B45] dark:text-green-400">
+                                                <div className="font-semibold text-[#E85002] dark:text-green-400">
                                                     {item.lapangan?.nama || "Lapangan"}
                                                 </div>
                                                 <div className="mt-0.5 text-sm font-medium">

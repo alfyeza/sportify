@@ -97,10 +97,10 @@ const buatUnitBaru = (nomor) => ({
 });
 
 const inputClass =
-    "w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#27A36B] focus:ring-2 focus:ring-[#27A36B]/10 dark:border-white/10 dark:bg-[#111A15] dark:text-white";
+    "w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-[#27A36B] focus:ring-2 focus:ring-[#27A36B]/10 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-white";
 
 const labelClass =
-    "mb-2 block text-sm font-semibold text-[#202B25] dark:text-gray-200";
+    "mb-2 block text-sm font-semibold text-[#333333] dark:text-gray-200";
 
 const sectionClass =
     "rounded-3xl border border-gray-100 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1B2921]";
@@ -622,8 +622,8 @@ export default function EditLapanganPage() {
             <>
                 <Navbar />
 
-                <main className="min-h-screen bg-[#F7F9F7] px-4 py-24 text-center dark:bg-[#111A15]">
-                    <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#146B45]/20 border-t-[#146B45]" />
+                <main className="min-h-screen bg-[#F9F9F9] px-4 py-24 text-center dark:bg-[#1A1A1A]">
+                    <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#E85002]/20 border-t-[#E85002]" />
 
                     <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
                         Memuat data lapangan...
@@ -644,11 +644,11 @@ export default function EditLapanganPage() {
             <>
                 <Navbar />
 
-                <main className="min-h-screen bg-[#F7F9F7] px-4 py-24 dark:bg-[#111A15]">
+                <main className="min-h-screen bg-[#F9F9F9] px-4 py-24 dark:bg-[#1A1A1A]">
                     <div className="mx-auto max-w-xl rounded-3xl border border-red-200 bg-white p-8 text-center shadow-sm dark:border-red-900 dark:bg-[#1B2921]">
                         <div className="text-4xl">!</div>
 
-                        <h1 className="mt-4 text-xl font-bold text-[#202B25] dark:text-white">
+                        <h1 className="mt-4 text-xl font-bold text-[#333333] dark:text-white">
                             Lapangan Tidak Ditemukan
                         </h1>
 
@@ -658,7 +658,7 @@ export default function EditLapanganPage() {
 
                         <Link
                             href="/mitra/lapangan"
-                            className="mt-6 inline-flex rounded-xl bg-[#146B45] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#105638]"
+                            className="mt-6 inline-flex rounded-xl bg-[#E85002] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#C10801]"
                         >
                             Kembali ke Kelola Lapangan
                         </Link>
@@ -678,7 +678,7 @@ export default function EditLapanganPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-10 dark:bg-[#111A15]">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-10 dark:bg-[#1A1A1A]">
                 <div className="mx-auto max-w-5xl">
 
                     {/* HEADER */}
@@ -686,7 +686,7 @@ export default function EditLapanganPage() {
                     <div className="mb-8">
                         <Link
                             href="/mitra/lapangan"
-                            className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#146B45] transition hover:text-[#27A36B] dark:text-[#B7E34A]"
+                            className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-[#E85002] transition hover:text-[#27A36B] dark:text-[#D9C3AB]"
                         >
                             <span>&lt;</span>
                             Kembali ke Kelola Lapangan
@@ -697,7 +697,7 @@ export default function EditLapanganPage() {
                                 MITRA SPORTIFY
                             </span>
 
-                            <h1 className="mt-2 text-3xl font-bold text-[#202B25] dark:text-white md:text-4xl">
+                            <h1 className="mt-2 text-3xl font-bold text-[#333333] dark:text-white md:text-4xl">
                                 Edit Lapangan
                             </h1>
 
@@ -727,7 +727,7 @@ export default function EditLapanganPage() {
 
                         <section className={sectionClass}>
                             <div className="mb-6">
-                                <h2 className="text-lg font-bold text-[#202B25] dark:text-white">
+                                <h2 className="text-lg font-bold text-[#333333] dark:text-white">
                                     Informasi Venue
                                 </h2>
 
@@ -824,7 +824,7 @@ export default function EditLapanganPage() {
                         {/* KATEGORI OLAHRAGA */}
 
                         <section className={sectionClass}>
-                            <h2 className="text-lg font-bold text-[#202B25] dark:text-white">
+                            <h2 className="text-lg font-bold text-[#333333] dark:text-white">
                                 Kategori Olahraga
                             </h2>
 
@@ -848,8 +848,8 @@ export default function EditLapanganPage() {
                                                 )
                                             }
                                             className={`rounded-xl border px-3 py-3 text-sm font-medium transition ${selected
-                                                    ? "border-[#146B45] bg-[#EAF5EF] text-[#146B45] dark:border-[#27A36B] dark:bg-[#146B45]/20 dark:text-[#B7E34A]"
-                                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:border-[#27A36B] dark:border-white/10 dark:bg-[#111A15] dark:text-gray-300"
+                                                    ? "border-[#E85002] bg-[#FFF4ED] text-[#E85002] dark:border-[#27A36B] dark:bg-[#E85002]/20 dark:text-[#D9C3AB]"
+                                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:border-[#27A36B] dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-300"
                                                 }`}
                                         >
                                             {selected ? "✓ " : ""}
@@ -865,7 +865,7 @@ export default function EditLapanganPage() {
                         <section className={sectionClass}>
                             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h2 className="text-lg font-bold text-[#202B25] dark:text-white">
+                                    <h2 className="text-lg font-bold text-[#333333] dark:text-white">
                                         Unit Lapangan
                                     </h2>
 
@@ -877,7 +877,7 @@ export default function EditLapanganPage() {
                                 <button
                                     type="button"
                                     onClick={tambahUnit}
-                                    className="rounded-xl bg-[#146B45] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#105638]"
+                                    className="rounded-xl bg-[#E85002] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#C10801]"
                                 >
                                     + Tambah Unit
                                 </button>
@@ -887,7 +887,7 @@ export default function EditLapanganPage() {
                                 {form.unitLapangan.map((unit, index) => (
                                     <div
                                         key={unit.id || index}
-                                        className="rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-white/10 dark:bg-[#111A15]"
+                                        className="rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-white/10 dark:bg-[#1A1A1A]"
                                     >
                                         {/* HEADER UNIT */}
 
@@ -897,7 +897,7 @@ export default function EditLapanganPage() {
                                                     UNIT LAPANGAN {index + 1}
                                                 </span>
 
-                                                <h3 className="mt-1 text-lg font-bold text-[#202B25] dark:text-white">
+                                                <h3 className="mt-1 text-lg font-bold text-[#333333] dark:text-white">
                                                     {unit.nama || `Area ${index + 1}`}
                                                 </h3>
                                             </div>
@@ -1018,7 +1018,7 @@ export default function EditLapanganPage() {
                                                             e.target.files?.[0]
                                                         )
                                                     }
-                                                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-[#EAF5EF] file:px-4 file:py-2 file:font-semibold file:text-[#146B45] dark:border-white/10 dark:bg-[#1B2921] dark:text-gray-300"
+                                                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-[#FFF4ED] file:px-4 file:py-2 file:font-semibold file:text-[#E85002] dark:border-white/10 dark:bg-[#1B2921] dark:text-gray-300"
                                                 />
 
                                                 <p className="mt-2 text-xs text-gray-400">
@@ -1039,7 +1039,7 @@ export default function EditLapanganPage() {
                                             <div className="border-t border-gray-200 pt-5 dark:border-white/10">
                                                 <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                                     <div>
-                                                        <h4 className="font-bold text-[#202B25] dark:text-white">
+                                                        <h4 className="font-bold text-[#333333] dark:text-white">
                                                             Jadwal Khusus
                                                         </h4>
 
@@ -1053,7 +1053,7 @@ export default function EditLapanganPage() {
                                                         onClick={() =>
                                                             tambahJadwalKhusus(unit.id)
                                                         }
-                                                        className="rounded-xl bg-[#146B45] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#105638]"
+                                                        className="rounded-xl bg-[#E85002] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#C10801]"
                                                     >
                                                         + Tambah Jadwal
                                                     </button>
@@ -1066,7 +1066,7 @@ export default function EditLapanganPage() {
                                                             📅
                                                         </div>
 
-                                                        <p className="mt-3 text-sm font-semibold text-[#202B25] dark:text-white">
+                                                        <p className="mt-3 text-sm font-semibold text-[#333333] dark:text-white">
                                                             Belum ada jadwal khusus
                                                         </p>
 
@@ -1123,7 +1123,7 @@ export default function EditLapanganPage() {
                                                                         </div>
 
                                                                         <div>
-                                                                            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-[#111A15]">
+                                                                            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-[#1A1A1A]">
                                                                                 <input
                                                                                     type="checkbox"
                                                                                     checked={!jadwal.tutupHari}
@@ -1135,10 +1135,10 @@ export default function EditLapanganPage() {
                                                                                             !e.target.checked
                                                                                         )
                                                                                     }
-                                                                                    className="h-4 w-4 accent-[#146B45]"
+                                                                                    className="h-4 w-4 accent-[#E85002]"
                                                                                 />
 
-                                                                                <span className="text-sm font-semibold text-[#202B25] dark:text-white">
+                                                                                <span className="text-sm font-semibold text-[#333333] dark:text-white">
                                                                                     Unit buka pada tanggal ini
                                                                                 </span>
                                                                             </label>
@@ -1227,7 +1227,7 @@ export default function EditLapanganPage() {
                         {/* FASILITAS */}
 
                         <section className={sectionClass}>
-                            <h2 className="text-lg font-bold text-[#202B25] dark:text-white">
+                            <h2 className="text-lg font-bold text-[#333333] dark:text-white">
                                 Fasilitas Venue
                             </h2>
 
@@ -1251,8 +1251,8 @@ export default function EditLapanganPage() {
                                                 )
                                             }
                                             className={`rounded-xl border px-3 py-3 text-left text-sm transition ${selected
-                                                    ? "border-[#146B45] bg-[#EAF5EF] font-semibold text-[#146B45] dark:border-[#27A36B] dark:bg-[#146B45]/20 dark:text-[#B7E34A]"
-                                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:border-[#27A36B] dark:border-white/10 dark:bg-[#111A15] dark:text-gray-300"
+                                                    ? "border-[#E85002] bg-[#FFF4ED] font-semibold text-[#E85002] dark:border-[#27A36B] dark:bg-[#E85002]/20 dark:text-[#D9C3AB]"
+                                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:border-[#27A36B] dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-300"
                                                 }`}
                                         >
                                             {selected ? "✓ " : "+ "}
@@ -1266,7 +1266,7 @@ export default function EditLapanganPage() {
                         {/* DESKRIPSI */}
 
                         <section className={sectionClass}>
-                            <h2 className="text-lg font-bold text-[#202B25] dark:text-white">
+                            <h2 className="text-lg font-bold text-[#333333] dark:text-white">
                                 Deskripsi Venue
                             </h2>
 
@@ -1283,7 +1283,7 @@ export default function EditLapanganPage() {
                         {/* FOTO VENUE */}
 
                         <section className={sectionClass}>
-                            <h2 className="text-lg font-bold text-[#202B25] dark:text-white">
+                            <h2 className="text-lg font-bold text-[#333333] dark:text-white">
                                 Foto Venue
                             </h2>
 
@@ -1356,7 +1356,7 @@ export default function EditLapanganPage() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="rounded-xl bg-[#146B45] px-8 py-3 text-sm font-bold text-white shadow-lg shadow-[#146B45]/20 transition hover:bg-[#105638] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="rounded-xl bg-[#E85002] px-8 py-3 text-sm font-bold text-white shadow-lg shadow-[#E85002]/20 transition hover:bg-[#C10801] disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {saving
                                     ? "Menyimpan Perubahan..."

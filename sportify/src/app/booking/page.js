@@ -33,6 +33,7 @@ function BookingContent() {
   const jam = searchParams.get("jam");
   const durasi = Number(searchParams.get("durasi")) || 1;
   const rawLapanganId = searchParams.get("lapangan");
+
   const UUID_MAP = {
     "1": "a1111111-aaaa-1111-aaaa-111111111111",
     "2": "a2222222-aaaa-2222-aaaa-222222222222",
@@ -40,6 +41,7 @@ function BookingContent() {
     "4": "a4444444-aaaa-4444-aaaa-444444444444",
     "5": "a5555555-aaaa-5555-aaaa-555555555555",
   };
+
   const REVERSE_UUID_MAP = {
     "a1111111-aaaa-1111-aaaa-111111111111": "1",
     "a2222222-aaaa-2222-aaaa-222222222222": "2",
@@ -55,6 +57,7 @@ function BookingContent() {
     async function fetchLapangans() {
       try {
         const res = await apiRequest("/lapangan");
+
         if (res.success && Array.isArray(res.data) && res.data.length > 0) {
           setSumberLapangan(res.data);
         }
@@ -64,6 +67,7 @@ function BookingContent() {
         setIsLoadingLapangan(false);
       }
     }
+
     fetchLapangans();
   }, []);
 
@@ -74,8 +78,6 @@ function BookingContent() {
       String(item.id) === String(dbLapanganId) ||
       String(item.id) === String(rawLapanganId)
   );
-
-
 
   const [namaPemesan, setNamaPemesan] = useState("");
   const [emailPemesan, setEmailPemesan] = useState("");
@@ -165,7 +167,7 @@ function BookingContent() {
         <Navbar />
 
         <main className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-          <div className="liquid-info-card booking-empty-state text-center max-w-md w-full p-6 sm:p-8 dark:bg-[#17231e] dark:border-white/10">
+          <div className="liquid-info-card booking-empty-state text-center max-w-md w-full p-6 sm:p-8 dark:bg-[#1A1A1A] dark:border-white/10">
             <div className="text-4xl mb-4">!</div>
 
             <h1 className="text-xl sm:text-2xl font-bold text-dark-text dark:text-gray-100">
@@ -272,7 +274,8 @@ function BookingContent() {
       // 1. Simpan pemesanan ke Supabase
       try {
         const formattedJamMulai = jam.length === 5 ? `${jam}:00` : jam;
-        const formattedJamSelesai = jamSelesai.length === 5 ? `${jamSelesai}:00` : jamSelesai;
+        const formattedJamSelesai =
+          jamSelesai.length === 5 ? `${jamSelesai}:00` : jamSelesai;
 
         const apiRes = await apiRequest("/booking", {
           method: "POST",
@@ -289,7 +292,10 @@ function BookingContent() {
         });
 
         if (apiRes.success && apiRes.data) {
-          bookingId = apiRes.data.kodeBooking || apiRes.data.bookingId || bookingId;
+          bookingId =
+            apiRes.data.kodeBooking ||
+            apiRes.data.bookingId ||
+            bookingId;
         }
       } catch (backendError) {
         // Jika terjadi benturan jadwal atau error validasi di database
@@ -303,6 +309,7 @@ function BookingContent() {
           setIsSubmitting(false);
           return;
         }
+
         console.warn("Sinkronisasi Supabase:", backendError.message);
       }
 
@@ -355,7 +362,7 @@ function BookingContent() {
     <>
       <Navbar />
 
-      <main className="booking-confirmation-page min-h-screen bg-background dark:bg-[#101a15] px-4 sm:px-6 py-8 sm:py-12 md:py-14">
+      <main className="booking-confirmation-page min-h-screen bg-background dark:bg-[#1A1A1A] px-4 sm:px-6 py-8 sm:py-12 md:py-14">
         <div className="booking-content max-w-3xl mx-auto min-w-0">
           {/* TOMBOL KEMBALI */}
           <Link
@@ -367,7 +374,7 @@ function BookingContent() {
 
           {/* HEADER */}
           <div className="booking-page-header mt-6 sm:mt-7 mb-7 sm:mb-8">
-            <span className="booking-label inline-block px-4 py-2 rounded-full bg-soft-mint dark:bg-[#22382c] text-primary text-xs font-bold tracking-wider">
+            <span className="booking-label inline-block px-4 py-2 rounded-full bg-[#FFF0E8] dark:bg-[#38251B] text-primary text-xs font-bold tracking-wider">
               SPORTIFY BOOKING
             </span>
 
@@ -383,7 +390,7 @@ function BookingContent() {
           </div>
 
           {/* KARTU RINGKASAN */}
-          <div className="liquid-booking-page-card booking-main-card w-full min-w-0 !bg-white dark:!bg-[#1b2922] !border-gray-200 dark:!border-white/10">
+          <div className="liquid-booking-page-card booking-main-card w-full min-w-0 !bg-white dark:!bg-[#1A1A1A] !border-gray-200 dark:!border-white/10">
             {/* INFORMASI TEMPAT */}
             <div className="booking-venue-info flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="min-w-0">
@@ -403,7 +410,7 @@ function BookingContent() {
                 </p>
               </div>
 
-              <div className="booking-venue-badge bg-soft-mint dark:bg-[#22382c] text-primary px-4 py-2 rounded-full text-sm font-semibold w-fit shrink-0">
+              <div className="booking-venue-badge bg-[#FFF0E8] dark:bg-[#38251B] text-primary px-4 py-2 rounded-full text-sm font-semibold w-fit shrink-0">
                 Sportify Booking
               </div>
             </div>
@@ -429,7 +436,9 @@ function BookingContent() {
 
               <div className="liquid-summary-row dark:text-gray-300">
                 <span>{isEnglish ? "Playing Time" : "Waktu Bermain"}</span>
-                <strong className="dark:text-gray-100">{jam ? `${jam} - ${jamSelesai}` : "-"}</strong>
+                <strong className="dark:text-gray-100">
+                  {jam ? `${jam} - ${jamSelesai}` : "-"}
+                </strong>
               </div>
 
               <div className="liquid-summary-row dark:text-gray-300">
@@ -459,7 +468,7 @@ function BookingContent() {
                   value={namaPemesan}
                   onChange={(e) => setNamaPemesan(e.target.value)}
                   placeholder={isEnglish ? "Enter full name" : "Masukkan nama lengkap"}
-                  className="liquid-auth-input booking-input w-full text-sm dark:bg-[#22382c] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
+                  className="liquid-auth-input booking-input w-full text-sm dark:bg-[#38251B] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
                 />
               </div>
 
@@ -475,7 +484,7 @@ function BookingContent() {
                     value={teleponPemesan}
                     onChange={(e) => setTeleponPemesan(e.target.value)}
                     placeholder="Contoh: 08123456789"
-                    className="liquid-auth-input booking-input w-full text-sm dark:bg-[#22382c] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
+                    className="liquid-auth-input booking-input w-full text-sm dark:bg-[#38251B] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
                   />
                 </div>
 
@@ -489,7 +498,7 @@ function BookingContent() {
                     value={emailPemesan}
                     onChange={(e) => setEmailPemesan(e.target.value)}
                     placeholder="email@example.com"
-                    className="liquid-auth-input booking-input w-full text-sm dark:bg-[#22382c] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
+                    className="liquid-auth-input booking-input w-full text-sm dark:bg-[#38251B] dark:text-gray-100 dark:border-white/10 dark:placeholder:text-gray-500"
                   />
                 </div>
               </div>
@@ -509,8 +518,8 @@ function BookingContent() {
                   type="button"
                   onClick={() => setMetodePembayaran("qris")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "qris"
-                    ? "border-primary bg-soft-mint dark:bg-[#22382c] text-primary ring-1 ring-primary"
-                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1b2922] dark:text-gray-100 dark:hover:border-white/20"
+                      ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
+                      : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -531,8 +540,8 @@ function BookingContent() {
                   type="button"
                   onClick={() => setMetodePembayaran("transfer")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "transfer"
-                    ? "border-primary bg-soft-mint dark:bg-[#22382c] text-primary ring-1 ring-primary"
-                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1b2922] dark:text-gray-100 dark:hover:border-white/20"
+                      ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
+                      : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
                   <div className="font-bold text-sm">
@@ -549,8 +558,8 @@ function BookingContent() {
                   type="button"
                   onClick={() => setMetodePembayaran("cod")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "cod"
-                    ? "border-primary bg-soft-mint dark:bg-[#22382c] text-primary ring-1 ring-primary"
-                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1b2922] dark:text-gray-100 dark:hover:border-white/20"
+                      ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
+                      : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
                   <div className="font-bold text-sm">
@@ -567,7 +576,7 @@ function BookingContent() {
             <div className="liquid-booking-divider dark:border-white/10" />
 
             {/* RINCIAN HARGA */}
-            <div className="booking-payment-details bg-soft-mint/70 dark:bg-[#22382c] rounded-2xl p-4 sm:p-6 w-full min-w-0">
+            <div className="booking-payment-details bg-[#FFF0E8]/70 dark:bg-[#38251B] rounded-2xl p-4 sm:p-6 w-full min-w-0">
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                 {isEnglish ? "Payment Details" : "Rincian Pembayaran"}
               </p>
@@ -641,12 +650,12 @@ function BookingContent() {
         {/* MODAL SUKSES PEMESANAN */}
         {bookingSuccess && (
           <div className="booking-success-overlay fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm">
-            <div className="booking-success-modal max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/70 bg-white/95 dark:border-white/10 dark:bg-[#17231e] p-6 sm:p-8 shadow-2xl backdrop-blur-2xl text-center">
-              <div className="booking-success-icon w-16 h-16 rounded-full bg-soft-mint dark:bg-[#22382c] text-primary flex items-center justify-center text-3xl font-bold mx-auto mb-4">
+            <div className="booking-success-modal max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/70 bg-white/95 dark:border-white/10 dark:bg-[#1A1A1A] p-6 sm:p-8 shadow-2xl backdrop-blur-2xl text-center">
+              <div className="booking-success-icon w-16 h-16 rounded-full bg-[#FFF0E8] dark:bg-[#38251B] text-primary flex items-center justify-center text-3xl font-bold mx-auto mb-4">
                 ✓
               </div>
 
-              <span className="inline-block px-4 py-1.5 rounded-full bg-soft-mint dark:bg-[#22382c] text-primary text-xs font-bold tracking-wider mb-2">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#FFF0E8] dark:bg-[#38251B] text-primary text-xs font-bold tracking-wider mb-2">
                 {isEnglish ? "BOOKING REQUEST SENT" : "PERMINTAAN BOOKING TERKIRIM"}
               </span>
 
@@ -662,7 +671,7 @@ function BookingContent() {
                   : "Permintaan booking kamu sudah tercatat dan sedang menunggu konfirmasi dari mitra."}
               </p>
 
-              <div className="bg-soft-mint/70 dark:bg-[#22382c] rounded-2xl p-4 my-6 text-left space-y-3 text-sm">
+              <div className="bg-[#FFF0E8]/70 dark:bg-[#38251B] rounded-2xl p-4 my-6 text-left space-y-3 text-sm">
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
                   <span className="text-gray-500 dark:text-gray-400">ID Booking:</span>
                   <span className="font-bold text-primary text-right break-words">
@@ -730,7 +739,7 @@ function BookingContent() {
               </div>
 
               {metodePembayaran === "qris" && (
-                <div className="p-4 bg-gray-50 dark:bg-[#22382c] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
+                <div className="p-4 bg-gray-50 dark:bg-[#38251B] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
                   <p className="font-bold text-gray-800 dark:text-gray-100 mb-1">
                     {isEnglish ? "QRIS Payment" : "Pembayaran QRIS"}
                   </p>
@@ -744,7 +753,7 @@ function BookingContent() {
               )}
 
               {metodePembayaran === "transfer" && (
-                <div className="p-4 bg-gray-50 dark:bg-[#22382c] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
+                <div className="p-4 bg-gray-50 dark:bg-[#38251B] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
                   <p className="font-bold text-gray-800 dark:text-gray-100 mb-1">
                     {isEnglish ? "Bank Transfer" : "Transfer Bank"}
                   </p>
@@ -868,7 +877,7 @@ function BookingContent() {
 
           .booking-label:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(20, 107, 69, 0.12);
+            box-shadow: 0 8px 20px rgba(232, 80, 2, 0.12);
           }
 
           .booking-main-card {
@@ -877,7 +886,7 @@ function BookingContent() {
           }
 
           .booking-main-card:hover {
-            box-shadow: 0 20px 55px rgba(20, 107, 69, 0.07);
+            box-shadow: 0 20px 55px rgba(232, 80, 2, 0.07);
           }
 
           .booking-venue-info {
@@ -921,7 +930,7 @@ function BookingContent() {
 
           .booking-payment-option:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 22px rgba(20, 107, 69, 0.09);
+            box-shadow: 0 10px 22px rgba(232, 80, 2, 0.09);
           }
 
           .booking-payment-option:active {
@@ -946,7 +955,7 @@ function BookingContent() {
 
           .booking-payment-details:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(20, 107, 69, 0.08);
+            box-shadow: 0 12px 28px rgba(232, 80, 2, 0.08);
           }
 
           .booking-confirm-button {
@@ -959,7 +968,7 @@ function BookingContent() {
 
           .booking-confirm-button:hover:not(:disabled) {
             transform: translateY(-4px);
-            box-shadow: 0 14px 28px rgba(20, 107, 69, 0.2);
+            box-shadow: 0 14px 28px rgba(232, 80, 2, 0.2);
           }
 
           .booking-confirm-button:active:not(:disabled) {
@@ -987,7 +996,7 @@ function BookingContent() {
             content: "";
             position: absolute;
             inset: -7px;
-            border: 2px solid rgba(39, 163, 107, 0.2);
+            border: 2px solid rgba(232, 80, 2, 0.2);
             border-radius: 9999px;
             animation: bookingSuccessCheck 0.7s ease both;
           }

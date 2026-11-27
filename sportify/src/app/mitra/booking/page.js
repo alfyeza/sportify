@@ -115,7 +115,7 @@ export default function MitraBookingPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-8 text-[#202B25] dark:bg-[#111A15] dark:text-white sm:px-6 lg:px-10">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-8 text-[#333333] dark:bg-[#1A1A1A] dark:text-white sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-7xl space-y-6">
                     {/* Header */}
                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -123,7 +123,7 @@ export default function MitraBookingPage() {
                             <div className="mb-2 flex items-center gap-2">
                                 <Link
                                     href="/mitra/dashboard"
-                                    className="text-xs font-semibold text-[#146B45] hover:underline dark:text-green-400"
+                                    className="text-xs font-semibold text-[#E85002] hover:underline dark:text-green-400"
                                 >
                                     &larr; {isEnglish ? "Back to Dashboard" : "Kembali ke Dashboard"}
                                 </Link>
@@ -167,7 +167,7 @@ export default function MitraBookingPage() {
                                 key={status}
                                 onClick={() => setFilterStatus(status)}
                                 className={`rounded-full px-4 py-2 text-xs font-semibold transition ${filterStatus === status
-                                    ? "bg-[#146B45] text-white shadow-sm"
+                                    ? "bg-[#E85002] text-white shadow-sm"
                                     : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-white/5 dark:text-gray-300"
                                     }`}
                             >
@@ -216,7 +216,7 @@ export default function MitraBookingPage() {
                                                     className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 dark:border-white/5 dark:hover:bg-white/[0.02]"
                                                 >
                                                     <td className="p-5">
-                                                        <div className="font-bold text-[#146B45] dark:text-green-400">
+                                                        <div className="font-bold text-[#E85002] dark:text-green-400">
                                                             {b.kodeBooking || b.id}
                                                         </div>
                                                         <div className="mt-1 font-medium">{b.pemesan?.fullName || "Penyewa"}</div>
@@ -236,7 +236,7 @@ export default function MitraBookingPage() {
                                                     </td>
 
                                                     <td className="p-5">
-                                                        <div className="font-bold text-[#146B45] dark:text-green-400">
+                                                        <div className="font-bold text-[#E85002] dark:text-green-400">
                                                             {formatRupiah(b.total)}
                                                         </div>
                                                         <div className="mt-1 flex items-center gap-2">
@@ -286,7 +286,7 @@ export default function MitraBookingPage() {
                                                                         onClick={() =>
                                                                             handleUpdateStatus(b.id, "dikonfirmasi", "lunas")
                                                                         }
-                                                                        className="rounded-xl bg-[#146B45] px-3.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-[#105638] disabled:opacity-50"
+                                                                        className="rounded-xl bg-[#E85002] px-3.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-[#C10801] disabled:opacity-50"
                                                                     >
                                                                         Konfirmasi & Lunas
                                                                     </button>
@@ -334,7 +334,7 @@ export default function MitraBookingPage() {
                     onClick={() => setPreviewBukti(null)}
                 >
                     <div
-                        className="relative max-h-[90vh] max-w-lg overflow-hidden rounded-3xl bg-white p-5 shadow-2xl dark:bg-[#1B2B22]"
+                        className="relative max-h-[90vh] max-w-lg overflow-hidden rounded-3xl bg-white p-5 shadow-2xl dark:bg-[#333333]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="mb-4 flex items-center justify-between border-b pb-3 dark:border-white/10">
@@ -360,7 +360,7 @@ export default function MitraBookingPage() {
                                 href={previewBukti}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-xs font-semibold text-[#146B45] hover:underline dark:text-green-400"
+                                className="text-xs font-semibold text-[#E85002] hover:underline dark:text-green-400"
                             >
                                 Buka di Tab Baru
                             </a>

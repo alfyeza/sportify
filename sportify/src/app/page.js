@@ -241,7 +241,7 @@ export default function Home() {
 
                 <Link
                   href="/artikel"
-                  className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-7 py-4 font-semibold text-primary transition duration-300 hover:-translate-y-1 hover:bg-soft-mint dark:border-white/10 dark:bg-[#1B2B22] dark:text-green-300 dark:hover:bg-green-900/40"
+                  className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-7 py-4 font-semibold text-primary transition duration-300 hover:-translate-y-1 hover:bg-soft-mint dark:border-white/10 dark:bg-[#333333] dark:text-green-300 dark:hover:bg-green-900/40"
                 >
                   {isEnglish ? "Read Articles" : "Jelajahi Artikel"}
                 </Link>
@@ -294,7 +294,7 @@ export default function Home() {
                   </div>
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#062b1b]/90 via-[#062b1b]/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1A0A00]/90 via-[#1A0A00]/20 to-transparent" />
 
                 <div className="absolute bottom-0 left-0 right-0 p-7 text-white md:p-9">
                   <span className="rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-semibold backdrop-blur-md">
@@ -329,7 +329,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="hero-floating absolute -bottom-5 -left-4 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1B2B22]/95 md:-left-8">
+              <div className="hero-floating absolute -bottom-5 -left-4 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#333333]/95 md:-left-8">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-soft-mint text-xl dark:bg-green-900/50">
                     ⭐
@@ -432,7 +432,7 @@ export default function Home() {
               />
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-r from-[#052d1c]/95 via-[#052d1c]/80 to-[#052d1c]/30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1A0A00]/95 via-[#1A0A00]/80 to-[#1A0A00]/30" />
 
             <div className="relative max-w-2xl px-7 py-14 text-white md:px-14 md:py-20">
               <span className="rounded-full border border-lime-300/40 bg-lime-300/15 px-4 py-2 text-xs font-bold uppercase tracking-widest text-lime-300">
@@ -471,7 +471,7 @@ export default function Home() {
         </section>
 
         {/* POPULAR COURTS */}
-        <section className="overflow-hidden bg-gradient-to-br from-[#0C5638] to-[#073C29] px-5 py-20 text-white md:px-10 md:py-24">
+        <section className="overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#333333] px-5 py-20 text-white md:px-10 md:py-24">
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
               <div>
@@ -523,14 +523,14 @@ export default function Home() {
         </section>
 
         {/* TESTIMONIALS / CERITA PENGGUNA */}
-        <section className="bg-[#F5F8F5] px-5 py-20 dark:bg-[#101B15] md:px-10 md:py-24">
+        <section className="bg-[#F9F9F9] px-5 py-20 dark:bg-[#1A1A1A] md:px-10 md:py-24">
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 text-center">
               <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-secondary dark:text-green-400">
                 {isEnglish ? "USER STORIES" : "CERITA PENGGUNA"}
               </p>
 
-              <h2 className="text-3xl font-extrabold text-[#202B25] dark:text-white md:text-4xl">
+              <h2 className="text-3xl font-extrabold text-[#333333] dark:text-white md:text-4xl">
                 {isEnglish
                   ? "Experiences with Sportify"
                   : "Pengalaman Mereka Bersama Sportify"}
@@ -558,7 +558,7 @@ export default function Home() {
                   <div
                     key={cerita.id}
                     style={{ animationDelay: `${index * 120}ms` }}
-                    className="sportify-card flex w-[290px] shrink-0 snap-start flex-col rounded-3xl border border-green-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-lg dark:border-white/10 dark:bg-[#1B2B22] md:w-[340px]"
+                    className="sportify-card flex w-[290px] shrink-0 snap-start flex-col rounded-3xl border border-green-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-lg dark:border-white/10 dark:bg-[#333333] md:w-[340px]"
                   >
                     <div className="mb-4 flex gap-1 text-lg text-yellow-400">
                       {Array.from({ length: 5 }).map((_, i) => (
@@ -573,7 +573,7 @@ export default function Home() {
                     </p>
 
                     <div className="mt-6 border-t border-gray-100 pt-5 dark:border-white/10">
-                      <p className="font-bold text-[#202B25] dark:text-white">
+                      <p className="font-bold text-[#333333] dark:text-white">
                         {cerita.nama ||
                           (isEnglish ? "Sportify User" : "Pengguna Sportify")}
                       </p>
@@ -601,7 +601,7 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-3xl border border-dashed border-green-200 bg-white/70 px-6 py-12 text-center dark:border-white/10 dark:bg-[#1B2B22]">
+              <div className="rounded-3xl border border-dashed border-green-200 bg-white/70 px-6 py-12 text-center dark:border-white/10 dark:bg-[#333333]">
                 <div className="text-4xl">💚</div>
 
                 <h3 className="mt-4 text-lg font-bold text-dark-text dark:text-white">
@@ -621,7 +621,7 @@ export default function Home() {
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               <Link
                 href="/cerita-pengguna"
-                className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-6 py-3 font-semibold text-primary transition hover:-translate-y-1 hover:bg-soft-mint dark:border-white/10 dark:bg-[#1B2B22] dark:text-green-300 dark:hover:bg-green-900/40"
+                className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-6 py-3 font-semibold text-primary transition hover:-translate-y-1 hover:bg-soft-mint dark:border-white/10 dark:bg-[#333333] dark:text-green-300 dark:hover:bg-green-900/40"
               >
                 {isEnglish ? "See All Stories" : "Lihat Semua Cerita"}
                 <span>&gt;</span>
@@ -639,7 +639,7 @@ export default function Home() {
         </section>
 
         {/* WHY SPORTIFY */}
-        <section className="bg-white px-5 py-20 dark:bg-[#142019] md:px-10 md:py-24">
+        <section className="bg-white px-5 py-20 dark:bg-[#1A1A1A] md:px-10 md:py-24">
           <div className="mx-auto max-w-7xl">
             <div className="mb-12 text-center">
               <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-secondary dark:text-green-400">
@@ -664,7 +664,7 @@ export default function Home() {
                 <div
                   key={index}
                   style={{ animationDelay: `${index * 150}ms` }}
-                  className="sportify-card rounded-3xl border border-green-100 bg-[#F8FBF8] p-8 transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#1B2B22] dark:hover:border-green-700"
+                  className="sportify-card rounded-3xl border border-green-100 bg-[#F9F9F9] p-8 transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#333333] dark:hover:border-green-700"
                 >
                   <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-soft-mint text-3xl transition duration-300 hover:rotate-6 hover:scale-110 dark:bg-green-900/50">
                     {item.icon}
@@ -684,7 +684,7 @@ export default function Home() {
         </section>
 
         {/* SPORTS ACTIVITIES */}
-        <section className="bg-[#F5F8F5] px-5 py-20 dark:bg-[#101B15] md:px-10 md:py-24">
+        <section className="bg-[#F9F9F9] px-5 py-20 dark:bg-[#1A1A1A] md:px-10 md:py-24">
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
               <div>
@@ -692,7 +692,7 @@ export default function Home() {
                   MORE THAN JUST SPORTS
                 </p>
 
-                <h2 className="text-3xl font-extrabold text-[#202B25] dark:text-white md:text-4xl">
+                <h2 className="text-3xl font-extrabold text-[#333333] dark:text-white md:text-4xl">
                   {isEnglish
                     ? "Make Every Game Meaningful"
                     : "Lebih dari Sekadar Olahraga"}
@@ -718,13 +718,13 @@ export default function Home() {
                 <div
                   key={index}
                   style={{ animationDelay: `${index * 150}ms` }}
-                  className="sportify-card group overflow-hidden rounded-3xl border border-green-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#1B2B22] dark:hover:border-green-700"
+                  className="sportify-card group overflow-hidden rounded-3xl border border-green-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-white/10 dark:bg-[#333333] dark:hover:border-green-700"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-soft-mint text-3xl transition duration-300 group-hover:rotate-6 group-hover:scale-110 dark:bg-green-900/50">
                     {item.icon}
                   </div>
 
-                  <h3 className="mt-6 text-xl font-bold text-[#202B25] dark:text-white">
+                  <h3 className="mt-6 text-xl font-bold text-[#333333] dark:text-white">
                     {item.judul}
                   </h3>
 
@@ -748,7 +748,7 @@ export default function Home() {
         </section>
 
         {/* HOW TO BOOK */}
-        <section className="bg-white px-5 py-20 dark:bg-[#142019] md:px-10 md:py-24">
+        <section className="bg-white px-5 py-20 dark:bg-[#1A1A1A] md:px-10 md:py-24">
           <div className="mx-auto max-w-7xl">
             <div className="mb-14 text-center">
               <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-secondary dark:text-green-400">
@@ -808,7 +808,7 @@ export default function Home() {
 
         {/* LATEST ARTICLES */}
         {artikelTerbaru.length > 0 && (
-          <section className="bg-[#F5F8F5] px-5 py-20 dark:bg-[#101B15] md:px-10 md:py-24">
+          <section className="bg-[#F9F9F9] px-5 py-20 dark:bg-[#1A1A1A] md:px-10 md:py-24">
             <div className="mx-auto max-w-7xl">
               <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
                 <div>
@@ -843,7 +843,7 @@ export default function Home() {
                     key={artikel.id || artikel.slug || index}
                     href={`/artikel/${artikel.slug}`}
                     style={{ animationDelay: `${index * 150}ms` }}
-                    className={`sportify-card group overflow-hidden rounded-3xl bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-xl dark:bg-[#1B2B22] ${index === 0 ? "md:col-span-2" : ""
+                    className={`sportify-card group overflow-hidden rounded-3xl bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-xl dark:bg-[#333333] ${index === 0 ? "md:col-span-2" : ""
                       }`}
                   >
                     <div
@@ -898,7 +898,7 @@ export default function Home() {
 
         {/* FINAL CTA */}
         <section className="px-5 py-20 md:px-10 md:py-24">
-          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-primary to-[#073C29] px-7 py-16 text-center text-white md:px-16 md:py-20">
+          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-primary to-[#333333] px-7 py-16 text-center text-white md:px-16 md:py-20">
             <div className="absolute -left-20 -top-20 h-64 w-64 animate-[sportifyGlow_8s_ease-in-out_infinite] rounded-full bg-lime-300/10 blur-3xl" />
             <div className="absolute -bottom-20 -right-20 h-64 w-64 animate-[sportifyGlow_10s_ease-in-out_infinite] rounded-full bg-emerald-300/20 blur-3xl" />
 

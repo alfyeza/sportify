@@ -322,14 +322,14 @@ export default function MitraDashboardPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-8 text-[#202B25] dark:bg-[#111A15] dark:text-white sm:px-6 lg:px-10">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-8 text-[#333333] dark:bg-[#1A1A1A] dark:text-white sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-7xl space-y-8">
 
                     {/* Header */}
                     <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
                         <div>
                             <div className="mb-2 flex items-center gap-2">
-                                <span className="rounded-full bg-[#EAF5EF] px-3 py-1 text-xs font-semibold text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
+                                <span className="rounded-full bg-[#FFF4ED] px-3 py-1 text-xs font-semibold text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
                                     Dashboard Mitra
                                 </span>
                                 <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isLive
@@ -351,7 +351,7 @@ export default function MitraDashboardPage() {
                             </p>
 
                             {tanggal && (
-                                <p className="mt-2 text-sm font-medium text-[#146B45] dark:text-green-400">
+                                <p className="mt-2 text-sm font-medium text-[#E85002] dark:text-green-400">
                                     {tanggal}
                                 </p>
                             )}
@@ -359,7 +359,7 @@ export default function MitraDashboardPage() {
 
                         <Link
                             href="/mitra/lapangan/tambah"
-                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#146B45] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#105638]"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#E85002] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#C10801]"
                         >
                             <Icon name="plus" size={18} />
                             {isEnglish ? "Add Venue" : "Tambah Lapangan"}
@@ -384,7 +384,7 @@ export default function MitraDashboardPage() {
                                     className="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-white/[0.04]"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <div className="rounded-2xl bg-[#EAF5EF] p-3 text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
+                                        <div className="rounded-2xl bg-[#FFF4ED] p-3 text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
                                             <Icon name={item.icon} size={22} />
                                         </div>
                                         <span className="text-xs text-gray-400">
@@ -405,7 +405,7 @@ export default function MitraDashboardPage() {
 
                                     <h3 className="mt-1 text-2xl font-bold">{item.value}</h3>
 
-                                    <p className="mt-2 text-xs text-[#219653] dark:text-green-400">
+                                    <p className="mt-2 text-xs text-[#F16001] dark:text-green-400">
                                         {item.perubahan}
                                     </p>
                                 </div>
@@ -424,14 +424,14 @@ export default function MitraDashboardPage() {
                                 <Link
                                     key={menu.title}
                                     href={menu.href}
-                                    className="group rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#B7E34A] hover:shadow-lg dark:border-white/10 dark:bg-white/[0.04]"
+                                    className="group rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#D9C3AB] hover:shadow-lg dark:border-white/10 dark:bg-white/[0.04]"
                                 >
                                     <div className="mb-4 flex items-center justify-between">
-                                        <div className="rounded-2xl bg-[#EAF5EF] p-3 text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
+                                        <div className="rounded-2xl bg-[#FFF4ED] p-3 text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
                                             <Icon name={menu.icon} size={23} />
                                         </div>
 
-                                        <span className="text-gray-400 transition group-hover:translate-x-1 group-hover:text-[#146B45]">
+                                        <span className="text-gray-400 transition group-hover:translate-x-1 group-hover:text-[#E85002]">
                                             <Icon name="arrow" size={20} />
                                         </span>
                                     </div>
@@ -481,7 +481,7 @@ export default function MitraDashboardPage() {
                                     </p>
                                 </div>
 
-                                <span className="rounded-xl bg-[#EAF5EF] px-3 py-2 text-xs font-semibold text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
+                                <span className="rounded-xl bg-[#FFF4ED] px-3 py-2 text-xs font-semibold text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
                                     {isEnglish ? "This Week" : "Minggu Ini"}
                                 </span>
                             </div>
@@ -493,7 +493,7 @@ export default function MitraDashboardPage() {
                                         className="flex h-full flex-1 flex-col items-center justify-end gap-2"
                                     >
                                         <div
-                                            className="w-full max-w-12 rounded-t-xl bg-gradient-to-t from-[#146B45] to-[#7BC99D] transition hover:opacity-80"
+                                            className="w-full max-w-12 rounded-t-xl bg-gradient-to-t from-[#E85002] to-[#7BC99D] transition hover:opacity-80"
                                             style={{ height: `${height}%` }}
                                         />
                                         <span className="text-xs text-gray-400">
@@ -512,7 +512,7 @@ export default function MitraDashboardPage() {
                             </p>
                         </div>
 
-                        <div className="rounded-3xl bg-gradient-to-br from-[#146B45] to-[#238B5D] p-6 text-white shadow-lg">
+                        <div className="rounded-3xl bg-gradient-to-br from-[#E85002] to-[#238B5D] p-6 text-white shadow-lg">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-white/80">
                                     {isEnglish ? "Total Revenue" : "Total Pendapatan"}
@@ -537,7 +537,7 @@ export default function MitraDashboardPage() {
 
                             <Link
                                 href="/mitra/keuangan"
-                                className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-[#146B45] transition hover:bg-[#EAF5EF]"
+                                className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-[#E85002] transition hover:bg-[#FFF4ED]"
                             >
                                 {isEnglish ? "View Finances" : "Lihat Keuangan"}
                                 <Icon name="arrow" size={17} />
@@ -561,7 +561,7 @@ export default function MitraDashboardPage() {
 
                             <Link
                                 href="/mitra/booking"
-                                className="inline-flex items-center gap-2 text-sm font-semibold text-[#146B45] hover:underline dark:text-green-400"
+                                className="inline-flex items-center gap-2 text-sm font-semibold text-[#E85002] hover:underline dark:text-green-400"
                             >
                                 {isEnglish ? "View All" : "Lihat Semua"}
                                 <Icon name="arrow" size={17} />
@@ -574,8 +574,8 @@ export default function MitraDashboardPage() {
                                     key={filter}
                                     onClick={() => setFilterBooking(filter)}
                                     className={`rounded-full px-4 py-2 text-xs font-semibold transition ${filterBooking === filter
-                                        ? "bg-[#146B45] text-white"
-                                        : "bg-gray-100 text-gray-500 hover:bg-[#EAF5EF] hover:text-[#146B45] dark:bg-white/10 dark:text-gray-300"
+                                        ? "bg-[#E85002] text-white"
+                                        : "bg-gray-100 text-gray-500 hover:bg-[#FFF4ED] hover:text-[#E85002] dark:bg-white/10 dark:text-gray-300"
                                         }`}
                                 >
                                     {isEnglish
@@ -619,7 +619,7 @@ export default function MitraDashboardPage() {
                                             key={booking.id}
                                             className="border-b border-gray-50 last:border-0 dark:border-white/5"
                                         >
-                                            <td className="py-4 font-semibold text-[#146B45] dark:text-green-400">
+                                            <td className="py-4 font-semibold text-[#E85002] dark:text-green-400">
                                                 {booking.id}
                                             </td>
                                             <td className="py-4 font-medium">{booking.nama}</td>
@@ -674,14 +674,14 @@ export default function MitraDashboardPage() {
                     </section>
 
                     {/* Informasi */}
-                    <section className="rounded-3xl border border-[#D8EBDD] bg-[#EAF5EF] p-5 dark:border-green-900/40 dark:bg-green-900/10 sm:p-6">
+                    <section className="rounded-3xl border border-[#FEC9A9] bg-[#FFF4ED] p-5 dark:border-green-900/40 dark:bg-green-900/10 sm:p-6">
                         <div className="flex gap-4">
-                            <div className="shrink-0 rounded-2xl bg-white p-3 text-[#146B45] dark:bg-white/10 dark:text-green-400">
+                            <div className="shrink-0 rounded-2xl bg-white p-3 text-[#E85002] dark:bg-white/10 dark:text-green-400">
                                 <Icon name="location" size={22} />
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-[#146B45] dark:text-green-400">
+                                <h3 className="font-bold text-[#E85002] dark:text-green-400">
                                     {isEnglish ? "Complete Your Venue Information" : "Lengkapi Informasi Lapangan"}
                                 </h3>
                                 <p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
@@ -692,7 +692,7 @@ export default function MitraDashboardPage() {
 
                                 <Link
                                     href="/mitra/lapangan"
-                                    className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#146B45] hover:underline dark:text-green-400"
+                                    className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#E85002] hover:underline dark:text-green-400"
                                 >
                                     {isEnglish ? "Manage Venues" : "Kelola Lapangan"}
                                     <Icon name="arrow" size={16} />

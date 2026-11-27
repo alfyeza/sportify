@@ -129,10 +129,10 @@ export default function TambahLapanganPage() {
     const [success, setSuccess] = useState("");
 
     const inputClass =
-        "w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#202B25] outline-none transition placeholder:text-gray-400 focus:border-[#146B45] focus:ring-2 focus:ring-[#146B45]/10 dark:border-white/10 dark:bg-white/5 dark:text-white";
+        "w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#333333] outline-none transition placeholder:text-gray-400 focus:border-[#E85002] focus:ring-2 focus:ring-[#E85002]/10 dark:border-white/10 dark:bg-white/5 dark:text-white";
 
     const labelClass =
-        "mb-2 block text-sm font-semibold text-[#202B25] dark:text-gray-200";
+        "mb-2 block text-sm font-semibold text-[#333333] dark:text-gray-200";
 
     const sectionClass =
         "rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] sm:p-7";
@@ -515,14 +515,14 @@ export default function TambahLapanganPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-8 text-[#202B25] dark:bg-[#111A15] dark:text-white sm:px-6 lg:px-10">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-8 text-[#333333] dark:bg-[#1A1A1A] dark:text-white sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-4xl space-y-7">
 
                     {/* HEADER */}
                     <section>
                         <Link
                             href="/mitra/lapangan"
-                            className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-[#146B45] dark:text-gray-400"
+                            className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-[#E85002] dark:text-gray-400"
                         >
                             &lt;
                             {isEnglish
@@ -530,7 +530,7 @@ export default function TambahLapanganPage() {
                                 : "Kembali ke Daftar Lapangan"}
                         </Link>
 
-                        <span className="rounded-full bg-[#EAF5EF] px-3 py-1.5 text-xs font-semibold text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
+                        <span className="rounded-full bg-[#FFF4ED] px-3 py-1.5 text-xs font-semibold text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
                             {isEnglish
                                 ? "Partner Area"
                                 : "Area Mitra"}
@@ -673,8 +673,8 @@ export default function TambahLapanganPage() {
                                                 toggleKategori(kategori)
                                             }
                                             className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${selected
-                                                ? "border-[#146B45] bg-[#EAF5EF] text-[#146B45] dark:border-green-400 dark:bg-green-900/30 dark:text-green-400"
-                                                : "border-gray-200 bg-white text-gray-500 hover:border-[#146B45] dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                                                ? "border-[#E85002] bg-[#FFF4ED] text-[#E85002] dark:border-green-400 dark:bg-green-900/30 dark:text-green-400"
+                                                : "border-gray-200 bg-white text-gray-500 hover:border-[#E85002] dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
                                                 }`}
                                         >
                                             {selected && "✓ "}
@@ -701,7 +701,7 @@ export default function TambahLapanganPage() {
                                 <button
                                     type="button"
                                     onClick={tambahUnit}
-                                    className="rounded-xl bg-[#146B45] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#105638]"
+                                    className="rounded-xl bg-[#E85002] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#C10801]"
                                 >
                                     + Tambah Unit
                                 </button>
@@ -716,7 +716,7 @@ export default function TambahLapanganPage() {
                                         {/* HEADER UNIT */}
                                         <div className="mb-5 flex items-center justify-between gap-3">
                                             <div>
-                                                <span className="text-xs font-semibold text-[#146B45] dark:text-green-400">
+                                                <span className="text-xs font-semibold text-[#E85002] dark:text-green-400">
                                                     UNIT {index + 1}
                                                 </span>
 
@@ -828,11 +828,11 @@ export default function TambahLapanganPage() {
                                         <div className="mt-7 border-t border-gray-200 pt-6 dark:border-white/10">
                                             <div className="mb-5">
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="font-bold text-[#202B25] dark:text-white">
+                                                    <h4 className="font-bold text-[#333333] dark:text-white">
                                                         Jadwal Operasional
                                                     </h4>
 
-                                                    <span className="rounded-full bg-[#EAF5EF] px-2.5 py-1 text-[10px] font-bold text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
+                                                    <span className="rounded-full bg-[#FFF4ED] px-2.5 py-1 text-[10px] font-bold text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
                                                         PER UNIT
                                                     </span>
                                                 </div>
@@ -871,13 +871,13 @@ export default function TambahLapanganPage() {
                                                                                     !e.target.checked
                                                                                 )
                                                                             }
-                                                                            className="h-4 w-4 accent-[#146B45]"
+                                                                            className="h-4 w-4 accent-[#E85002]"
                                                                         />
 
                                                                         <span
                                                                             className={`text-xs font-semibold ${jadwal.tutupHari
                                                                                 ? "text-red-500"
-                                                                                : "text-[#146B45] dark:text-green-400"
+                                                                                : "text-[#E85002] dark:text-green-400"
                                                                                 }`}
                                                                         >
                                                                             {jadwal.tutupHari
@@ -951,8 +951,8 @@ export default function TambahLapanganPage() {
                                                 )}
                                             </div>
 
-                                            <div className="mt-4 rounded-xl bg-[#EAF5EF] p-4 dark:bg-green-900/20">
-                                                <p className="text-xs leading-relaxed text-[#146B45] dark:text-green-400">
+                                            <div className="mt-4 rounded-xl bg-[#FFF4ED] p-4 dark:bg-green-900/20">
+                                                <p className="text-xs leading-relaxed text-[#E85002] dark:text-green-400">
                                                     <strong>Informasi:</strong>{" "}
                                                     {isEnglish
                                                         ? "Customers will only be able to select booking times within this unit's operating hours."
@@ -967,12 +967,12 @@ export default function TambahLapanganPage() {
                                                 Foto Unit
                                             </label>
 
-                                            <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white p-5 transition hover:border-[#146B45] dark:border-white/20 dark:bg-white/5">
+                                            <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white p-5 transition hover:border-[#E85002] dark:border-white/20 dark:bg-white/5">
                                                 <span className="text-2xl">
                                                     +
                                                 </span>
 
-                                                <span className="mt-2 text-sm font-semibold text-[#146B45] dark:text-green-400">
+                                                <span className="mt-2 text-sm font-semibold text-[#E85002] dark:text-green-400">
                                                     Pilih Foto Unit
                                                 </span>
 
@@ -1062,7 +1062,7 @@ export default function TambahLapanganPage() {
 
                                 {form.harga &&
                                     Number(form.harga) > 0 && (
-                                        <p className="mt-2 text-xs font-medium text-[#146B45] dark:text-green-400">
+                                        <p className="mt-2 text-xs font-medium text-[#E85002] dark:text-green-400">
                                             {new Intl.NumberFormat(
                                                 "id-ID",
                                                 {
@@ -1093,8 +1093,8 @@ export default function TambahLapanganPage() {
                                                 <label
                                                     key={fasilitas}
                                                     className={`flex cursor-pointer items-center gap-2 rounded-xl border p-3 text-sm transition ${selected
-                                                        ? "border-[#146B45] bg-[#EAF5EF] text-[#146B45] dark:border-green-400 dark:bg-green-900/20 dark:text-green-400"
-                                                        : "border-gray-200 text-gray-500 hover:border-[#146B45] dark:border-white/10 dark:text-gray-300"
+                                                        ? "border-[#E85002] bg-[#FFF4ED] text-[#E85002] dark:border-green-400 dark:bg-green-900/20 dark:text-green-400"
+                                                        : "border-gray-200 text-gray-500 hover:border-[#E85002] dark:border-white/10 dark:text-gray-300"
                                                         }`}
                                                 >
                                                     <input
@@ -1105,7 +1105,7 @@ export default function TambahLapanganPage() {
                                                                 fasilitas
                                                             )
                                                         }
-                                                        className="accent-[#146B45]"
+                                                        className="accent-[#E85002]"
                                                     />
 
                                                     {fasilitas}
@@ -1135,12 +1135,12 @@ export default function TambahLapanganPage() {
                                     Foto Utama
                                 </label>
 
-                                <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 transition hover:border-[#146B45] hover:bg-[#EAF5EF]/50 dark:border-white/20 dark:bg-white/5">
+                                <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 transition hover:border-[#E85002] hover:bg-[#FFF4ED]/50 dark:border-white/20 dark:bg-white/5">
                                     <span className="mb-3 text-4xl">
                                         +
                                     </span>
 
-                                    <span className="text-sm font-semibold text-[#146B45] dark:text-green-400">
+                                    <span className="text-sm font-semibold text-[#E85002] dark:text-green-400">
                                         Pilih Foto Utama
                                     </span>
 
@@ -1184,12 +1184,12 @@ export default function TambahLapanganPage() {
                                     Foto Galeri (Maksimal 5)
                                 </label>
 
-                                <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 transition hover:border-[#146B45] hover:bg-[#EAF5EF]/50 dark:border-white/20 dark:bg-white/5">
+                                <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 transition hover:border-[#E85002] hover:bg-[#FFF4ED]/50 dark:border-white/20 dark:bg-white/5">
                                     <span className="mb-3 text-4xl">
                                         +
                                     </span>
 
-                                    <span className="text-sm font-semibold text-[#146B45] dark:text-green-400">
+                                    <span className="text-sm font-semibold text-[#E85002] dark:text-green-400">
                                         Pilih Foto Tambahan
                                     </span>
 
@@ -1300,7 +1300,7 @@ export default function TambahLapanganPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="rounded-2xl bg-[#146B45] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#105638] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="rounded-2xl bg-[#E85002] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#C10801] disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {loading
                                     ? isEnglish

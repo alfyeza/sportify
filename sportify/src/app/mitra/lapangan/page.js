@@ -256,7 +256,7 @@ export default function MitraLapanganPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-8 text-[#202B25] dark:bg-[#111A15] dark:text-white sm:px-6 lg:px-10">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-8 text-[#333333] dark:bg-[#1A1A1A] dark:text-white sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-7xl space-y-7">
 
                     {/* Header */}
@@ -264,7 +264,7 @@ export default function MitraLapanganPage() {
                         <div>
                             <Link
                                 href="/mitra/dashboard"
-                                className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-gray-500 transition hover:text-[#146B45] dark:text-gray-400"
+                                className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-gray-500 transition hover:text-[#E85002] dark:text-gray-400"
                             >
                                 <span className="rotate-180">
                                     <Icon name="arrow" size={16} />
@@ -295,7 +295,7 @@ export default function MitraLapanganPage() {
 
                         <Link
                             href="/mitra/lapangan/tambah"
-                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#146B45] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#105638]"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#E85002] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#C10801]"
                         >
                             <Icon name="plus" size={19} />
                             {isEnglish ? "Add Venue" : "Tambah Lapangan"}
@@ -360,7 +360,7 @@ export default function MitraLapanganPage() {
                                             ? "Search venue name, location, or sport..."
                                             : "Cari nama lapangan, lokasi, atau olahraga..."
                                     }
-                                    className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[#146B45] focus:ring-2 focus:ring-[#146B45]/10 dark:border-white/10 dark:bg-white/5"
+                                    className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[#E85002] focus:ring-2 focus:ring-[#E85002]/10 dark:border-white/10 dark:bg-white/5"
                                 />
                             </div>
 
@@ -371,8 +371,8 @@ export default function MitraLapanganPage() {
                                             key={filter}
                                             onClick={() => setFilterStatus(filter)}
                                             className={`rounded-xl px-4 py-3 text-xs font-semibold transition ${filterStatus === filter
-                                                ? "bg-[#146B45] text-white"
-                                                : "bg-gray-100 text-gray-500 hover:bg-[#EAF5EF] hover:text-[#146B45] dark:bg-white/10 dark:text-gray-300"
+                                                ? "bg-[#E85002] text-white"
+                                                : "bg-gray-100 text-gray-500 hover:bg-[#FFF4ED] hover:text-[#E85002] dark:bg-white/10 dark:text-gray-300"
                                                 }`}
                                         >
                                             {isEnglish
@@ -421,14 +421,14 @@ export default function MitraLapanganPage() {
                                 </p>
                                 <button
                                     onClick={fetchVenues}
-                                    className="mt-4 rounded-xl bg-[#146B45] px-5 py-2.5 text-sm font-semibold text-white"
+                                    className="mt-4 rounded-xl bg-[#E85002] px-5 py-2.5 text-sm font-semibold text-white"
                                 >
                                     {isEnglish ? "Try Again" : "Coba Lagi"}
                                 </button>
                             </div>
                         ) : filteredVenues.length === 0 ? (
                             <div className="rounded-3xl border border-white/70 bg-white/80 px-5 py-12 text-center shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EAF5EF] text-[#146B45] dark:bg-green-900/30 dark:text-green-400">
+                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FFF4ED] text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
                                     <Icon name="court" size={30} />
                                 </div>
 
@@ -455,7 +455,7 @@ export default function MitraLapanganPage() {
                                 {!search && filterStatus === "Semua" && (
                                     <Link
                                         href="/mitra/lapangan/tambah"
-                                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#146B45] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#105638]"
+                                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#E85002] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#C10801]"
                                     >
                                         <Icon name="plus" size={18} />
                                         {isEnglish ? "Add Your First Venue" : "Tambah Lapangan Pertama"}
@@ -488,7 +488,7 @@ export default function MitraLapanganPage() {
                                             key={venue.id}
                                             className="group overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-sm backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-white/[0.04]"
                                         >
-                                            <div className="relative h-48 overflow-hidden bg-[#EAF5EF] dark:bg-green-900/20">
+                                            <div className="relative h-48 overflow-hidden bg-[#FFF4ED] dark:bg-green-900/20">
                                                 {image !== "/images/placeholder.jpg" ? (
                                                     <img
                                                         src={image}
@@ -496,7 +496,7 @@ export default function MitraLapanganPage() {
                                                         className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                                     />
                                                 ) : (
-                                                    <div className="flex h-full items-center justify-center text-[#146B45] dark:text-green-400">
+                                                    <div className="flex h-full items-center justify-center text-[#E85002] dark:text-green-400">
                                                         <Icon name="court" size={55} />
                                                     </div>
                                                 )}
@@ -527,7 +527,7 @@ export default function MitraLapanganPage() {
                                                     {categories.map((category, index) => (
                                                         <span
                                                             key={`${category}-${index}`}
-                                                            className="rounded-full bg-[#EAF5EF] px-3 py-1 text-xs font-medium text-[#146B45] dark:bg-green-900/30 dark:text-green-400"
+                                                            className="rounded-full bg-[#FFF4ED] px-3 py-1 text-xs font-medium text-[#E85002] dark:bg-green-900/30 dark:text-green-400"
                                                         >
                                                             {category}
                                                         </span>
@@ -539,7 +539,7 @@ export default function MitraLapanganPage() {
                                                         <p className="text-xs text-gray-400">
                                                             {isEnglish ? "Starting from" : "Mulai dari"}
                                                         </p>
-                                                        <p className="mt-1 font-bold text-[#146B45] dark:text-green-400">
+                                                        <p className="mt-1 font-bold text-[#E85002] dark:text-green-400">
                                                             {formatRupiah(venue.harga)}
                                                             <span className="text-xs font-normal text-gray-400">
                                                                 {" "}/ Sesi
@@ -549,7 +549,7 @@ export default function MitraLapanganPage() {
 
                                                     <Link
                                                         href={`/mitra/lapangan/${venue.id}`}
-                                                        className="inline-flex items-center gap-1 text-sm font-semibold text-[#146B45] hover:underline dark:text-green-400"
+                                                        className="inline-flex items-center gap-1 text-sm font-semibold text-[#E85002] hover:underline dark:text-green-400"
                                                     >
                                                         {isEnglish ? "Details" : "Detail"}
                                                         <Icon name="arrow" size={16} />
@@ -563,7 +563,7 @@ export default function MitraLapanganPage() {
                                                             type="button"
                                                             disabled={verifyingId === venue.id || isActive}
                                                             onClick={() => handleVerifyVenue(venue.id, "aktif")}
-                                                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#146B45] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#105638] disabled:cursor-not-allowed disabled:opacity-40"
+                                                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#E85002] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#C10801] disabled:cursor-not-allowed disabled:opacity-40"
                                                         >
                                                             <Icon name="check" size={15} />
                                                             {isEnglish ? "Approve" : "Verifikasi Aktif"}
@@ -584,7 +584,7 @@ export default function MitraLapanganPage() {
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <Link
                                                         href={`/mitra/lapangan/${venue.id}/edit`}
-                                                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#146B45]/20 px-3 py-2.5 text-sm font-semibold text-[#146B45] transition hover:bg-[#EAF5EF] dark:border-green-400/20 dark:text-green-400 dark:hover:bg-green-900/20"
+                                                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#E85002]/20 px-3 py-2.5 text-sm font-semibold text-[#E85002] transition hover:bg-[#FFF4ED] dark:border-green-400/20 dark:text-green-400 dark:hover:bg-green-900/20"
                                                     >
                                                         <Icon name="edit" size={16} />
                                                         {isEnglish ? "Edit" : "Edit"}

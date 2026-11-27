@@ -225,14 +225,14 @@ export default function MitraKeuanganPage() {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-[#F7F9F7] px-4 py-8 text-[#202B25] dark:bg-[#111A15] dark:text-white sm:px-6 lg:px-10">
+            <main className="min-h-screen bg-[#F9F9F9] px-4 py-8 text-[#333333] dark:bg-[#1A1A1A] dark:text-white sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-7xl space-y-8">
                     {/* Header */}
                     <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                         <div>
                             <Link
                                 href="/mitra/dashboard"
-                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#146B45] hover:underline dark:text-green-400"
+                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#E85002] hover:underline dark:text-green-400"
                             >
                                 ‹ {isEnglish ? "Back to Dashboard" : "Kembali ke Dashboard"}
                             </Link>
@@ -260,7 +260,7 @@ export default function MitraKeuanganPage() {
                                 setFormError("");
                                 setShowModal(true);
                             }}
-                            className="inline-flex items-center justify-center rounded-2xl bg-[#146B45] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#105638]"
+                            className="inline-flex items-center justify-center rounded-2xl bg-[#E85002] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/10 transition hover:bg-[#C10801]"
                         >
                             {isEnglish ? "Request Withdrawal" : "Ajukan Pencairan Dana"}
                         </button>
@@ -274,7 +274,7 @@ export default function MitraKeuanganPage() {
 
                     {/* Ringkasan Saldo */}
                     <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        <div className="rounded-3xl bg-gradient-to-br from-[#146B45] to-[#238B5D] p-6 text-white shadow-lg">
+                        <div className="rounded-3xl bg-gradient-to-br from-[#E85002] to-[#238B5D] p-6 text-white shadow-lg">
                             <p className="text-sm text-white/80">
                                 {isEnglish ? "Available Balance" : "Saldo Tersedia untuk Dicairkan"}
                             </p>
@@ -292,7 +292,7 @@ export default function MitraKeuanganPage() {
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 {isEnglish ? "Total Withdrawn" : "Total Dana Dicairkan"}
                             </p>
-                            <h2 className="mt-2 text-2xl font-bold text-[#146B45] dark:text-green-400 sm:text-3xl">
+                            <h2 className="mt-2 text-2xl font-bold text-[#E85002] dark:text-green-400 sm:text-3xl">
                                 {formatRupiah(ringkasan.totalDicairkan)}
                             </h2>
                             <p className="mt-2 text-xs text-gray-400">
@@ -373,7 +373,7 @@ export default function MitraKeuanganPage() {
                                                         a.n. {item.nama_pemilik_rekening}
                                                     </p>
                                                 </td>
-                                                <td className="py-4 font-bold text-[#146B45] dark:text-green-400">
+                                                <td className="py-4 font-bold text-[#E85002] dark:text-green-400">
                                                     {formatRupiah(item.jumlah)}
                                                 </td>
                                                 <td className="py-4">
@@ -399,7 +399,7 @@ export default function MitraKeuanganPage() {
                                                                     onClick={() =>
                                                                         handleUpdateStatusPencairan(item.id, "selesai")
                                                                     }
-                                                                    className="rounded-xl bg-[#146B45] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#105638] disabled:opacity-50"
+                                                                    className="rounded-xl bg-[#E85002] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#C10801] disabled:opacity-50"
                                                                 >
                                                                     Tandai Cair
                                                                 </button>
@@ -446,8 +446,8 @@ export default function MitraKeuanganPage() {
                                         type="button"
                                         onClick={() => setFilterStatus(status)}
                                         className={`rounded-full px-4 py-2 text-xs font-semibold transition ${filterStatus === status
-                                            ? "bg-[#146B45] text-white"
-                                            : "bg-gray-100 text-gray-500 hover:bg-[#EAF5EF] hover:text-[#146B45] dark:bg-white/10 dark:text-gray-300"
+                                            ? "bg-[#E85002] text-white"
+                                            : "bg-gray-100 text-gray-500 hover:bg-[#FFF4ED] hover:text-[#E85002] dark:bg-white/10 dark:text-gray-300"
                                             }`}
                                     >
                                         {isEnglish
@@ -497,7 +497,7 @@ export default function MitraKeuanganPage() {
                                                 key={item.id}
                                                 className="border-b border-gray-50 last:border-0 dark:border-white/5"
                                             >
-                                                <td className="py-4 font-semibold text-[#146B45] dark:text-green-400">
+                                                <td className="py-4 font-semibold text-[#E85002] dark:text-green-400">
                                                     {item.id}
                                                 </td>
                                                 <td className="py-4 font-medium">{item.penyewa}</td>
@@ -571,7 +571,7 @@ export default function MitraKeuanganPage() {
                             </button>
                         </div>
 
-                        <div className="mb-4 rounded-2xl bg-[#EAF5EF] p-3.5 text-xs text-[#146B45] dark:bg-green-900/20 dark:text-green-400">
+                        <div className="mb-4 rounded-2xl bg-[#FFF4ED] p-3.5 text-xs text-[#E85002] dark:bg-green-900/20 dark:text-green-400">
                             Saldo Tersedia: <strong>{formatRupiah(ringkasan.saldoTersedia)}</strong> (Minimal penarikan Rp 50.000)
                         </div>
 
@@ -595,7 +595,7 @@ export default function MitraKeuanganPage() {
                                         setFormPencairan({ ...formPencairan, jumlah: e.target.value })
                                     }
                                     placeholder="Contoh: 500000"
-                                    className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#146B45] dark:border-white/10 dark:bg-white/5"
+                                    className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#E85002] dark:border-white/10 dark:bg-white/5"
                                 />
                             </div>
 
@@ -609,7 +609,7 @@ export default function MitraKeuanganPage() {
                                         onChange={(e) =>
                                             setFormPencairan({ ...formPencairan, namaBank: e.target.value })
                                         }
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#146B45] dark:border-white/10 dark:bg-white/5"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#E85002] dark:border-white/10 dark:bg-white/5"
                                     >
                                         <option value="BCA">BCA</option>
                                         <option value="BNI">BNI</option>
@@ -634,7 +634,7 @@ export default function MitraKeuanganPage() {
                                             })
                                         }
                                         placeholder="1234567890"
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#146B45] dark:border-white/10 dark:bg-white/5"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#E85002] dark:border-white/10 dark:bg-white/5"
                                     />
                                 </div>
                             </div>
@@ -654,7 +654,7 @@ export default function MitraKeuanganPage() {
                                         })
                                     }
                                     placeholder="Nama sesuai buku tabungan"
-                                    className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#146B45] dark:border-white/10 dark:bg-white/5"
+                                    className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#E85002] dark:border-white/10 dark:bg-white/5"
                                 />
                             </div>
 
@@ -669,7 +669,7 @@ export default function MitraKeuanganPage() {
                                         setFormPencairan({ ...formPencairan, catatan: e.target.value })
                                     }
                                     placeholder="Keterangan tambahan"
-                                    className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#146B45] dark:border-white/10 dark:bg-white/5"
+                                    className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#E85002] dark:border-white/10 dark:bg-white/5"
                                 />
                             </div>
 
@@ -685,7 +685,7 @@ export default function MitraKeuanganPage() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-1 rounded-xl bg-[#146B45] py-2.5 text-sm font-semibold text-white hover:bg-[#105638] disabled:opacity-50"
+                                    className="flex-1 rounded-xl bg-[#E85002] py-2.5 text-sm font-semibold text-white hover:bg-[#C10801] disabled:opacity-50"
                                 >
                                     {submitting ? "Mengirim..." : "Kirim Pengajuan"}
                                 </button>
