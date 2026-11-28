@@ -15,8 +15,31 @@ function generateBookingId() {
 
 function getTodayDateString() {
   const now = new Date();
-
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+function loadMidtransSnapScript() {
+  return new Promise((resolve, reject) => {
+    if (typeof window === "undefined") return reject(new Error("Browser tidak tersedia."));
+    if (window.snap) return resolve(window.snap);
+
+    const existingScript = document.getElementById("midtrans-snap-script");
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve(window.snap));
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = "midtrans-snap-script";
+    script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    script.setAttribute(
+      "data-client-key",
+      process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ""
+    );
+    script.onload = () => resolve(window.snap);
+    script.onerror = () => reject(new Error("Gagal memuat SDK Midtrans Snap."));
+    document.body.appendChild(script);
+  });
 }
 
 function BookingContent() {
@@ -27,7 +50,6 @@ function BookingContent() {
 
   const isEnglish = language === "en";
 
-  const lapanganId = searchParams.get("lapangan");
   const unit = searchParams.get("unit");
   const tanggal = searchParams.get("tanggal");
   const jam = searchParams.get("jam");
@@ -42,22 +64,14 @@ function BookingContent() {
     "5": "a5555555-aaaa-5555-aaaa-555555555555",
   };
 
-  const REVERSE_UUID_MAP = {
-    "a1111111-aaaa-1111-aaaa-111111111111": "1",
-    "a2222222-aaaa-2222-aaaa-222222222222": "2",
-    "a3333333-aaaa-3333-aaaa-333333333333": "3",
-    "a4444444-aaaa-4444-aaaa-444444444444": "4",
-    "a5555555-aaaa-5555-aaaa-555555555555": "5",
-  };
-
-  const resolvedNumId = REVERSE_UUID_MAP[rawLapanganId] || rawLapanganId;
   const [isLoadingLapangan, setIsLoadingLapangan] = useState(true);
 
   useEffect(() => {
+    loadMidtransSnapScript().catch(() => { });
+
     async function fetchLapangans() {
       try {
         const res = await apiRequest("/lapangan");
-
         if (res.success && Array.isArray(res.data) && res.data.length > 0) {
           setSumberLapangan(res.data);
         }
@@ -93,20 +107,14 @@ function BookingContent() {
 
     if (!token) {
       const currentPath = `/booking?${searchParams.toString()}`;
-
-      router.replace(
-        `/login?redirect=${encodeURIComponent(currentPath)}`
-      );
-
+      router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
 
     try {
       const savedUser = localStorage.getItem("sportify_user");
-
       if (savedUser) {
         const user = JSON.parse(savedUser);
-
         if (user.fullName) setNamaPemesan(user.fullName);
         if (user.email) setEmailPemesan(user.email);
         if (user.phone) setTeleponPemesan(user.phone);
@@ -122,37 +130,15 @@ function BookingContent() {
     return (
       <>
         <Navbar />
-
         <main className="min-h-screen bg-background flex items-center justify-center px-5">
           <div className="text-center booking-loading">
             <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-
             <p className="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
-              {isEnglish
-                ? "Checking account access..."
-                : "Memeriksa akses akun..."}
+              {isEnglish ? "Checking account access..." : "Memeriksa akses akun..."}
             </p>
           </div>
         </main>
-
         <Footer />
-
-        <style jsx global>{`
-          @keyframes bookingLoading {
-            from {
-              opacity: 0;
-              transform: translateY(12px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          .booking-loading {
-            animation: bookingLoading 0.6s ease both;
-          }
-        `}</style>
       </>
     );
   }
@@ -165,94 +151,63 @@ function BookingContent() {
     return (
       <>
         <Navbar />
-
         <main className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
           <div className="liquid-info-card booking-empty-state text-center max-w-md w-full p-6 sm:p-8 dark:bg-[#1A1A1A] dark:border-white/10">
             <div className="text-4xl mb-4">!</div>
-
             <h1 className="text-xl sm:text-2xl font-bold text-dark-text dark:text-gray-100">
               {isEnglish ? "No Booking Found" : "Belum Ada Pemesanan"}
             </h1>
-
             <p className="text-gray-500 dark:text-gray-400 mt-3 leading-relaxed text-sm sm:text-base">
               {isEnglish
                 ? "Please choose a sports venue before continuing with your booking."
                 : "Silakan pilih tempat olahraga terlebih dahulu sebelum melanjutkan booking."}
             </p>
-
-            <Link
-              href="/lapangan"
-              className="liquid-booking-button inline-flex mt-6"
-            >
+            <Link href="/lapangan" className="liquid-booking-button inline-flex mt-6">
               {isEnglish ? "Find a Court" : "Cari Lapangan"}
             </Link>
           </div>
         </main>
-
         <Footer />
-
-        <style jsx global>{`
-          @keyframes bookingEmpty {
-            from {
-              opacity: 0;
-              transform: translateY(25px) scale(0.97);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0) scale(1);
-            }
-          }
-
-          .booking-empty-state {
-            animation: bookingEmpty 0.7s ease both;
-          }
-        `}</style>
       </>
     );
   }
 
-  // Harga lapangan dihitung per sesi, tidak dikalikan durasi.
   const totalHarga = Number(lapangan.harga || 0);
 
   const hitungJamSelesai = (jamMulai, totalDurasi) => {
     if (!jamMulai) return "-";
-
     const [jamAwal] = jamMulai.split(":").map(Number);
     const jamAkhir = (jamAwal + totalDurasi) % 24;
-
     return `${String(jamAkhir).padStart(2, "0")}:00`;
   };
 
   const jamSelesai = hitungJamSelesai(jam, durasi);
+
+  const simpanKeLocalStorage = (bookingObj) => {
+    const existing = JSON.parse(localStorage.getItem("sportify_bookings") || "[]");
+    const filtered = existing.filter((item) => item.id !== bookingObj.id);
+    localStorage.setItem("sportify_bookings", JSON.stringify([bookingObj, ...filtered]));
+  };
 
   const handleProsesBooking = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
     const token = localStorage.getItem("token");
-
     if (!token) {
       const currentPath = `/booking?${searchParams.toString()}`;
-
-      router.replace(
-        `/login?redirect=${encodeURIComponent(currentPath)}`
-      );
-
+      router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
 
     if (!namaPemesan.trim()) {
-      setErrorMessage(
-        isEnglish ? "Full name is required." : "Nama pemesan wajib diisi."
-      );
+      setErrorMessage(isEnglish ? "Full name is required." : "Nama pemesan wajib diisi.");
       return;
     }
 
     if (!teleponPemesan.trim()) {
       setErrorMessage(
-        isEnglish
-          ? "WhatsApp / Phone number is required."
-          : "Nomor WhatsApp / HP wajib diisi."
+        isEnglish ? "WhatsApp / Phone number is required." : "Nomor WhatsApp / HP wajib diisi."
       );
       return;
     }
@@ -270,35 +225,31 @@ function BookingContent() {
 
     try {
       let bookingId = generateBookingId();
+      let dbRecordId = null;
 
       // 1. Simpan pemesanan ke Supabase
       try {
         const formattedJamMulai = jam.length === 5 ? `${jam}:00` : jam;
-        const formattedJamSelesai =
-          jamSelesai.length === 5 ? `${jamSelesai}:00` : jamSelesai;
+        const formattedJamSelesai = jamSelesai.length === 5 ? `${jamSelesai}:00` : jamSelesai;
 
         const apiRes = await apiRequest("/booking", {
           method: "POST",
           body: JSON.stringify({
-            lapangan_id: lapanganId,
+            lapangan_id: dbLapanganId,
             tanggal_main: tanggal,
             jam_mulai: formattedJamMulai,
             jam_selesai: formattedJamSelesai,
             durasi_jam: durasi,
             total_biaya: totalHarga,
-            metode_pembayaran: metodePembayaran,
-            catatan: `Unit: ${unit}. Pemesan: ${namaPemesan.trim()}`,
+            catatan: `Unit: ${unit}. Metode: ${metodePembayaran.toUpperCase()}. Pemesan: ${namaPemesan.trim()}`,
           }),
         });
 
         if (apiRes.success && apiRes.data) {
-          bookingId =
-            apiRes.data.kodeBooking ||
-            apiRes.data.bookingId ||
-            bookingId;
+          dbRecordId = apiRes.data.id;
+          bookingId = apiRes.data.kodeBooking || apiRes.data.bookingId || bookingId;
         }
       } catch (backendError) {
-        // Jika terjadi benturan jadwal atau error validasi di database
         if (
           backendError.message.includes("Benturan") ||
           backendError.message.includes("bentrok") ||
@@ -309,7 +260,6 @@ function BookingContent() {
           setIsSubmitting(false);
           return;
         }
-
         console.warn("Sinkronisasi Supabase:", backendError.message);
       }
 
@@ -317,8 +267,9 @@ function BookingContent() {
         ? lapangan.kategori[0]
         : lapangan.kategori || "Padel";
 
-      const newBooking = {
+      const baseBooking = {
         id: bookingId,
+        dbId: dbRecordId,
         tempat: lapangan.nama,
         lapangan: unit,
         kategori: kategoriUtama,
@@ -337,21 +288,90 @@ function BookingContent() {
         createdAt: getTodayDateString(),
       };
 
-      const existing = JSON.parse(
-        localStorage.getItem("sportify_bookings") || "[]"
-      );
+      simpanKeLocalStorage(baseBooking);
 
-      localStorage.setItem(
-        "sportify_bookings",
-        JSON.stringify([newBooking, ...existing])
-      );
+      // 2. Jika bukan COD (Bayar di Tempat), buka Midtrans Snap
+      if (metodePembayaran !== "cod") {
+        const midtransRes = await fetch("/api/midtrans", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: bookingId,
+            grossAmount: totalHarga,
+            customerDetails: {
+              name: namaPemesan.trim(),
+              email: emailPemesan.trim() || "penyewa@sportify.test",
+              phone: teleponPemesan.trim(),
+            },
+            itemDetails: [
+              {
+                id: String(dbLapanganId || "LAP-1"),
+                price: totalHarga,
+                quantity: 1,
+                name: `${lapangan.nama} (${unit})`,
+              },
+            ],
+          }),
+        });
 
-      setBookingSuccess(newBooking);
-    } catch {
+        const midtransData = await midtransRes.json();
+
+        if (!midtransRes.ok || !midtransData.token) {
+          throw new Error(midtransData.message || "Gagal menghubungkan ke Midtrans.");
+        }
+
+        const snap = await loadMidtransSnapScript();
+        setIsSubmitting(false);
+
+        snap.pay(midtransData.token, {
+          onSuccess: async () => {
+            if (dbRecordId) {
+              try {
+                await apiRequest(`/booking/${dbRecordId}`, {
+                  method: "PATCH",
+                  body: JSON.stringify({
+                    status_pembayaran: "lunas",
+                    status_pemesanan: "dikonfirmasi",
+                  }),
+                });
+              } catch (err) {
+                console.warn("Gagal update status lunas ke Supabase:", err.message);
+              }
+            }
+            const paidBooking = {
+              ...baseBooking,
+              statusBooking: "Confirmed",
+              statusPembayaran: "Paid",
+            };
+            simpanKeLocalStorage(paidBooking);
+            setBookingSuccess(paidBooking);
+          },
+          onPending: () => {
+            setBookingSuccess(baseBooking);
+          },
+          onError: () => {
+            setErrorMessage(
+              isEnglish
+                ? "Payment failed in Midtrans. You can retry payment from Booking History."
+                : "Pembayaran gagal diproses Midtrans. Kamu bisa ulangi bayar dari halaman Riwayat Booking."
+            );
+            setBookingSuccess(baseBooking);
+          },
+          onClose: () => {
+            setBookingSuccess(baseBooking);
+          },
+        });
+        return;
+      }
+
+      // 3. Jika COD (Bayar di Tempat)
+      setBookingSuccess(baseBooking);
+    } catch (err) {
       setErrorMessage(
-        isEnglish
+        err.message ||
+        (isEnglish
           ? "Failed to process booking. Please try again."
-          : "Gagal memproses pemesanan. Silakan coba lagi."
+          : "Gagal memproses pemesanan. Silakan coba lagi.")
       );
     } finally {
       setIsSubmitting(false);
@@ -364,7 +384,6 @@ function BookingContent() {
 
       <main className="booking-confirmation-page min-h-screen bg-background dark:bg-[#1A1A1A] px-4 sm:px-6 py-8 sm:py-12 md:py-14">
         <div className="booking-content max-w-3xl mx-auto min-w-0">
-          {/* TOMBOL KEMBALI */}
           <Link
             href={`/lapangan/${lapangan.id}/booking`}
             className="booking-back inline-flex items-center gap-2 text-primary font-semibold text-sm hover:opacity-70 transition"
@@ -372,7 +391,6 @@ function BookingContent() {
             ← {isEnglish ? "Back to Schedule Selection" : "Kembali ke Pilih Jadwal"}
           </Link>
 
-          {/* HEADER */}
           <div className="booking-page-header mt-6 sm:mt-7 mb-7 sm:mb-8">
             <span className="booking-label inline-block px-4 py-2 rounded-full bg-[#FFF0E8] dark:bg-[#38251B] text-primary text-xs font-bold tracking-wider">
               SPORTIFY BOOKING
@@ -384,14 +402,12 @@ function BookingContent() {
 
             <p className="text-gray-500 dark:text-gray-400 mt-3 text-sm sm:text-base leading-relaxed">
               {isEnglish
-                ? "Review your booking details and submit your booking request."
-                : "Periksa kembali detail pemesanan sebelum mengirim permintaan booking."}
+                ? "Review your booking details and complete payment via Midtrans."
+                : "Periksa kembali detail pemesanan dan selesaikan pembayaran melalui Midtrans."}
             </p>
           </div>
 
-          {/* KARTU RINGKASAN */}
           <div className="liquid-booking-page-card booking-main-card w-full min-w-0 !bg-white dark:!bg-[#1A1A1A] !border-gray-200 dark:!border-white/10">
-            {/* INFORMASI TEMPAT */}
             <div className="booking-venue-info flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-xs text-primary font-bold tracking-wider uppercase">
@@ -404,20 +420,17 @@ function BookingContent() {
 
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 flex items-start gap-2">
                   <span className="shrink-0">📍</span>
-                  <span className="min-w-0 break-words">
-                    {lapangan.lokasi}
-                  </span>
+                  <span className="min-w-0 break-words">{lapangan.lokasi}</span>
                 </p>
               </div>
 
               <div className="booking-venue-badge bg-[#FFF0E8] dark:bg-[#38251B] text-primary px-4 py-2 rounded-full text-sm font-semibold w-fit shrink-0">
-                Sportify Booking
+                Midtrans Payment
               </div>
             </div>
 
             <div className="liquid-booking-divider dark:border-white/10" />
 
-            {/* INFORMASI BOOKING */}
             <div className="booking-details space-y-4 sm:space-y-5 w-full min-w-0">
               <div className="liquid-summary-row dark:text-gray-300">
                 <span>{isEnglish ? "Sports Venue" : "Tempat Olahraga"}</span>
@@ -451,7 +464,6 @@ function BookingContent() {
 
             <div className="liquid-booking-divider dark:border-white/10" />
 
-            {/* FORM DATA PEMESAN */}
             <div className="booking-form-section space-y-4 min-w-0">
               <h3 className="font-bold text-dark-text dark:text-gray-100 text-base sm:text-lg">
                 {isEnglish ? "Customer Information" : "Data Pemesan"}
@@ -506,66 +518,59 @@ function BookingContent() {
 
             <div className="liquid-booking-divider dark:border-white/10" />
 
-            {/* PILIH METODE PEMBAYARAN */}
             <div className="booking-payment-section space-y-3 min-w-0">
               <h3 className="font-bold text-dark-text dark:text-gray-100 text-base sm:text-lg">
                 {isEnglish ? "Payment Method" : "Metode Pembayaran"}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* QRIS */}
                 <button
                   type="button"
                   onClick={() => setMetodePembayaran("qris")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "qris"
-                      ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
-                      : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
+                    ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
+                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-sm">QRIS</span>
-
+                    <span className="font-bold text-sm">QRIS & E-Wallet</span>
                     <span className="text-xs bg-primary text-white px-1.5 py-0.5 rounded shrink-0">
-                      Instan
+                      Midtrans
                     </span>
                   </div>
-
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Gopay, OVO, Dana, BCA
+                    QRIS, GoPay, ShopeePay, Dana
                   </p>
                 </button>
 
-                {/* TRANSFER BANK */}
                 <button
                   type="button"
                   onClick={() => setMetodePembayaran("transfer")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "transfer"
-                      ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
-                      : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
+                    ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
+                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
-                  <div className="font-bold text-sm">
-                    Transfer Bank
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-sm">Virtual Account</span>
+                    <span className="text-xs bg-primary text-white px-1.5 py-0.5 rounded shrink-0">
+                      Midtrans
+                    </span>
                   </div>
-
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Virtual Account BCA, BNI
+                    BCA, BNI, BRI, Mandiri VA
                   </p>
                 </button>
 
-                {/* BAYAR DI TEMPAT */}
                 <button
                   type="button"
                   onClick={() => setMetodePembayaran("cod")}
                   className={`booking-payment-option p-3.5 rounded-2xl border text-left transition ${metodePembayaran === "cod"
-                      ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
-                      : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
+                    ? "border-primary bg-[#FFF0E8] dark:bg-[#38251B] text-primary ring-1 ring-primary"
+                    : "border-gray-200 bg-white text-dark-text hover:border-gray-300 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-gray-100 dark:hover:border-white/20"
                     }`}
                 >
-                  <div className="font-bold text-sm">
-                    Bayar di Tempat
-                  </div>
-
+                  <div className="font-bold text-sm">Bayar di Tempat</div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Bayar langsung di kasir
                   </p>
@@ -575,7 +580,6 @@ function BookingContent() {
 
             <div className="liquid-booking-divider dark:border-white/10" />
 
-            {/* RINCIAN HARGA */}
             <div className="booking-payment-details bg-[#FFF0E8]/70 dark:bg-[#38251B] rounded-2xl p-4 sm:p-6 w-full min-w-0">
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                 {isEnglish ? "Payment Details" : "Rincian Pembayaran"}
@@ -585,7 +589,6 @@ function BookingContent() {
                 <span className="text-gray-600 dark:text-gray-300 text-sm min-w-0">
                   {isEnglish ? "Price per session" : "Harga per sesi"}
                 </span>
-
                 <span className="font-semibold text-dark-text dark:text-gray-100 text-sm sm:text-base whitespace-nowrap tabular-nums">
                   Rp {totalHarga.toLocaleString("id-ID")}
                 </span>
@@ -595,7 +598,6 @@ function BookingContent() {
                 <span className="text-gray-600 dark:text-gray-300 text-sm min-w-0">
                   {isEnglish ? "Playing Duration" : "Durasi Bermain"}
                 </span>
-
                 <span className="font-semibold text-dark-text dark:text-gray-100 text-sm sm:text-base whitespace-nowrap">
                   {durasi} {isEnglish ? "hour(s)" : "Jam"}
                 </span>
@@ -607,21 +609,18 @@ function BookingContent() {
                 <span className="font-bold text-dark-text dark:text-gray-100 text-sm sm:text-base min-w-0">
                   {isEnglish ? "Total Payment" : "Total Pembayaran"}
                 </span>
-
                 <span className="text-lg sm:text-2xl font-bold text-primary whitespace-nowrap tabular-nums">
                   Rp {totalHarga.toLocaleString("id-ID")}
                 </span>
               </div>
             </div>
 
-            {/* PESAN ERROR */}
             {errorMessage && (
               <div className="booking-error mt-4 p-3 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-300 text-sm border border-red-200 dark:border-red-500/20">
                 {errorMessage}
               </div>
             )}
 
-            {/* TOMBOL KONFIRMASI */}
             <button
               type="button"
               onClick={handleProsesBooking}
@@ -630,20 +629,17 @@ function BookingContent() {
             >
               {isSubmitting
                 ? isEnglish
-                  ? "Processing..."
-                  : "Memproses..."
-                : isEnglish
-                  ? "Submit Booking Request"
-                  : "Kirim Permintaan Booking"}
-
+                  ? "Opening Midtrans..."
+                  : "Menghubungkan Midtrans..."
+                : metodePembayaran === "cod"
+                  ? isEnglish
+                    ? "Submit Booking Request"
+                    : "Kirim Permintaan Booking"
+                  : isEnglish
+                    ? "Proceed to Midtrans Payment"
+                    : "Bayar Sekarang via Midtrans"}
               <span>→</span>
             </button>
-
-            <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4 leading-relaxed">
-              {isEnglish
-                ? "Your booking will be pending until the venue confirms it. Payment must also be verified."
-                : "Booking akan menunggu konfirmasi mitra. Pembayaran juga perlu diverifikasi."}
-            </p>
           </div>
         </div>
 
@@ -656,19 +652,21 @@ function BookingContent() {
               </div>
 
               <span className="inline-block px-4 py-1.5 rounded-full bg-[#FFF0E8] dark:bg-[#38251B] text-primary text-xs font-bold tracking-wider mb-2">
-                {isEnglish ? "BOOKING REQUEST SENT" : "PERMINTAAN BOOKING TERKIRIM"}
+                {bookingSuccess.statusPembayaran === "Paid"
+                  ? "PEMBAYARAN LUNAS"
+                  : "BOOKING TERCATAT"}
               </span>
 
               <h2 className="text-2xl font-bold text-dark-text dark:text-gray-100">
-                {isEnglish
-                  ? "Booking Request Submitted!"
+                {bookingSuccess.statusPembayaran === "Paid"
+                  ? "Pembayaran Midtrans Berhasil!"
                   : "Permintaan Booking Berhasil Dikirim!"}
               </h2>
 
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                {isEnglish
-                  ? "Your booking request has been recorded and is waiting for venue confirmation."
-                  : "Permintaan booking kamu sudah tercatat dan sedang menunggu konfirmasi dari mitra."}
+                {bookingSuccess.statusPembayaran === "Paid"
+                  ? "Pembayaran telah terverifikasi otomatis oleh Midtrans dan jadwalmu sudah dikonfirmasi."
+                  : "Booking tercatat. Kamu bisa menyelesaikan pembayaran kapan saja di halaman Riwayat Booking."}
               </p>
 
               <div className="bg-[#FFF0E8]/70 dark:bg-[#38251B] rounded-2xl p-4 my-6 text-left space-y-3 text-sm">
@@ -700,85 +698,29 @@ function BookingContent() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-start">
-                  <span className="text-gray-500 dark:text-gray-400">Pemesan:</span>
-                  <span className="font-semibold text-dark-text dark:text-gray-100 text-right break-words">
-                    {bookingSuccess.customer.name}
-                  </span>
-                </div>
-
                 <div className="border-t border-primary/10 dark:border-white/10 pt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
                   <span className="font-bold text-dark-text dark:text-gray-100">
                     Total Pembayaran:
                   </span>
-
                   <span className="font-bold text-primary text-base whitespace-nowrap tabular-nums">
                     Rp {bookingSuccess.total.toLocaleString("id-ID")}
                   </span>
                 </div>
 
-                <div className="border-t border-primary/10 dark:border-white/10 pt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    {isEnglish ? "Booking Status:" : "Status Booking:"}
-                  </span>
-
-                  <span className="font-bold text-yellow-700 dark:text-yellow-400">
-                    {isEnglish ? "Pending" : "Menunggu Konfirmasi"}
-                  </span>
-                </div>
-
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    {isEnglish ? "Payment Status:" : "Status Pembayaran:"}
-                  </span>
-
-                  <span className="font-bold text-yellow-700 dark:text-yellow-400">
-                    {isEnglish ? "Pending" : "Menunggu Pembayaran"}
+                  <span className="text-gray-500 dark:text-gray-400">Status Pembayaran:</span>
+                  <span
+                    className={`font-bold ${bookingSuccess.statusPembayaran === "Paid"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-yellow-700 dark:text-yellow-400"
+                      }`}
+                  >
+                    {bookingSuccess.statusPembayaran === "Paid"
+                      ? "Lunas (Midtrans)"
+                      : "Menunggu Pembayaran"}
                   </span>
                 </div>
               </div>
-
-              {metodePembayaran === "qris" && (
-                <div className="p-4 bg-gray-50 dark:bg-[#38251B] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
-                  <p className="font-bold text-gray-800 dark:text-gray-100 mb-1">
-                    {isEnglish ? "QRIS Payment" : "Pembayaran QRIS"}
-                  </p>
-
-                  <p>
-                    {isEnglish
-                      ? "Your selected payment method is QRIS. Payment instructions and verification will follow the venue's confirmation."
-                      : "Kamu memilih metode QRIS. Instruksi dan verifikasi pembayaran akan mengikuti konfirmasi dari mitra."}
-                  </p>
-                </div>
-              )}
-
-              {metodePembayaran === "transfer" && (
-                <div className="p-4 bg-gray-50 dark:bg-[#38251B] rounded-2xl border border-gray-200 dark:border-white/10 mb-6 text-xs text-gray-600 dark:text-gray-300">
-                  <p className="font-bold text-gray-800 dark:text-gray-100 mb-1">
-                    {isEnglish ? "Bank Transfer" : "Transfer Bank"}
-                  </p>
-
-                  <p>
-                    {isEnglish
-                      ? "Your selected payment method is bank transfer. Please wait for payment instructions from the venue."
-                      : "Kamu memilih metode transfer bank. Silakan tunggu instruksi pembayaran dari mitra."}
-                  </p>
-                </div>
-              )}
-
-              {metodePembayaran === "cod" && (
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-500/10 rounded-2xl border border-yellow-200 dark:border-yellow-500/20 mb-6 text-xs text-yellow-800 dark:text-yellow-300">
-                  <p className="font-bold mb-1">
-                    {isEnglish ? "Pay at Venue" : "Bayar di Tempat"}
-                  </p>
-
-                  <p>
-                    {isEnglish
-                      ? "If your booking is confirmed, show this booking ID to the cashier when you arrive."
-                      : "Jika booking sudah dikonfirmasi, tunjukkan ID Booking ini kepada petugas kasir saat tiba di lokasi."}
-                  </p>
-                </div>
-              )}
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
@@ -800,227 +742,6 @@ function BookingContent() {
             </div>
           </div>
         )}
-
-        <style jsx global>{`
-          @keyframes bookingPageFade {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 1;
-            }
-          }
-
-          @keyframes bookingPageUp {
-            from {
-              opacity: 0;
-              transform: translateY(24px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          @keyframes bookingPageScale {
-            from {
-              opacity: 0;
-              transform: scale(0.96) translateY(16px);
-            }
-            to {
-              opacity: 1;
-              transform: scale(1) translateY(0);
-            }
-          }
-
-          @keyframes bookingSuccessPop {
-            0% {
-              opacity: 0;
-              transform: scale(0.5);
-            }
-            70% {
-              opacity: 1;
-              transform: scale(1.12);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-
-          @keyframes bookingSuccessCheck {
-            from {
-              opacity: 0;
-              transform: scale(0.5) rotate(-30deg);
-            }
-            to {
-              opacity: 1;
-              transform: scale(1) rotate(0);
-            }
-          }
-
-          .booking-confirmation-page {
-            animation: bookingPageFade 0.6s ease both;
-          }
-
-          .booking-back {
-            animation: bookingPageUp 0.5s ease both;
-          }
-
-          .booking-page-header {
-            animation: bookingPageUp 0.65s ease 0.08s both;
-          }
-
-          .booking-label {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-          }
-
-          .booking-label:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(232, 80, 2, 0.12);
-          }
-
-          .booking-main-card {
-            animation: bookingPageUp 0.8s ease 0.18s both;
-            transition: box-shadow 0.3s ease;
-          }
-
-          .booking-main-card:hover {
-            box-shadow: 0 20px 55px rgba(232, 80, 2, 0.07);
-          }
-
-          .booking-venue-info {
-            animation: bookingPageUp 0.6s ease 0.25s both;
-          }
-
-          .booking-venue-badge {
-            transition: transform 0.3s ease;
-          }
-
-          .booking-venue-badge:hover {
-            transform: translateY(-3px);
-          }
-
-          .booking-details {
-            animation: bookingPageUp 0.6s ease 0.32s both;
-          }
-
-          .booking-details .liquid-summary-row {
-            transition: transform 0.25s ease;
-          }
-
-          .booking-details .liquid-summary-row:hover {
-            transform: translateX(4px);
-          }
-
-          .booking-form-section {
-            animation: bookingPageUp 0.6s ease 0.4s both;
-          }
-
-          .booking-payment-section {
-            animation: bookingPageUp 0.6s ease 0.48s both;
-          }
-
-          .booking-payment-option {
-            transition:
-              transform 0.25s ease,
-              box-shadow 0.25s ease,
-              border-color 0.25s ease;
-          }
-
-          .booking-payment-option:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 22px rgba(232, 80, 2, 0.09);
-          }
-
-          .booking-payment-option:active {
-            transform: scale(0.98);
-          }
-
-          .booking-input {
-            transition:
-              border-color 0.25s ease,
-              box-shadow 0.25s ease,
-              transform 0.25s ease;
-          }
-
-          .booking-input:focus {
-            transform: translateY(-1px);
-          }
-
-          .booking-payment-details {
-            animation: bookingPageUp 0.65s ease 0.55s both;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-          }
-
-          .booking-payment-details:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(232, 80, 2, 0.08);
-          }
-
-          .booking-confirm-button {
-            animation: bookingPageUp 0.6s ease 0.65s both;
-            transition:
-              transform 0.25s ease,
-              box-shadow 0.25s ease,
-              opacity 0.25s ease;
-          }
-
-          .booking-confirm-button:hover:not(:disabled) {
-            transform: translateY(-4px);
-            box-shadow: 0 14px 28px rgba(232, 80, 2, 0.2);
-          }
-
-          .booking-confirm-button:active:not(:disabled) {
-            transform: scale(0.98);
-          }
-
-          .booking-error {
-            animation: bookingPageUp 0.3s ease both;
-          }
-
-          .booking-success-overlay {
-            animation: bookingPageFade 0.25s ease both;
-          }
-
-          .booking-success-modal {
-            animation: bookingPageScale 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-          }
-
-          .booking-success-icon {
-            animation: bookingSuccessPop 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-            position: relative;
-          }
-
-          .booking-success-icon::after {
-            content: "";
-            position: absolute;
-            inset: -7px;
-            border: 2px solid rgba(232, 80, 2, 0.2);
-            border-radius: 9999px;
-            animation: bookingSuccessCheck 0.7s ease both;
-          }
-
-          .booking-home-button {
-            transition:
-              transform 0.25s ease,
-              background-color 0.25s ease;
-          }
-
-          .booking-home-button:hover {
-            transform: translateY(-2px);
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            .booking-confirmation-page *,
-            .booking-confirmation-page *::before,
-            .booking-confirmation-page *::after {
-              animation-duration: 0.01ms !important;
-              animation-iteration-count: 1 !important;
-              transition-duration: 0.01ms !important;
-            }
-          }
-        `}</style>
       </main>
 
       <Footer />
@@ -1029,24 +750,16 @@ function BookingContent() {
 }
 
 export default function BookingPage() {
-  const isEnglishLoading = "Loading booking summary...";
-  const isIndonesianLoading = "Memuat ringkasan booking...";
-
   return (
     <Suspense
       fallback={
         <>
           <Navbar />
-
           <div className="min-h-screen flex items-center justify-center bg-background px-4">
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              <LoadingText
-                indonesian={isIndonesianLoading}
-                english={isEnglishLoading}
-              />
+              Memuat ringkasan booking...
             </p>
           </div>
-
           <Footer />
         </>
       }
@@ -1054,10 +767,4 @@ export default function BookingPage() {
       <BookingContent />
     </Suspense>
   );
-}
-
-function LoadingText({ indonesian, english }) {
-  const { language } = useLanguage();
-
-  return language === "en" ? english : indonesian;
 }

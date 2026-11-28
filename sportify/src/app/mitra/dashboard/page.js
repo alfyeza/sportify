@@ -173,6 +173,7 @@ export default function MitraDashboardPage() {
     const isEnglish = language === "en";
 
     const [namaMitra, setNamaMitra] = useState("Mitra Sportify");
+    const [isAdmin, setIsAdmin] = useState(false);
     const [tanggal, setTanggal] = useState("");
     const [filterBooking, setFilterBooking] = useState("Semua");
     const [stats, setStats] = useState({
@@ -180,6 +181,7 @@ export default function MitraDashboardPage() {
         totalPendapatan: 0,
         totalLapangan: 0,
         menungguKonfirmasi: 0,
+        selesai: 0,
     });
     const [realBookings, setRealBookings] = useState([]);
     const [isLive, setIsLive] = useState(false);
@@ -187,21 +189,26 @@ export default function MitraDashboardPage() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         const userData = localStorage.getItem("sportify_user");
-        const role = localStorage.getItem("sportify_role");
+        const role = (localStorage.getItem("sportify_role") || "").toLowerCase();
 
         if (!token) {
             router.replace("/login?redirect=%2Fmitra%2Fdashboard");
             return;
         }
 
-        if (role && !["mitra", "pemilik", "owner", "admin"].includes(role.toLowerCase())) {
+        if (role && !["mitra", "pemilik", "owner", "admin"].includes(role)) {
             router.replace("/profile");
             return;
         }
 
+        setIsAdmin(role === "admin");
+
         if (userData) {
             try {
                 const user = JSON.parse(userData);
+                if (user.role?.toLowerCase() === "admin") {
+                    setIsAdmin(true);
+                }
                 setNamaMitra(
                     user.fullName ||
                     user.full_name ||
@@ -230,10 +237,19 @@ export default function MitraDashboardPage() {
             try {
                 const res = await apiRequest("/mitra/dashboard");
                 if (res.success && res.data) {
+                    setIsLive(true);
+
                     if (res.data.statistik) {
-                        setStats(res.data.statistik);
+                        setStats({
+                            bookingHariIni: Number(res.data.statistik.bookingHariIni) || 0,
+                            totalPendapatan: Number(res.data.statistik.totalPendapatan) || 0,
+                            totalLapangan: Number(res.data.statistik.totalLapangan) || 0,
+                            menungguKonfirmasi: Number(res.data.statistik.menungguKonfirmasi) || 0,
+                            selesai: Number(res.data.statistik.selesai) || 0,
+                        });
                     }
-                    if (Array.isArray(res.data.daftarBooking) && res.data.daftarBooking.length > 0) {
+
+                    if (Array.isArray(res.data.daftarBooking)) {
                         setRealBookings(
                             res.data.daftarBooking.map((b) => ({
                                 id: b.kodeBooking || b.id,
@@ -253,7 +269,6 @@ export default function MitraDashboardPage() {
                                 statusPemesanan: b.statusPemesanan,
                             }))
                         );
-                        setIsLive(true);
                     }
                 }
             } catch (e) {
@@ -264,7 +279,7 @@ export default function MitraDashboardPage() {
         fetchDashboard();
     }, [router, isEnglish]);
 
-    const sourceBookings = isLive && realBookings.length > 0 ? realBookings : bookingContoh;
+    const sourceBookings = isLive ? realBookings : bookingContoh;
     const daftarBooking =
         filterBooking === "Semua"
             ? sourceBookings
@@ -330,7 +345,7 @@ export default function MitraDashboardPage() {
                         <div>
                             <div className="mb-2 flex items-center gap-2">
                                 <span className="rounded-full bg-[#FFF4ED] px-3 py-1 text-xs font-semibold text-[#E85002] dark:bg-green-900/30 dark:text-green-400">
-                                    Dashboard Mitra
+                                    {isAdmin ? "Dashboard Admin" : "Dashboard Mitra"}
                                 </span>
                                 <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isLive
                                     ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
@@ -466,7 +481,7 @@ export default function MitraDashboardPage() {
                         </div>
                     </section>
 
-                    {/* Grafik Pendapatan */}
+                    {/* Grafik Pendapatan & Kartu Total Pendapatan */}
                     <section className="grid grid-cols-1 gap-5 lg:grid-cols-3">
                         <div className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] lg:col-span-2">
                             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -507,12 +522,12 @@ export default function MitraDashboardPage() {
 
                             <p className="mt-4 text-xs text-gray-400">
                                 * {isEnglish
-                                    ? "Illustrative revenue chart. Real data will be connected to the backend."
-                                    : "Grafik pendapatan ilustrasi. Data sebenarnya akan dihubungkan ke backend."}
+                                    ? "Weekly revenue trend visualization. Click the card on the right for full monthly reports."
+                                    : "Visualisasi tren pendapatan mingguan. Klik tombol di samping untuk melihat laporan bulanan lengkap."}
                             </p>
                         </div>
 
-                        <div className="rounded-3xl bg-gradient-to-br from-[#E85002] to-[#238B5D] p-6 text-white shadow-lg">
+                        <div className="rounded-3xl bg-gradient-to-br from-[#E85002] to-[#C10801] p-6 text-white shadow-lg">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-white/80">
                                     {isEnglish ? "Total Revenue" : "Total Pendapatan"}
@@ -520,26 +535,36 @@ export default function MitraDashboardPage() {
                                 <Icon name="chart" size={23} />
                             </div>
 
-                            <h3 className="mt-5 text-3xl font-bold">Rp8.450.000</h3>
+                            <h3 className="mt-5 text-3xl font-bold">
+                                {isLive ? formatRupiah(stats.totalPendapatan) : "Rp8.450.000"}
+                            </h3>
 
-                            <p className="mt-2 text-sm text-white/70">
-                                {isEnglish ? "Illustrative monthly revenue" : "Ilustrasi pendapatan bulan ini"}
+                            <p className="mt-2 text-sm text-white/80">
+                                {isLive
+                                    ? isEnglish
+                                        ? "Confirmed accumulated revenue"
+                                        : "Akumulasi pendapatan terkonfirmasi"
+                                    : isEnglish
+                                        ? "Illustrative monthly revenue"
+                                        : "Ilustrasi pendapatan bulan ini"}
                             </p>
 
                             <div className="my-6 h-px bg-white/20" />
 
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-white/70">
+                                <span className="text-white/80">
                                     {isEnglish ? "Completed bookings" : "Booking selesai"}
                                 </span>
-                                <span className="font-bold">48</span>
+                                <span className="font-bold">
+                                    {isLive ? stats.selesai : 48}
+                                </span>
                             </div>
 
                             <Link
-                                href="/mitra/keuangan"
+                                href="/mitra/keuangan#laporan"
                                 className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-[#E85002] transition hover:bg-[#FFF4ED]"
                             >
-                                {isEnglish ? "View Finances" : "Lihat Keuangan"}
+                                {isEnglish ? "View Report & Combo" : "Lihat Laporan & Combo"}
                                 <Icon name="arrow" size={17} />
                             </Link>
                         </div>
